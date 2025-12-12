@@ -1,8 +1,8 @@
-import * as CarouselModule from "./ui/carousel/carousel";
-import * as CardModule from "./ui/card/card";
-import * as ButtonModule from "./ui/button/button";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import * as ButtonModule from "./ui/button/button";
+import * as CardModule from "./ui/card/card";
+import * as CarouselModule from "./ui/carousel/carousel";
 
 function resolve(module: any, name?: string) {
   if (!module) return undefined;
@@ -26,7 +26,7 @@ const Carousel = {
 const Card = resolve(CardModule, "Card");
 const CardTitle = resolve(CardModule, "CardTitle");
 const CardDescription = resolve(CardModule, "CardDescription");
-const CardImage = resolve(CardModule, "CardImage");
+const _CardImage = resolve(CardModule, "CardImage");
 const CardContent = resolve(CardModule, "CardContent");
 const CardFooter = resolve(CardModule, "CardFooter");
 
@@ -36,7 +36,7 @@ export default function Work() {
   const work = [
     {
       id: "openpolicy",
-      image: "/openpolicy.png",
+      image: "/openpolicy-2.png",
       title: "OpenPolicy",
       description: "Write, host, and manage your public documents.",
       url: "/openpolicy",
@@ -51,7 +51,7 @@ export default function Work() {
     },
     {
       id: "measurely",
-      image: "/measurely.png",
+      image: "/measurely-2.png",
       title: "Measurely",
       description:
         "Measurely is a tool that helps developers and teams track metrics, and analyze data.",
@@ -61,8 +61,7 @@ export default function Work() {
       id: "maybe-you",
       image: "/question-mark.png",
       title: "Have something in mind?",
-      description:
-        "Contact me for any project or idea that you have in mind.",
+      description: "Contact me for any project or idea that you have in mind.",
       url: "mailto:hello@zakary.dev",
     },
   ];
@@ -104,7 +103,9 @@ export default function Work() {
                     <CardFooter>
                       <Link href={work.url} target="_blank">
                         <Button size="sm" variant="outline">
-                          {work.id === "maybe-you" ? "Contact Me" : "Learn More"}
+                          {work.id === "maybe-you"
+                            ? "Contact Me"
+                            : "Learn More"}
                         </Button>
                       </Link>
                     </CardFooter>

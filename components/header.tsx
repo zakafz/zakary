@@ -1,10 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 import * as React from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "./ui/button/button";
 import { GitHub } from "./ui/github-icon";
 import { Separator } from "./ui/separator/separator";
@@ -17,9 +17,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip/tooltip";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const { setTheme, theme } = useTheme();
+  const pathname = usePathname();
 
   const toggleTheme = React.useCallback(() => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -27,7 +29,8 @@ export default function Header() {
 
   const navItems = [
     { name: "About", url: "/about" },
-    { name: "Contact", url: "/contact" },
+    { name: "Blog", url: "/blog" },
+    { name: "Tools", url: "/tools" },
   ];
 
   function ThemeIcon() {
@@ -48,18 +51,23 @@ export default function Header() {
       <div className="flex items-center justify-between h-14 w-full pt-2">
         {/*Section 1*/}
         <div className="h-full flex items-center justify-center">
-          <div className="cursor-pointer group p-2 pt-1 flex justify-center items-center bg-primary relative text-primary-foreground font-medium">
-            <div className="italic">zakary</div>
-            <div className="absolute font-mono text-xs bg-accent -bottom-3 text-primary px-0.5 border border-border">
-              fofana
+          <Link href={"/"}>
+            <div className="cursor-pointer group p-2 pt-1 flex justify-center items-center bg-primary relative text-primary-foreground font-medium">
+              <div className="italic">zakary</div>
+              <div className="absolute font-mono text-xs bg-accent -bottom-3 text-primary px-0.5 border border-border">
+                fofana
+              </div>
             </div>
-          </div>
-          <div className="flex gap-4 items-center ml-6 mr-4">
+          </Link>
+          <div className="flex gap-2 items-center ml-6 mr-4">
             {navItems.map((item, index) => (
               <div key={index}>
                 <Link
                   href={item.url}
-                  className="text-sm hover:bg-accent p-2 px-4 text-muted-foreground hover:text-primary"
+                  className={cn(
+                    "text-sm hover:bg-accent p-2 px-4 text-muted-foreground hover:text-primary",
+                    pathname === item.url ? "bg-accent text-primary" : "",
+                  )}
                 >
                   {item.name}
                 </Link>

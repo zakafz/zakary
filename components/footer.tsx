@@ -1,10 +1,9 @@
-import * as React from "react";
-import { Button } from "./ui/button/button";
-import { LinkedIn } from "./ui/linkedin-icon";
-import Link from "next/link";
-import { Separator } from "./ui/separator/separator";
-import { GitHub } from "./ui/github-icon";
 import { Send } from "lucide-react";
+import Link from "next/link";
+import { Button } from "./ui/button/button";
+import { GitHub } from "./ui/github-icon";
+import { LinkedIn } from "./ui/linkedin-icon";
+import { Separator } from "./ui/separator/separator";
 
 export default function Footer() {
   return (

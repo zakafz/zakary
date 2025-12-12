@@ -14,3 +14,20 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export function getAge(birthYear: number, birthMonth0Based: number, birthDay: number) {
+  const now = new Date(); // local timezone (America/Toronto on your machine)
+  const birth = new Date(birthYear, birthMonth0Based, birthDay);
+
+  let years = now.getFullYear() - birth.getFullYear();
+
+  const hasNotReachedBirthdayThisYear =
+    now.getMonth() < birthMonth0Based ||
+    (now.getMonth() === birthMonth0Based && now.getDate() < birthDay);
+
+  if (hasNotReachedBirthdayThisYear) {
+    years -= 1;
+  }
+
+  return years;
+}

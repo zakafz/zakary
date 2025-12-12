@@ -30,7 +30,7 @@ const cardVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 /**
@@ -80,7 +80,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       className={cn(
         "grid max-w-full grid-cols-[1fr_auto] items-center gap-2",
-        className
+        className,
       )}
       data-slot="card-header"
       {...props}
@@ -94,7 +94,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
       className={cn(
         "m-0 font-medium text-xl leading-none tracking-tight",
         "max-sm:text-lg",
-        className
+        className,
       )}
       data-slot="card-title"
       {...props}
@@ -108,7 +108,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
       className={cn(
         "col-span-full m-0 whitespace-normal text-muted-foreground text-sm leading-5",
         "max-sm:text-[0.9375rem] max-sm:leading-[1.5]",
-        className
+        className,
       )}
       data-slot="card-description"
       {...props}
@@ -172,7 +172,7 @@ function CardImage({
         "-mt-6 mx-0 mb-0 h-[250px]",
         "md:-mt-[calc(1.5rem+1px)] md:-mx-[calc(1.5rem+1px)] md:mb-0 md:h-[300px] md:w-[calc(100%+3rem+2px)] md:max-w-[100vw]",
         "rounded-t-[var(--radius)] transition-transform duration-[250ms] ease-[var(--ease-in-out-quad)]",
-        className
+        className,
       )}
       data-slot="card-image"
       height={300}
@@ -211,7 +211,7 @@ function CardImageContent({
       className={cn(
         "absolute inset-0 flex flex-col justify-end",
         "bg-gradient-to-b from-transparent to-black/60 text-white",
-        className
+        className,
       )}
       data-slot="card-image-content"
       {...props}
@@ -232,7 +232,7 @@ function CardIcon({
         "relative z-10 flex items-center justify-center",
         "mb-[1.125rem] h-8 w-8 p-1.5",
         "max-sm:mb-4 max-sm:h-7 max-sm:w-7",
-        className
+        className,
       )}
       data-slot="card-icon"
       {...props}
@@ -247,7 +247,7 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
     <div
       className={cn(
         "col-start-2 row-start-1 self-start justify-self-end",
-        className
+        className,
       )}
       data-slot="card-action"
       {...props}

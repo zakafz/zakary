@@ -84,7 +84,7 @@ export function Root({
       setCurrentIndexInternal(index);
       onIndexChange?.(index);
     },
-    [setCurrentIndexInternal, onIndexChange]
+    [setCurrentIndexInternal, onIndexChange],
   );
 
   const goToIndex = useCallback(
@@ -115,7 +115,7 @@ export function Root({
 
       setCurrentIndex(index);
     },
-    [setCurrentIndex, variant, bleedRefFromContext]
+    [setCurrentIndex, variant, bleedRefFromContext],
   );
 
   const getVisibleItemsCount = useCallback(() => {
@@ -251,13 +251,13 @@ export function Root({
       // Left padding: distance from viewport's left edge to parent's content left edge, minus gap
       const leftPadding = Math.max(
         0,
-        parentRect.left + parentPaddingLeft - viewportRect.left - gap
+        parentRect.left + parentPaddingLeft - viewportRect.left - gap,
       );
 
       // Right padding: distance from parent's content right edge to viewport's right edge
       const rightPadding = Math.max(
         0,
-        viewportRect.right - (parentRect.right - parentPaddingRight)
+        viewportRect.right - (parentRect.right - parentPaddingRight),
       );
 
       setInsetPaddingLeft(leftPadding);
@@ -276,7 +276,7 @@ export function Root({
         className={cn(
           "relative mx-auto w-full overflow-visible rounded-lg",
           "data-[align=center]:flex data-[align=center]:flex-col data-[align=center]:items-center",
-          className
+          className,
         )}
         data-align={align}
         data-slot="carousel"
@@ -320,7 +320,7 @@ export function Bleed({ className, children, ...props }: CarouselBleedProps) {
       <div
         className={cn(
           "-ml-[50vw] -mr-[50vw] relative right-1/2 left-1/2 w-screen",
-          className
+          className,
         )}
         ref={bleedRef}
         {...props}
@@ -349,7 +349,7 @@ export function Viewport({
         "scroll-snap-stop-always relative w-full overflow-y-hidden overflow-x-scroll overscroll-x-contain",
         "py-[calc(2px+2px)] [-ms-overflow-style:none] [scrollbar-width:none]",
         "[&::-webkit-scrollbar]:hidden",
-        className
+        className,
       )}
       ref={viewportRef}
       {...props}
@@ -375,7 +375,7 @@ export function Content({
         "flex items-stretch",
         "before:w-[var(--inset-padding-left,0)] before:flex-shrink-0 before:content-['']",
         "after:w-[var(--inset-padding-right,0)] after:flex-shrink-0 after:content-['']",
-        className
+        className,
       )}
       style={
         {
@@ -442,7 +442,7 @@ export function Item({
           break;
       }
     },
-    [canGoPrev, canGoNext, prevSlide, nextSlide, goToIndex, totalItems]
+    [canGoPrev, canGoNext, prevSlide, nextSlide, goToIndex, totalItems],
   );
 
   return (
@@ -453,7 +453,7 @@ export function Item({
       className={cn(
         "relative flex-shrink-0 rounded-[var(--radius)]",
         "focus-visible:outline-2 focus-visible:outline-[color:var(--color-ring)] focus-visible:outline-offset-[1px]",
-        className
+        className,
       )}
       onKeyDown={handleKeyDown}
       role="group"
@@ -489,7 +489,7 @@ export function Previous({
         "disabled:pointer-events-none disabled:cursor-default disabled:bg-[color:var(--muted)] disabled:text-[color:var(--muted-foreground)] disabled:opacity-30",
         "disabled:hover:scale-100 disabled:hover:bg-[color:var(--muted)] disabled:hover:opacity-30",
         "motion-reduce:transition-none [&_svg]:h-4 [&_svg]:w-4",
-        className
+        className,
       )}
       disabled={!canGoPrev}
       onClick={prevSlide}
@@ -531,7 +531,7 @@ export function Next({ className, children, ...props }: CarouselNextProps) {
         "disabled:pointer-events-none disabled:cursor-default disabled:bg-[color:var(--muted)] disabled:text-[color:var(--muted-foreground)] disabled:opacity-30",
         "disabled:hover:scale-100 disabled:hover:bg-[color:var(--muted)] disabled:hover:opacity-30",
         "motion-reduce:transition-none [&_svg]:h-4 [&_svg]:w-4",
-        className
+        className,
       )}
       disabled={!canGoNext}
       onClick={nextSlide}
@@ -604,7 +604,7 @@ export function Indicators({ className, ...props }: CarouselIndicatorsProps) {
       aria-label="Choose slide to display"
       className={cn(
         "-translate-x-1/2 absolute bottom-4 left-1/2 z-10 flex gap-2",
-        className
+        className,
       )}
       role="tablist"
       {...props}
@@ -620,7 +620,7 @@ export function Indicators({ className, ...props }: CarouselIndicatorsProps) {
             "hover:scale-110 hover:bg-white/70",
             "focus-visible:outline-2 focus-visible:outline-[color:var(--color-ring)] focus-visible:outline-offset-2",
             "data-[active]:scale-[1.2] data-[active]:bg-[color:var(--color-primary)] data-[active]:hover:bg-[color:var(--color-primary)]",
-            "motion-reduce:transition-none"
+            "motion-reduce:transition-none",
           )}
           data-active={currentIndex === index ? "" : undefined}
           // biome-ignore lint/suspicious/noArrayIndexKey: Indicators are stable and don't reorder

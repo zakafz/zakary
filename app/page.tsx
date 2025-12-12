@@ -1,3 +1,5 @@
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import Container from "@/components/container";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
@@ -5,8 +7,6 @@ import { Badge, BadgeIcon } from "@/components/ui/badge/badge";
 import { Button } from "@/components/ui/button/button";
 import { LinkedIn } from "@/components/ui/linkedin-icon";
 import Work from "@/components/work";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 
 export default function Home() {
   return (
@@ -35,10 +35,7 @@ export default function Home() {
             <Button>Contact me</Button>
           </Link>
           <Link href="https://linkedin.com/in/zakary-fofana" target="_blank">
-            <Button
-              className="aspect-square"
-              variant={"outline"}
-            >
+            <Button className="aspect-square" variant={"outline"}>
               <LinkedIn className="size-4.5 shrink-0" />
             </Button>
           </Link>
