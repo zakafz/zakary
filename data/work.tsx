@@ -151,7 +151,7 @@ const workWithContent = workData.map((project) => {
             </ul>
             <div className="mt-10 mb-5 font-medium">Why I built it?</div>
             <div className="text-muted-foreground text-justify">
-              I built LocalCard because I wanted to try out{" "}
+              I built OpenPolicy because I wanted to try out{" "}
               <a
                 href="https://polar.sh"
                 className="text-primary font-medium hover:underline"
