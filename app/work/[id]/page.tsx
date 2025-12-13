@@ -1,9 +1,9 @@
+import type { Metadata, ResolvingMetadata } from "next";
 import Container from "@/components/container";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import WorkPage from "@/components/work-page";
 import { workData } from "@/data/work-data";
-import { Metadata, ResolvingMetadata } from "next";
 
 type Props = {
   params: { id: string };

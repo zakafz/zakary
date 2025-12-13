@@ -10,6 +10,13 @@ import { Button } from "./ui/button/button";
 import { GitHub } from "./ui/github-icon";
 import { Separator } from "./ui/separator/separator";
 import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
+import {
   Tooltip,
   TooltipArrow,
   TooltipPopup,
@@ -18,13 +25,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip/tooltip";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
 
 export default function Header() {
   const { setTheme, theme } = useTheme();

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Announcement from "@/components/annoucement";
 import Container from "@/components/container";
 import Footer from "@/components/footer";
@@ -5,7 +6,6 @@ import Header from "@/components/header";
 import { Reveal } from "@/components/ui/reveal";
 import { TextReveal } from "@/components/ui/text-reveal";
 import { getAge } from "@/lib/utils";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About",

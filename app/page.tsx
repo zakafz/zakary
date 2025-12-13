@@ -3,13 +3,13 @@ import Link from "next/link";
 import Container from "@/components/container";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
+import Work from "@/components/work";
 import { Badge, BadgeIcon } from "@/components/ui/badge/badge";
 import { Button } from "@/components/ui/button/button";
+import { GitHub } from "@/components/ui/github-icon";
 import { LinkedIn } from "@/components/ui/linkedin-icon";
 import { Reveal } from "@/components/ui/reveal";
 import { TextReveal } from "@/components/ui/text-reveal";
-import Work from "@/components/work";
-import { GitHub } from "@/components/ui/github-icon";
 
 export default function Home() {
   return (

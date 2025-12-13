@@ -1,246 +1,107 @@
-"use client";
-
-import { AnimatePresence, motion } from "framer-motion";
-import { Pause, Play, Volume1, Volume2, VolumeX } from "lucide-react";
-import { useRef, useState } from "react";
-import { Button } from "@/components/ui/button/button";
+import { Play, X } from "lucide-react";
+import Image from "next/image";
+import * as React from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+  DialogOverlay,
+  DialogPortal,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-const formatTime = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-};
+// Interface for component props
+interface VideoPlayerProps extends React.HTMLAttributes<HTMLDivElement> {
+  thumbnailUrl: string;
+  videoUrl: string;
+  title: string;
+  description?: string;
+  aspectRatio?: "16/9" | "4/3" | "1/1";
+}
 
-const CustomSlider = ({
-  value,
-  onChange,
-  className,
-}: {
-  value: number;
-  onChange: (value: number) => void;
-  className?: string;
-}) => {
-  return (
-    <motion.div
-      className={cn(
-        "relative w-full h-1 bg-white/20 rounded-full cursor-pointer",
-        className,
-      )}
-      onClick={(e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const percentage = (x / rect.width) * 100;
-        onChange(Math.min(Math.max(percentage, 0), 100));
-      }}
-    >
-      <motion.div
-        className="absolute top-0 left-0 h-full bg-white rounded-full"
-        style={{ width: `${value}%` }}
-        initial={{ width: 0 }}
-        animate={{ width: `${value}%` }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      />
-    </motion.div>
-  );
-};
-
-const VideoPlayer = ({
-  src,
-  className,
-}: {
-  src: string;
-  className?: string;
-}) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(1);
-  const [progress, setProgress] = useState(0);
-  const [isMuted, setIsMuted] = useState(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [showControls, setShowControls] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const handleVolumeChange = (value: number) => {
-    if (videoRef.current) {
-      const newVolume = value / 100;
-      videoRef.current.volume = newVolume;
-      setVolume(newVolume);
-      setIsMuted(newVolume === 0);
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      const progress =
-        (videoRef.current.currentTime / videoRef.current.duration) * 100;
-      setProgress(Number.isFinite(progress) ? progress : 0);
-      setCurrentTime(videoRef.current.currentTime);
-      setDuration(videoRef.current.duration);
-    }
-  };
-
-  const handleSeek = (value: number) => {
-    if (videoRef.current?.duration) {
-      const time = (value / 100) * videoRef.current.duration;
-      if (Number.isFinite(time)) {
-        videoRef.current.currentTime = time;
-        setProgress(value);
-      }
-    }
-  };
-
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-      if (!isMuted) {
-        setVolume(0);
-      } else {
-        setVolume(1);
-        videoRef.current.volume = 1;
-      }
-    }
-  };
-
-  const setSpeed = (speed: number) => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = speed;
-      setPlaybackSpeed(speed);
-    }
-  };
-
-  return (
-    <motion.div
-      className={cn(
-        "relative w-full max-w-4xl mx-auto overflow-hidden bg-background border-[0.5px] border-border/70",
-        className,
-      )}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      onMouseEnter={() => setShowControls(true)}
-      onMouseLeave={() => setShowControls(false)}
-    >
-      <video
-        ref={videoRef}
-        className="w-full"
-        onTimeUpdate={handleTimeUpdate}
-        src={src}
-        onClick={togglePlay}
-      >
-        <track kind="captions" />
-      </video>
-
-      <AnimatePresence>
-        {showControls && (
-          <motion.div
-            className="absolute bottom-0 mx-auto max-w-xl left-0 right-0 p-4 bg-black/70 backdrop-blur-md"
-            initial={{ y: 20, opacity: 0, filter: "blur(10px)" }}
-            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-            exit={{ y: 20, opacity: 0, filter: "blur(10px)" }}
-            transition={{ duration: 0.6, ease: "circInOut", type: "spring" }}
+const VideoPlayer = React.forwardRef<HTMLDivElement, VideoPlayerProps>(
+  (
+    {
+      className,
+      thumbnailUrl,
+      videoUrl,
+      title,
+      description,
+      aspectRatio = "16/9",
+      ...props
+    },
+    ref,
+  ) => {
+    return (
+      <Dialog >
+        <DialogTrigger asChild>
+          <div
+            ref={ref}
+            className={cn(
+              "group relative cursor-pointer overflow-hidden border border-border",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              className,
+            )}
+            style={{ aspectRatio }}
+            {...props}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-white text-sm">
-                {formatTime(currentTime)}
-              </span>
-              <CustomSlider
-                value={progress}
-                onChange={handleSeek}
-                className="flex-1"
-              />
-              <span className="text-white text-sm">{formatTime(duration)}</span>
-            </div>
+            {/* Thumbnail Image */}
+            <Image
+              src={thumbnailUrl}
+              alt={`Thumbnail for ${title}`}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              layout="fill"
+            />
+            {/* Overlay Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+            {/* Play Button */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="flex h-16 w-16 items-center justify-center bg-(--mix-card-33-bg) border border-border backdrop-blur-sm transition-all duration-300 group-hover:scale-110">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 fill-muted-foreground text-muted-foreground group-hover:fill-primary group-hover:text-primary"
+                  viewBox="0 0 512 512"
                 >
-                  <Button
-                    onClick={togglePlay}
-                    variant="ghost"
-                    size="icon"
-                    className="text-white hover:bg-[#111111d1] hover:text-white"
-                  >
-                    {isPlaying ? (
-                      <Pause className="h-5 w-5" />
-                    ) : (
-                      <Play className="h-5 w-5" />
-                    )}
-                  </Button>
-                </motion.div>
-                <div className="flex items-center gap-x-1">
-                  <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Button
-                      onClick={toggleMute}
-                      variant="ghost"
-                      size="icon"
-                      className="text-white hover:bg-[#111111d1] hover:text-white"
-                    >
-                      {isMuted ? (
-                        <VolumeX className="h-5 w-5" />
-                      ) : volume > 0.5 ? (
-                        <Volume2 className="h-5 w-5" />
-                      ) : (
-                        <Volume1 className="h-5 w-5" />
-                      )}
-                    </Button>
-                  </motion.div>
-
-                  <div className="w-24">
-                    <CustomSlider
-                      value={volume * 100}
-                      onChange={handleVolumeChange}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {[0.5, 1, 1.5, 2].map((speed) => (
-                  <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    key={speed}
-                  >
-                    <Button
-                      onClick={() => setSpeed(speed)}
-                      variant="ghost"
-                      size="icon"
-                      className={cn(
-                        "text-white hover:bg-[#111111d1] hover:text-white",
-                        playbackSpeed === speed && "bg-[#111111d1]",
-                      )}
-                    >
-                      {speed}x
-                    </Button>
-                  </motion.div>
-                ))}
+                  <path d="M96 448l320-192L96 64v384z" />
+                </svg>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-};
 
-export default VideoPlayer;
+            {/* Title and Description */}
+            <div className="absolute bottom-0 left-0 p-6">
+              <h3 className="text-2xl font-medium text-white">{title}</h3>
+              {description && (
+                <p className="mt-1 text-sm text-white/80">{description}</p>
+              )}
+            </div>
+          </div>
+        </DialogTrigger>
+
+        {/* Video Modal */}
+        <DialogPortal>
+          <DialogOverlay />
+          <DialogContent className="aspect-video max-w-4xl border-0 bg-transparent p-0">
+            <DialogTitle className="sr-only">Video Player</DialogTitle>
+            <DialogClose className="absolute -right-4 -top-4 z-50 bg-(--mix-card-33-bg) border-[0.5px] border-border/70 ring-0! p-2 text-muted-foreground hover:text-primary transition-colors">
+              <X className="h-6 w-6" />
+            </DialogClose>
+            <iframe
+              src={videoUrl}
+              title={title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="h-full w-full"
+            />
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>
+    );
+  },
+);
+VideoPlayer.displayName = "VideoPlayer";
+
+export { VideoPlayer };

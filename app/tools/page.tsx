@@ -1,10 +1,10 @@
+import type { Metadata } from "next";
 import Container from "@/components/container";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import ToolsTable from "@/components/tools";
 import { Reveal } from "@/components/ui/reveal";
 import { TextReveal } from "@/components/ui/text-reveal";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Tools",

@@ -9,7 +9,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart/chart";
-import VideoPlayer from "@/components/ui/video-player";
+import { VideoPlayer } from "@/components/ui/video-player";
 import { cn } from "@/lib/utils";
 import { workData } from "./work-data";
 
@@ -282,7 +282,6 @@ const workWithContent = workData.map((project) => {
               height={100}
             />
             <div className="w-full p-4 bg-accent/70 border-border border grid gap-2 grid-cols-6">
-              {/* biome-ignore lint/suspicious/noArrayIndexKey: These are decorative elements and the order is stable. */}
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={`localcard-present-${i}`}
@@ -300,7 +299,6 @@ const workWithContent = workData.map((project) => {
                 </div>
               ))}
 
-              {/* biome-ignore lint/suspicious/noArrayIndexKey: These are decorative elements and the order is stable. */}
               {Array.from({ length: 7 }).map((_, i) => (
                 <div
                   key={`localcard-empty-${i}`}
@@ -445,7 +443,13 @@ const workWithContent = workData.map((project) => {
                 : AWS CloudWatch, Google Analytics, and LemonSqueeze.
               </li>
             </ul>
-            <VideoPlayer src="/measurely.mp4" className="mt-10" />
+            <VideoPlayer
+              thumbnailUrl="/measurely-thumbnail.jpg"
+              videoUrl="https://www.youtube.com/embed/ky-__c0YUmI?autoplay=1&vq=hd1080"
+              title="Measurely"
+              description="What it is? Small demo of some features."
+              className="mt-10"
+            />
             <div className="mt-10 mb-5 font-medium">Tech Stack</div>
             <ul className="list-disc list-outside space-y-2 pl-4 text-muted-foreground marker:text-primary">
               <li>

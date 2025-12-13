@@ -1,10 +1,10 @@
+import type { Metadata } from "next";
 import Announcement from "@/components/annoucement";
 import BlogSection from "@/components/blog";
 import Container from "@/components/container";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { TextReveal } from "@/components/ui/text-reveal";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Blog",
