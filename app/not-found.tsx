@@ -1,9 +1,9 @@
+import Link from "next/link";
 import Container from "@/components/container";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { Badge } from "@/components/ui/badge/badge";
 import { Button } from "@/components/ui/button/button";
-import Link from "next/link";
 
 export default function NotFound() {
   return (

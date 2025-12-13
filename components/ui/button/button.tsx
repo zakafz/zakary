@@ -73,6 +73,7 @@ function Spinner() {
       viewBox="0 0 24 24"
       width="16"
     >
+      <title>Loading...</title>
       <circle
         cx="12"
         cy="12"
@@ -151,6 +152,7 @@ function ArrowPointer({
       viewBox="0 0 14 10"
       xmlns="http://www.w3.org/2000/svg"
     >
+      <title>Arrow</title>
       <g fillRule="nonzero">
         <path
           className={cn(pointClasses, pointLeft && pointLeftClasses)}

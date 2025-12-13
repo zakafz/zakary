@@ -6,6 +6,8 @@ import Header from "@/components/header";
 import { Badge, BadgeIcon } from "@/components/ui/badge/badge";
 import { Button } from "@/components/ui/button/button";
 import { LinkedIn } from "@/components/ui/linkedin-icon";
+import { Reveal } from "@/components/ui/reveal";
+import { TextReveal } from "@/components/ui/text-reveal";
 import Work from "@/components/work";
 
 export default function Home() {
@@ -13,24 +15,40 @@ export default function Home() {
     <Container>
       <Header />
       <div className="pt-40 flex flex-col">
-        <Link target="_blank" href="https://openpolicyhq.com">
-          <Badge size={"md"} variant={"outline"} className="cursor-pointer">
-            OpenPolicy is now live{" "}
-            <BadgeIcon className="mr-0 ml-0.5">
-              <ArrowRight className="size-3" />
-            </BadgeIcon>
-          </Badge>
-        </Link>
+        <Reveal variant="slideUp" delay={1}>
+          <Link target="_blank" href="https://openpolicyhq.com">
+            <Badge size={"md"} variant={"outline"} className="cursor-pointer">
+              OpenPolicy is now live{" "}
+              <BadgeIcon className="mr-0 ml-0.5">
+                <ArrowRight className="size-3" />
+              </BadgeIcon>
+            </Badge>
+          </Link>
+        </Reveal>
+
         <div className="mt-6 text-5xl font-medium">
-          <span className="italic">Zakary</span>{" "}
-          <span className="font-mono">Fofana</span>
+          <TextReveal variant="slideUp" className="italic leading-14">
+            Zakary
+          </TextReveal>{" "}
+          <TextReveal
+            variant="slideUp"
+            delay={0.2}
+            className="font-mono leading-14"
+          >
+            Fofana
+          </TextReveal>
         </div>
-        <div className="mt-5 text-muted-foreground max-w-4xl">
+        <TextReveal
+          variant="slideDown"
+          staggerDelay={0.003}
+          delay={0.4}
+          className="mt-5 text-muted-foreground max-w-4xl"
+        >
           Full-stack engineer, and self proclaimed design enthusiast.
           Specialized in Typescript, Next.js, Tailwind, Tauri and Electron.
           Based in Montréal, Canada.
-        </div>
-        <div className="flex gap-4 mt-6">
+        </TextReveal>
+        <Reveal variant="slideUp" delay={1} className="flex gap-4 mt-6">
           <Link href="/contact">
             <Button>Contact me</Button>
           </Link>
@@ -39,7 +57,7 @@ export default function Home() {
               <LinkedIn className="size-4.5 shrink-0" />
             </Button>
           </Link>
-        </div>
+        </Reveal>
       </div>
       <Work />
       <Footer />

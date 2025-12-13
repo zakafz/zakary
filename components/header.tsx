@@ -2,6 +2,7 @@
 
 import { Moon, Sun } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import * as React from "react";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip/tooltip";
-import { usePathname } from "next/navigation";
 
 export default function Header() {
   const { setTheme, theme } = useTheme();
@@ -60,8 +60,8 @@ export default function Header() {
             </div>
           </Link>
           <div className="flex gap-2 items-center ml-6 mr-4">
-            {navItems.map((item, index) => (
-              <div key={index}>
+            {navItems.map((item) => (
+              <div key={item.url}>
                 <Link
                   href={item.url}
                   className={cn(
@@ -80,9 +80,11 @@ export default function Header() {
           <Tooltip>
             <TooltipTrigger
               render={
-                <Button variant={"outline"} size={"md"}>
-                  Contact me
-                </Button>
+                <Link href="/contact">
+                  <Button variant={"outline"} size={"md"}>
+                    Contact me
+                  </Button>
+                </Link>
               }
             />
             <TooltipPortal>

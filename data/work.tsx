@@ -1,6 +1,5 @@
 "use client";
-import VideoPlayer from "@/components/ui/video-player";
-import { cn } from "@/lib/utils";
+import { Gift } from "lucide-react";
 import Image from "next/image";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
@@ -9,6 +8,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart/chart";
+import VideoPlayer from "@/components/ui/video-player";
+import { cn } from "@/lib/utils";
 
 const chartData = [
   { month: "Jan", "Page visits": 100 },
@@ -26,9 +27,7 @@ const chartConfig = {
     color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
-// biome-ignore lint/style/noMagicNumbers: Animation duration in ms
 const ANIMATION_DURATION = 500;
-// biome-ignore lint/style/noMagicNumbers: Border radius
 const BAR_RADIUS: [number, number, number, number] = [0, 0, 0, 0];
 
 const CodeIllustration = ({ className }: { className?: string }) => {
@@ -48,11 +47,11 @@ const CodeIllustration = ({ className }: { className?: string }) => {
           "Deleted items",
           "Meters",
           "Storage usage",
-        ].map((item, index) => (
+        ].map((item) => (
           <li
-            key={index}
+            key={item}
             className={cn(
-              index == 3 &&
+              item === "Signups" &&
                 "text-foreground before:absolute before:-translate-x-[110%] before:text-blue-500 before:content-['Track']",
             )}
           >
@@ -64,6 +63,8 @@ const CodeIllustration = ({ className }: { className?: string }) => {
   );
 };
 
+export type Work = (typeof work)[number];
+
 export const work = [
   {
     id: "openpolicy",
@@ -71,7 +72,7 @@ export const work = [
     website: "https://openpolicyhq.com",
     showcase: (
       <div className="w-[calc(100%-40px)] mt-5 h-full bg-accent/70 mask-[linear-gradient(180deg,#000_0%,#000_40%,transparent_100%)] mx-auto flex flex-col overflow-hidden">
-        <div className="border-b h-fit border-border p-2 pt-4 px-4 flex justify-between items-center ">
+        <div className="border-b-[0.5px] h-fit border-border/70 p-2 pt-4 px-4 flex justify-between items-center ">
           <span className="font-medium text-sm flex whitespace-nowrap gap-1">
             <Image
               src="/icon-openpolicy.svg"
@@ -280,7 +281,7 @@ export const work = [
         <div className="w-full p-4 bg-accent/70 border-border border grid gap-2 grid-cols-6">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
-              key={i}
+              key={`localcard-present-${i}`}
               className="w-full aspect-square border-green-500/30 border bg-green-500/20 text-green-500/50 flex items-center justify-center"
             >
               <svg
@@ -289,17 +290,24 @@ export const work = [
                 className="size-6"
                 fill="currentColor"
               >
+                <title>Checkmark</title>
                 <path d="M48 48v416h416V48zm170 312.38l-80.6-89.57 23.79-21.41 56 62.22L350 153.46 374.54 174z" />
               </svg>
             </div>
           ))}
 
-          {Array.from({ length: 8 }).map((_, i) => (
+          {Array.from({ length: 7 }).map((_, i) => (
             <div
-              key={i}
-              className="w-full aspect-square border-border border bg-(--mix-card-33-bg)"
-            />
+              key={`localcard-empty-${i}`}
+              className="w-full aspect-square border-border border bg-(--mix-card-33-bg) flex items-center justify-center"
+            >
+              <div className="size-5 text-muted-foreground stroke-1.5 border border-border" />
+            </div>
           ))}
+
+          <div className="w-full aspect-square border-border border bg-(--mix-card-33-bg) flex items-center justify-center">
+            <Gift className="size-6 text-green-600/50 dark:text-green-800" />
+          </div>
         </div>
       </div>
     ),
@@ -372,7 +380,7 @@ export const work = [
   {
     id: "measurely",
     website: "https://github.com/Measurely-dev/Measurely",
-    image: "/preview-measurely-3.png",
+    image: "/measurely-preview.png",
     showcase: (
       <div className="w-full h-full items-center flex">
         <CodeIllustration />
@@ -546,7 +554,7 @@ export const work = [
             <Bar
               animationDuration={ANIMATION_DURATION}
               dataKey="Page visits"
-              fill="#48da7a"
+              fill="var(--color-sales)"
               radius={BAR_RADIUS}
             />
           </BarChart>
@@ -628,7 +636,7 @@ export const work = [
     id: "maybe-you",
     showcase: (
       <div className="w-full h-full flex justify-center items-center">
-        <div className="flex items-center justify-center text-7xl text-muted-foreground w-[40%] bg-accent aspect-square border border-border">
+        <div className="flex items-center justify-center text-7xl text-muted-foreground w-[40%] bg-accent/70 aspect-square border border-border">
           ?
         </div>
       </div>

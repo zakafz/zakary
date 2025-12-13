@@ -403,12 +403,7 @@ export type CarouselItemProps = React.ComponentProps<"div"> & {
 };
 
 /** Individual carousel slide. */
-export function Item({
-  index,
-  className,
-  children,
-  ...props
-}: CarouselItemProps) {
+export function Item({ index, className, children }: CarouselItemProps) {
   const { totalItems, goToIndex, nextSlide, prevSlide, canGoNext, canGoPrev } =
     useCarousel();
 
@@ -446,7 +441,7 @@ export function Item({
   );
 
   return (
-    // biome-ignore lint/a11y/noNoninteractiveElementInteractions: Keyboard navigation is required for carousel accessibility
+    // biome-ignore lint/a11y/useSemanticElements: <fieldset> is not appropriate for a carousel slide
     <div
       aria-label={`${index + 1} of ${totalItems}`}
       aria-roledescription="slide"
@@ -458,7 +453,6 @@ export function Item({
       onKeyDown={handleKeyDown}
       role="group"
       tabIndex={isVisible ? 0 : -1}
-      {...props}
     >
       {children}
     </div>
@@ -623,7 +617,6 @@ export function Indicators({ className, ...props }: CarouselIndicatorsProps) {
             "motion-reduce:transition-none",
           )}
           data-active={currentIndex === index ? "" : undefined}
-          // biome-ignore lint/suspicious/noArrayIndexKey: Indicators are stable and don't reorder
           key={`indicator-${index}`}
           onClick={() => goToIndex(index)}
           role="tab"
