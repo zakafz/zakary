@@ -11,6 +11,7 @@ import {
   DialogPortal,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { Button } from "./button/button";
 
 // Interface for component props
 interface VideoPlayerProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -35,7 +36,7 @@ const VideoPlayer = React.forwardRef<HTMLDivElement, VideoPlayerProps>(
     ref,
   ) => {
     return (
-      <Dialog >
+      <Dialog>
         <DialogTrigger asChild>
           <div
             ref={ref}
@@ -83,19 +84,21 @@ const VideoPlayer = React.forwardRef<HTMLDivElement, VideoPlayerProps>(
         {/* Video Modal */}
         <DialogPortal>
           <DialogOverlay />
-          <DialogContent className="aspect-video max-w-4xl border-0 bg-transparent p-0">
+          <DialogContent className="aspect-video flex flex-col justify-center items-center max-w-5xl border-0 bg-transparent p-0">
             <DialogTitle className="sr-only">Video Player</DialogTitle>
-            <DialogClose className="absolute -right-4 -top-4 z-50 bg-(--mix-card-33-bg) border-[0.5px] border-border/70 ring-0! p-2 text-muted-foreground hover:text-primary transition-colors">
-              <X className="h-6 w-6" />
-            </DialogClose>
             <iframe
               src={videoUrl}
               title={title}
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="h-full w-full"
+              className="h-full w-[95%] border-[0.5px] border-border/70 mx-auto"
             />
+            <DialogClose asChild>
+              <Button variant={"outline"} className="mt-5">
+                Close
+              </Button>
+            </DialogClose>
           </DialogContent>
         </DialogPortal>
       </Dialog>

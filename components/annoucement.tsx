@@ -36,7 +36,7 @@ export default function Announcement() {
         <Reveal variant="slideLeft" delay={0.5}>
           <Link href={"https://openpolicyhq.com"} target="_blank">
             <Button size="sm" variant="secondary">
-              Visit website
+              Visit <span className="max-md:hidden ml-1">website</span>
             </Button>
           </Link>
         </Reveal>
