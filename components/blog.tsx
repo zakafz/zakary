@@ -8,7 +8,7 @@ export default function BlogSection() {
       date: "12/12/2025",
       title: "Making OpenPolicy",
       description: "Why and how I built OpenPolicy in 3 weeks. ALONE.",
-      url: "https://zakary.openpolicyhq.com/blog-1",
+      url: "https://blog.zakary.dev/blog-2",
       image: "/blog-2.webp",
     },
     {
@@ -16,7 +16,7 @@ export default function BlogSection() {
       title: "Measurely goes open source",
       description:
         "Why Measurely is now open source and how this move empowers developers to innovate, collaborate, and trust the platform.",
-      url: "https://zakary.openpolicyhq.com/blog-2",
+      url: "https://blog.zakary.dev/blog-1",
       image: "/blog-1.png",
     },
   ];
