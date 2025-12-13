@@ -68,7 +68,7 @@ export type Work = (typeof work)[number];
 export const work = [
   {
     id: "openpolicy",
-    image: "/blog-2.webp",
+    image: "/preview-openpolicy-2.png",
     website: "https://openpolicyhq.com",
     showcase: (
       <div className="w-[calc(100%-40px)] mt-5 h-full bg-accent/70 mask-[linear-gradient(180deg,#000_0%,#000_40%,transparent_100%)] mx-auto flex flex-col overflow-hidden">
@@ -350,7 +350,7 @@ export const work = [
           height={1000}
         />
         <div className="text-muted-foreground text-xs mt-2">
-          *Sorry, it’s in French. (This was a demo for a potential client—their
+          *Sorry, it’s in French. (This was a demo for a potential client, their
           store was pink, hence the theme.)
         </div>
         <div className="mt-10 mb-5 font-medium">Did it fail?</div>

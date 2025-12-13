@@ -58,12 +58,11 @@ export default function Work() {
               {projects.map((project: WorkType, index: number) => (
                 <Carousel.Item index={index} key={project.id}>
                   <Reveal variant="slideUp" startOnView={false} delay={1.2}>
-                    <Card className="h-full max-w-90" variant="lift">
+                    <Card onClick={() => window.open(project.url, "_self")} className="h-full max-w-90" variant="lift">
                       <div
                         className={cn(
                           "box-border w-full max-w-none",
-                          "-mt-6 mx-0 mb-0 h-62.5",
-                          "md:-mt-6.25 md:-mx-6.25 md:mb-0 md:h-75 md:w-[calc(100%+3rem+2px)] md:max-w-[100vw]",
+                          "-mt-6.25 -mx-6.25 mb-0 h-75 w-[calc(100%+3rem+2px)] max-w-[100vw]",
                           "transition-transform duration-250 ease-in-out-quad",
                         )}
                       >
