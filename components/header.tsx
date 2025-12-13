@@ -197,7 +197,12 @@ export default function Header() {
                   <Link href="/contact">
                     <Button
                       variant="outline"
-                      className="text-sm w-full font-mono"
+                      className={cn(
+                        "text-sm w-full font-mono pointer-events-none",
+                        pathname === "/contact"
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "",
+                      )}
                     >
                       Contact me
                     </Button>

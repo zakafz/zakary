@@ -91,7 +91,7 @@ export default function ContactPage() {
             <div className="flex flex-wrap items-center gap-2">
               {socialLinks.map((link) => (
                 <a
-                  className="flex items-center gap-x-2 rounded-full border-[0.5px] border-border/70 bg-card px-3 py-1.5 shadow hover:bg-accent"
+                  className="flex items-center gap-x-2 border-[0.5px] border-border/70 bg-card px-3 py-1.5 shadow hover:bg-accent"
                   href={link.href}
                   key={link.label}
                   rel="noopener noreferrer"
