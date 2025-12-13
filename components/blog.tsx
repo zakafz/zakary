@@ -14,7 +14,7 @@ export default function BlogSection() {
       date: "02/04/2025",
       title: "Measurely goes open source",
       description: "Why Measurely is now open source and how this move empowers developers to innovate, collaborate, and trust the platform.",
-      url: "/blog/post-title",
+      url: "https://zakary.openpolicyhq.com/blog-2",
       image: "/blog-1.png",
     },
   ];
@@ -39,7 +39,7 @@ export default function BlogSection() {
                 src={post.image}
                 draggable={false}
                 alt="Post Image"
-                className="w-full border-[0.5px] group-hover:grayscale-0 duration-200 grayscale border-border"
+                className="w-full border-[0.5px] duration-200 grayscale border-border"
                 width={4000}
                 height={3500}
               />
