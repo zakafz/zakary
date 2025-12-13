@@ -58,7 +58,11 @@ export default function Work() {
               {projects.map((project: WorkType, index: number) => (
                 <Carousel.Item index={index} key={project.id}>
                   <Reveal variant="slideUp" startOnView={false} delay={1.2}>
-                    <Card onClick={() => window.open(project.url, "_self")} className="h-full max-w-90" variant="lift">
+                    <Card
+                      onClick={() => window.open(project.url, "_self")}
+                      className="h-full max-w-90"
+                      variant="lift"
+                    >
                       <div
                         className={cn(
                           "box-border w-full max-w-none",

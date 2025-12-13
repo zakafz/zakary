@@ -4,7 +4,37 @@ import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { Reveal } from "@/components/ui/reveal";
 import { TextReveal } from "@/components/ui/text-reveal";
+import { getAge } from "@/lib/utils";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Learn about Zakary Fofana - Full-stack engineer, Design enthusiast, and entrepreneur. Co-founder of LocalCard and Measurely, building minimalist platforms with Next.js, React, and TypeScript.",
+  keywords: [
+    "Zakary Fofana",
+    "about",
+    "developer",
+    "entrepreneur",
+    "full-stack engineer",
+    "design enthusiast",
+    "business administration",
+    "Montreal developer",
+  ],
+  openGraph: {
+    title: "About | Zakary Fofana",
+    description:
+      "Learn about Zakary Fofana - Full-stack engineer, Design enthusiast.",
+    url: "https://zakary.dev/about",
+    type: "profile",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About | Zakary Fofana",
+    description:
+      "Learn about Zakary Fofana - Full-stack engineer, Design enthusiast, and entrepreneur.",
+  },
+};
 export default function About() {
   return (
     <Container>
@@ -18,16 +48,14 @@ export default function About() {
         >
           What?
         </TextReveal>
-        <Reveal
+        <TextReveal
           display="block"
           variant="slideDown"
           className="mb-20 font-normal text-muted-foreground text-base"
+          staggerDelay={0.001}
         >
-          My name is Zakary, I am a 18 years old design technologist and
-          software developer based in Montreal, Canada. I create designs that
-          feel <b className="text-primary font-medium">natural</b>, fluid, and
-          intuitive. I am specialized in Typescript.
-        </Reveal>
+          {`My name is Zakary, I am an ${getAge(2007, 9, 13)} years old Full-stack engineer and Design enthusiast based in Montreal, Canada. I create designs that feel natural, fluid, and intuitive. I am specialized in Typescript.`}
+        </TextReveal>
         <TextReveal
           display="block"
           variant="slideUp"

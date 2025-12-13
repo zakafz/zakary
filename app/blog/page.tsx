@@ -4,6 +4,36 @@ import Container from "@/components/container";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { TextReveal } from "@/components/ui/text-reveal";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blog",
+  description:
+    "Read Zakary Fofana's blog on design, technology, and software development. Insights on Next.js, React, TypeScript, and building user-centric products.",
+  keywords: [
+    "Zakary Fofana",
+    "blog",
+    "design",
+    "technology",
+    "software development",
+    "Next.js",
+    "React",
+    "TypeScript",
+  ],
+  openGraph: {
+    title: "Blog | Zakary Fofana",
+    description:
+      "Read Zakary Fofana's blog on design, technology, and software development.",
+    url: "https://zakary.dev/blog",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog | Zakary Fofana",
+    description:
+      "Read Zakary Fofana's blog on design, technology, and software development.",
+  },
+};
 
 export default function Blog() {
   return (

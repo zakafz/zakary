@@ -4,6 +4,33 @@ import Header from "@/components/header";
 import ToolsTable from "@/components/tools";
 import { Reveal } from "@/components/ui/reveal";
 import { TextReveal } from "@/components/ui/text-reveal";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Tools",
+  description:
+    "Discover the tools and software Zakary Fofana uses for design, development, and productivity. Includes code editors, design software, and project management tools.",
+  keywords: [
+    "Zakary Fofana",
+    "tools",
+    "software",
+    "design tools",
+    "development tools",
+    "productivity",
+  ],
+  openGraph: {
+    title: "Tools | Zakary Fofana",
+    description: "A curated list of tools and software used by Zakary Fofana.",
+    url: "https://zakary.dev/tools",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tools | Zakary Fofana",
+    description:
+      "Discover the tools and software Zakary Fofana uses for design, development, and productivity.",
+  },
+};
 
 export default function Tools() {
   return (

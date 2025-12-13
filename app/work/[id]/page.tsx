@@ -2,6 +2,52 @@ import Container from "@/components/container";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import WorkPage from "@/components/work-page";
+import { workData } from "@/data/work-data";
+import { Metadata, ResolvingMetadata } from "next";
+
+type Props = {
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const id = params.id;
+  const work = workData.find((w) => w.id === id);
+
+  if (!work) {
+    return {
+      title: "Work not found",
+      description: "The work you are looking for does not exist.",
+    };
+  }
+
+  const previousImages = (await parent).openGraph?.images || [];
+
+  return {
+    title: work.title,
+    description: work.description,
+    openGraph: {
+      title: `${work.title} | Zakary Fofana`,
+      description: work.description,
+      images: work.image ? [work.image, ...previousImages] : previousImages,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${work.title} | Zakary Fofana`,
+      description: work.description,
+      images: work.image ? [work.image, ...previousImages] : previousImages,
+    },
+  };
+}
+
+export async function generateStaticParams() {
+  return workData.map((work) => ({
+    id: work.id,
+  }));
+}
 
 export default function Work() {
   return (
