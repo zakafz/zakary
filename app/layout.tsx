@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://zakary.dev"),
   title: {
     template: "%s | Zakary Fofana",
     default: "Zakary Fofana - Full-stack engineer and Design enthusiast",
@@ -40,6 +41,16 @@ export const metadata: Metadata = {
     },
   ],
   creator: "Zakary Fofana",
+  openGraph: {
+    type: "website",
+    locale: "en_CA",
+    url: "https://zakary.dev",
+    title: "Zakary Fofana - Full-stack engineer and Design enthusiast",
+    description:
+      "Full-stack engineer and Design enthusiast in Montreal specializing in minimalist, UX-focused interfaces.",
+    siteName: "Zakary Fofana Portfolio",
+    images: ["/og.png"],
+  },
   twitter: {
     card: "summary_large_image",
     title: "Zakary Fofana - Full-stack engineer and Design enthusiast",

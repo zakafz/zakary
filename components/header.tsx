@@ -183,7 +183,12 @@ export default function Header() {
                     <Link key={index} href={item.url}>
                       <Button
                         variant="outline"
-                        className="text-sm w-full font-mono"
+                        className={cn(
+                          "text-sm w-full font-mono",
+                          pathname === item.url
+                            ? "bg-primary text-primary-foreground pointer-events-none border-primary"
+                            : "",
+                        )}
                       >
                         {item.name}
                       </Button>

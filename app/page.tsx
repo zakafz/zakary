@@ -9,6 +9,7 @@ import { LinkedIn } from "@/components/ui/linkedin-icon";
 import { Reveal } from "@/components/ui/reveal";
 import { TextReveal } from "@/components/ui/text-reveal";
 import Work from "@/components/work";
+import { GitHub } from "@/components/ui/github-icon";
 
 export default function Home() {
   return (
@@ -55,6 +56,15 @@ export default function Home() {
           <Link href="https://linkedin.com/in/zakary-fofana" target="_blank">
             <Button className="aspect-square" variant={"outline"}>
               <LinkedIn className="size-4.5 shrink-0" />
+            </Button>
+          </Link>
+          <Link
+            href="https://github.com/zakafz"
+            target="_blank"
+            className="md:hidden"
+          >
+            <Button className="aspect-square" variant={"outline"}>
+              <GitHub className="size-4.5 shrink-0" />
             </Button>
           </Link>
         </Reveal>

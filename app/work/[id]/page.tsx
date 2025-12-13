@@ -7,14 +7,13 @@ import { Metadata, ResolvingMetadata } from "next";
 
 type Props = {
   params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
 };
 
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  const id = params.id;
+  const { id } = (await params) as unknown as { id: string };
   const work = workData.find((w) => w.id === id);
 
   if (!work) {
@@ -32,6 +31,7 @@ export async function generateMetadata(
     openGraph: {
       title: `${work.title} | Zakary Fofana`,
       description: work.description,
+      url: `https://zakary.dev/work/${work.id}`,
       images: work.image ? [work.image, ...previousImages] : previousImages,
     },
     twitter: {
