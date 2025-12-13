@@ -338,14 +338,7 @@ const workWithContent = workData.map((project) => {
               (yes, everything was consented).
             </div>
             <Image
-              src="/localcard-dev.JPG"
-              className="w-full mt-10 border-[0.5px] border-border/70"
-              alt="LocalCard"
-              width={2000}
-              height={1000}
-            />
-            <Image
-              src="/localcard-demo-3.png"
+              src="/localcard-device.png"
               className="w-full mt-10 border-[0.5px] border-border/70"
               alt="LocalCard"
               width={2000}
@@ -355,6 +348,13 @@ const workWithContent = workData.map((project) => {
               *Sorry, it’s in French. (This was a demo for a potential client,
               their store was pink, hence the theme.)
             </div>
+            <Image
+              src="/localcard-dev.JPG"
+              className="w-full mt-10 border-[0.5px] border-border/70"
+              alt="LocalCard"
+              width={2000}
+              height={1000}
+            />
             <div className="mt-10 mb-5 font-medium">Did it fail?</div>
             <div className="text-muted-foreground text-justify">
               We managed to get a couple of clients, including a local franchise
