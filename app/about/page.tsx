@@ -48,14 +48,14 @@ export default function About() {
         >
           What?
         </TextReveal>
-        <TextReveal
+        <Reveal
           display="block"
           variant="slideDown"
-          className="mb-20 font-normal text-muted-foreground text-base"
+          className="mb-20 font-normal text-muted-foreground text-base text-justify"
           staggerDelay={0.001}
         >
           {`My name is Zakary, I am an ${getAge(2007, 9, 13)} years old Full-stack engineer and Design enthusiast based in Montreal, Canada. I create designs that feel natural, fluid, and intuitive. I am specialized in Typescript.`}
-        </TextReveal>
+        </Reveal>
         <TextReveal
           display="block"
           variant="slideUp"
@@ -63,16 +63,13 @@ export default function About() {
         >
           Why?
         </TextReveal>
-        <Reveal
-          display="block"
-          variant="slideDown"
-          className="mb-20 font-normal text-muted-foreground text-base"
-        >
-          Put simply: “
-          <b className="text-primary font-medium">
-            A great interface fades away, leaving only the experience.
-          </b>
-          ”
+        <Reveal display="block" variant="slideDown" className="mb-20">
+          <span className="font-normal text-muted-foreground text-base text-justify">
+            Put simply:{" "}
+            <b className="text-primary font-medium">
+              “A great interface fades away, leaving only the experience.”
+            </b>
+          </span>
         </Reveal>
 
         <TextReveal variant="slideUp" className="mb-5 font-medium text-lg">
@@ -81,7 +78,7 @@ export default function About() {
         <Reveal
           display="block"
           variant="slideDown"
-          className="mb-5 font-normal text-muted-foreground text-base"
+          className="mb-5 font-normal text-muted-foreground text-base text-justify"
         >
           Design is power. It shapes perception and influences decisions. A bad
           product with great UX can thrive, but a great product with bad UX will
