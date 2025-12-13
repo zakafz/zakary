@@ -45,8 +45,8 @@ export default function WorkPage() {
     <TooltipProvider>
       <div>
         {work ? (
-          <div className="grid grid-cols-2 gap-10">
-            <Reveal variant="blur" className="sticky top-5 self-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <Reveal variant="blur" className="lg:sticky top-5 self-start">
               <Image
                 className="w-full border-[0.5px] border-border/70"
                 src={work.image || "/openpolicy.png"}

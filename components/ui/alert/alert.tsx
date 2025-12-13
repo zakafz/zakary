@@ -6,11 +6,6 @@ const alertVariants = cva(
     "relative w-full rounded-[var(--radius)] border-[0.5px] border-border/80",
     "grid grid-cols-[0_1fr_auto] items-start gap-x-3 gap-y-0.5 px-4 py-3",
     "bg-[var(--mix-card-33-bg)] text-xs leading-[1.2]",
-    "has-[>svg]:grid-cols-[1rem_1fr_auto]",
-    "[&>svg]:h-full [&>svg]:w-4",
-    "max-sm:grid-cols-[1rem_1fr] max-sm:gap-x-3 max-sm:gap-y-2 max-sm:px-4",
-    "max-sm:has-[>svg]:grid-cols-[1rem_1fr]",
-    "max-sm:[&>svg]:h-4 max-sm:[&>svg]:w-4 max-sm:[&>svg]:self-start",
   ],
   {
     variants: {
@@ -68,7 +63,7 @@ function AlertDescription({
     <div
       className={cn(
         "alert-description col-start-2 m-0 font-light text-muted-foreground text-sm leading-5",
-        "max-sm:text-[0.9375rem] max-sm:leading-[1.5]",
+        "max-sm:text-[0.9375rem] max-sm:leading-normal",
         className,
       )}
       data-slot="alert-description"
@@ -82,7 +77,6 @@ function AlertAction({ className, ...props }: React.ComponentProps<"div">) {
     <div
       className={cn(
         "col-start-3 row-[1/span_2] flex h-full items-center justify-center gap-1",
-        "max-sm:col-span-full max-sm:row-auto max-sm:mt-2 max-sm:justify-stretch max-sm:[&>*]:w-full",
         className,
       )}
       data-slot="alert-action"

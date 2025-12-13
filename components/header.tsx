@@ -1,6 +1,6 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
+import { Menu, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -18,6 +18,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip/tooltip";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
 
 export default function Header() {
   const { setTheme, theme } = useTheme();
@@ -59,7 +66,7 @@ export default function Header() {
               </div>
             </div>
           </Link>
-          <div className="flex gap-2 items-center ml-6 mr-4">
+          <div className="flex gap-2 items-center ml-6 mr-4 max-md:hidden">
             {navItems.map((item) => (
               <div key={item.url}>
                 <Link
@@ -80,7 +87,7 @@ export default function Header() {
           <Tooltip>
             <TooltipTrigger
               render={
-                <Link href="/contact">
+                <Link href="/contact" className="max-md:hidden">
                   <Button variant={"outline"} size={"md"}>
                     Contact me
                   </Button>
@@ -97,9 +104,13 @@ export default function Header() {
             </TooltipPortal>
           </Tooltip>
 
-          <Separator orientation="vertical" className={"h-6!"} />
+          <Separator orientation="vertical" className={"h-6! max-md:hidden"} />
 
-          <Link target="_blank" href="https://github.com/zakafz">
+          <Link
+            target="_blank"
+            href="https://github.com/zakafz"
+            className="max-md:hidden"
+          >
             <Tooltip>
               <TooltipTrigger
                 render={
@@ -108,7 +119,7 @@ export default function Header() {
                     variant="ghost"
                     size={"md"}
                   >
-                    <GitHub className="size-4.5 shrink-0" />
+                    <GitHub className="size-4.5 shrink-0 max-md:hidden" />
                   </Button>
                 }
               />
@@ -123,7 +134,7 @@ export default function Header() {
             </Tooltip>
           </Link>
 
-          <Separator orientation="vertical" className={"h-5!"} />
+          <Separator orientation="vertical" className={"h-5! max-md:hidden"} />
 
           <Tooltip>
             <TooltipTrigger
@@ -143,6 +154,62 @@ export default function Header() {
                 <TooltipPopup className="shadow-none text-xs font-mono">
                   <TooltipArrow />
                   Change theme
+                </TooltipPopup>
+              </TooltipPositioner>
+            </TooltipPortal>
+          </Tooltip>
+
+          <Separator orientation="vertical" className={"h-5! md:hidden"} />
+
+          <Tooltip>
+            <Sheet>
+              <SheetTrigger asChild>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      className={cn("aspect-square md:hidden")}
+                      variant="outline"
+                      size={"md"}
+                    >
+                      <Menu className="size-4.5 shrink-0" />
+                    </Button>
+                  }
+                />
+              </SheetTrigger>
+              <SheetContent>
+                <div className="flex flex-col gap-4 p-4 h-full">
+                  <SheetTitle className="font-medium text-sm">Menu</SheetTitle>
+                  {navItems.map((item, index) => (
+                    <Link key={index} href={item.url}>
+                      <Button
+                        variant="outline"
+                        className="text-sm w-full font-mono"
+                      >
+                        {item.name}
+                      </Button>
+                    </Link>
+                  ))}
+                  <Link href="/contact">
+                    <Button
+                      variant="outline"
+                      className="text-sm w-full font-mono"
+                    >
+                      Contact me
+                    </Button>
+                  </Link>
+                  <SheetClose asChild>
+                    <Button className="md:hidden mt-auto" variant="primary">
+                      Close
+                    </Button>
+                  </SheetClose>
+                </div>
+              </SheetContent>
+            </Sheet>
+            <TooltipPortal>
+              <TooltipPositioner className="mt-2">
+                <TooltipPopup className="shadow-none text-xs font-mono">
+                  <TooltipArrow />
+                  Open menu
                 </TooltipPopup>
               </TooltipPositioner>
             </TooltipPortal>

@@ -49,7 +49,6 @@ export default function Work() {
       <Carousel.Bleed>
         <Carousel.Root
           align="start"
-          className="max-sm:-ml-[10vw]"
           gap={8}
           totalItems={projects.length}
           variant="inset"
@@ -58,8 +57,8 @@ export default function Work() {
             <Carousel.Content>
               {projects.map((project: WorkType, index: number) => (
                 <Carousel.Item index={index} key={project.id}>
-                  <Reveal variant="slideUp" delay={1.2}>
-                    <Card className="max-w-full sm:max-w-90" variant="lift">
+                  <Reveal variant="slideUp" startOnView={false} delay={1.2}>
+                    <Card className="h-full max-w-90" variant="lift">
                       <div
                         className={cn(
                           "box-border w-full max-w-none",
@@ -93,10 +92,17 @@ export default function Work() {
               ))}
             </Carousel.Content>
           </Carousel.Viewport>
-          <Carousel.Navigation>
-            <Carousel.Previous />
-            <Carousel.Next />
-          </Carousel.Navigation>
+          <Reveal
+            display="block"
+            variant="slideUp"
+            startOnView={false}
+            delay={1.2}
+          >
+            <Carousel.Navigation>
+              <Carousel.Previous />
+              <Carousel.Next />
+            </Carousel.Navigation>
+          </Reveal>
         </Carousel.Root>
       </Carousel.Bleed>
     </div>

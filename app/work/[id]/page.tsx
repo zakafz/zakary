@@ -7,7 +7,7 @@ export default function Work() {
   return (
     <Container>
       <Header />
-      <div className="min-h-[calc(100vh-56px-80px)] pt-40">
+      <div className="min-h-[calc(100vh-56px-80px)] pt-10 lg:pt-40">
         <WorkPage />
       </div>
       <Footer />

@@ -28,7 +28,7 @@ export default function ContactPage() {
   return (
     <Container>
       <Header />
-      <div className="mx-auto min-h-[calc(100vh-56px-80px)] pt-40 w-full">
+      <div className="mx-auto min-h-[calc(100vh-56px-80px)] pt-10 md:pt-40 w-full">
         <TextReveal
           display="block"
           variant="slideDown"

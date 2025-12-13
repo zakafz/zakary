@@ -11,7 +11,11 @@ export default function Blog() {
       <Header />
       <div className="min-h-[calc(100vh-56px-80px)] pt-[calc(160px-40px-68px)]">
         <Announcement />
-        <TextReveal variant="slideDown" className="mb-5 font-medium text-lg">
+        <TextReveal
+          startOnView={false}
+          variant="slideDown"
+          className="mb-5 font-medium text-lg"
+        >
           My blog
         </TextReveal>
         <BlogSection />

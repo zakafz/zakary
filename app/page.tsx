@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <Container>
       <Header />
-      <div className="pt-40 flex flex-col">
+      <div className="pt-20 md:pt-40 flex flex-col">
         <Reveal variant="slideUp" delay={1}>
           <Link target="_blank" href="https://openpolicyhq.com">
             <Badge size={"md"} variant={"outline"} className="cursor-pointer">

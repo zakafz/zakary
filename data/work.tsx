@@ -306,14 +306,14 @@ export const work = [
           ))}
 
           <div className="w-full aspect-square border-border border bg-(--mix-card-33-bg) flex items-center justify-center">
-            <Gift className="size-6 text-green-600/50 dark:text-green-800" />
+            <Gift className="size-6 text-green-500 dark:text-green-800" />
           </div>
         </div>
       </div>
     ),
     title: "LocalCard",
     description:
-      "A simple, web‑based loyalty tool that replaces paper punch cards for local businesses.",
+      "A web‑based loyalty tool that replaces paper punch cards for local businesses.",
     url: "/work/localcard",
     content: (
       <div>

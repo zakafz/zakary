@@ -12,7 +12,7 @@ import { TextReveal } from "./ui/text-reveal";
 
 export default function Announcement() {
   return (
-    <Alert className="mb-10 h-17 pl-2">
+    <Alert className="mb-10 h-18 pl-2">
       <AlertTitle>
         <Reveal variant="slideDown" className="flex gap-1">
           <div className="size-5">

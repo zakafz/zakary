@@ -9,7 +9,8 @@ export default function Footer() {
   return (
     <div className="border-t border-border/70 w-full mt-20 pt-5 pb-8 flex justify-between items-center">
       <div className="text-xs font-mono text-muted-foreground">
-        All rights reserved &copy; {new Date().getFullYear()} Zakary Fofana
+        <span className="max-md:hidden">All rights reserved</span> &copy;{" "}
+        {new Date().getFullYear()} Zakary Fofana
       </div>
       <div className="flex gap-2 items-center">
         <Link href="https://github.com/zakafz/" target="_blank">

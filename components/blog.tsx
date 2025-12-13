@@ -21,7 +21,7 @@ export default function BlogSection() {
     },
   ];
   return (
-    <div className="grid grid-cols-2 gap-5">
+    <div className="grid md:grid-cols-2 gap-5">
       {posts.map((post) => (
         <Link key={post.title} href={post.url}>
           <Reveal variant="slideUp">

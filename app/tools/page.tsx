@@ -9,7 +9,7 @@ export default function Tools() {
   return (
     <Container>
       <Header />
-      <div className="min-h-[calc(100vh-56px-80px)] pt-40">
+      <div className="min-h-[calc(100vh-56px-80px)] pt-10 md:pt-40">
         <TextReveal
           display="block"
           variant="slideDown"
