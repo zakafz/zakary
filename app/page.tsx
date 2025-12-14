@@ -27,14 +27,14 @@ export default function Home() {
           </Link>
         </Reveal>
 
-        <div className="mt-6 text-5xl font-medium">
-          <TextReveal variant="slideUp" className="italic leading-14">
+        <div className="mt-6 text-5xl font-medium font-serif">
+          <TextReveal variant="slideUp" className="italic leading-13">
             Zakary
           </TextReveal>{" "}
           <TextReveal
             variant="slideUp"
             delay={0.2}
-            className="font-mono leading-14"
+            className="leading-13"
           >
             Fofana
           </TextReveal>
@@ -43,7 +43,7 @@ export default function Home() {
           variant="slideDown"
           staggerDelay={0.003}
           delay={0.4}
-          className="mt-5 text-muted-foreground max-w-4xl"
+          className="mt-3 text-muted-foreground max-w-4xl"
         >
           Full-stack engineer, and self proclaimed design enthusiast.
           Specialized in Typescript, Next.js, Tailwind, Tauri and Electron.

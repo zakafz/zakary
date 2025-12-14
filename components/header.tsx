@@ -59,9 +59,9 @@ export default function Header() {
         {/*Section 1*/}
         <div className="h-full flex items-center justify-center">
           <Link href={"/"}>
-            <div className="cursor-pointer group p-2 pt-1 flex justify-center items-center bg-primary relative text-primary-foreground font-medium">
-              <div className="italic">zakary</div>
-              <div className="absolute font-mono text-xs bg-accent -bottom-3 text-primary px-0.5 border border-border">
+            <div className="cursor-pointer group font-serif p-2 pt-1 flex justify-center items-center bg-primary relative text-primary-foreground font-medium">
+              <div className="italic text-lg">zakary</div>
+              <div className="absolute text-sm bg-accent -bottom-3 text-primary px-0.5 border border-border">
                 fofana
               </div>
             </div>
