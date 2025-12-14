@@ -21,7 +21,7 @@ import {
 
 export default function WorkPage() {
   const { id } = useParams();
-  const work = workData.find((work) => work.id === id);
+  const work = workData.find((w) => w.id === id);
 
   const projects = workData.filter((p) => p.id !== "maybe-you");
   const currentProjectIndex = projects.findIndex((p) => p.id === id);
@@ -45,19 +45,21 @@ export default function WorkPage() {
     <TooltipProvider>
       <div>
         {work ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <Reveal variant="blur" className="lg:sticky top-5 self-start">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+            <Reveal className="top-5 self-start lg:sticky" variant="blur">
               <Image
-                className="w-full border-[0.5px] border-border/70"
-                src={work.image || "/openpolicy.png"}
                 alt={work.title}
-                width={3000}
+                className="w-full border-[0.5px] border-border/70"
                 height={3000}
+                src={work.image || "/openpolicy.png"}
+                width={3000}
               />
             </Reveal>
-            <Reveal variant="blur" className="flex flex-col">
-              <div className="text-3xl font-medium flex justify-between items-center">
-                <TextReveal variant="slideDown" className="font-serif">{work.title}</TextReveal>
+            <Reveal className="flex flex-col" variant="blur">
+              <div className="flex items-center justify-between font-medium text-3xl">
+                <TextReveal className="font-serif" variant="slideDown">
+                  {work.title}
+                </TextReveal>
                 <Tooltip>
                   <TooltipTrigger
                     render={
@@ -66,7 +68,7 @@ export default function WorkPage() {
                         target="_blank"
                       >
                         <Reveal variant="slideDown">
-                          <Button variant={"ghost"} className="aspect-square">
+                          <Button className="aspect-square" variant={"ghost"}>
                             <Globe className="size-4.5 shrink-0" />
                           </Button>
                         </Reveal>
@@ -89,23 +91,23 @@ export default function WorkPage() {
                   <TooltipTrigger
                     render={
                       <Button
+                        className="aspect-square"
                         onClick={handleScrollToTop}
                         variant={"outline"}
-                        className="aspect-square"
                       >
                         <svg
-                          xmlns="http://www.w3.org/2000/svg"
                           className="size-4.5 shrink-0"
                           viewBox="0 0 512 512"
+                          xmlns="http://www.w3.org/2000/svg"
                         >
                           <title>Scroll to top</title>
                           <path
+                            d="M112 244l144-144 144 144M256 120v292"
                             fill="none"
                             stroke="currentColor"
                             strokeLinecap="square"
                             strokeMiterlimit="10"
                             strokeWidth="48"
-                            d="M112 244l144-144 144 144M256 120v292"
                           />
                         </svg>
                       </Button>
@@ -120,29 +122,28 @@ export default function WorkPage() {
                     </TooltipPositioner>
                   </TooltipPortal>
                 </Tooltip>
-
-                {nextProject && (
+                {nextProject ? (
                   <Link href={nextProject.url}>
-                    <Button variant="outline" className="pr-2.5">
+                    <Button className="pr-2.5" variant="outline">
                       {nextProject.title}
                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="size-4 ml-2"
+                        className="ml-2 size-4"
                         viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
                         <title>Next project</title>
                         <path
+                          d="M184 112l144 144-144 144"
                           fill="none"
                           stroke="currentColor"
                           strokeLinecap="square"
                           strokeMiterlimit="10"
                           strokeWidth="48"
-                          d="M184 112l144 144-144 144"
                         />
                       </svg>
                     </Button>
                   </Link>
-                )}
+                ) : null}{" "}
               </div>
             </Reveal>
           </div>
@@ -151,13 +152,13 @@ export default function WorkPage() {
             <Badge size={"lg"} variant={"outline"}>
               404
             </Badge>
-            <div className="mt-6 text-5xl font-medium">
+            <div className="mt-6 font-medium text-5xl">
               Can't seem to find this work
             </div>
-            <div className="mt-5 text-muted-foreground max-w-4xl">
+            <div className="mt-5 max-w-4xl text-muted-foreground">
               Maybe its a sign, contact me
             </div>
-            <div className="flex gap-4 mt-6">
+            <div className="mt-6 flex gap-4">
               <Link href="/">
                 <Button>Home</Button>
               </Link>

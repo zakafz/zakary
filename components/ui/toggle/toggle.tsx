@@ -16,7 +16,7 @@ function ToggleRoot({ className, ...props }: Toggle.Props) {
         "data-[pressed]:bg-[var(--accent)] data-[pressed]:text-[var(--foreground)]",
         "data-[pressed]:hover:bg-[var(--accent)] data-[pressed]:hover:text-[var(--foreground)]",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-        className,
+        className
       )}
       {...props}
     />

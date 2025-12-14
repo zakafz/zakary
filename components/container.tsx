@@ -1,14 +1,14 @@
 import type * as React from "react";
 import { cn } from "@/lib/utils";
 
-interface ContainerProps {
+type ContainerProps = {
   children: React.ReactNode;
   className?: string;
-}
+};
 
 export default function Container({ children, className }: ContainerProps) {
   return (
-    <div className={cn("w-[95%] max-w-5xl mx-auto flex flex-col", className)}>
+    <div className={cn("mx-auto flex w-[95%] max-w-5xl flex-col", className)}>
       {children}
     </div>
   );

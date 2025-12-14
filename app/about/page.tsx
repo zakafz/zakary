@@ -42,43 +42,43 @@ export default function About() {
       <div className="min-h-[calc(100vh-56px-80px)] pt-[calc(160px-40px-68px)]">
         <Announcement />
         <TextReveal
+          className="mb-5 font-medium text-lg"
           display="block"
           variant="slideUp"
-          className="mb-5 font-medium text-lg"
         >
           What?
         </TextReveal>
         <Reveal
+          className="mb-20 text-justify font-normal text-base text-muted-foreground"
           display="block"
-          variant="slideDown"
-          className="mb-20 font-normal text-muted-foreground text-base text-justify"
           staggerDelay={0.001}
+          variant="slideDown"
         >
           {`My name is Zakary, I am an ${getAge(2007, 9, 13)} years old Full-stack engineer and Design enthusiast based in Montreal, Canada. I create designs that feel natural, fluid, and intuitive. I am specialized in Typescript.`}
         </Reveal>
         <TextReveal
+          className="mb-5 font-medium text-lg"
           display="block"
           variant="slideUp"
-          className="mb-5 font-medium text-lg"
         >
           Why?
         </TextReveal>
-        <Reveal display="block" variant="slideDown" className="mb-20">
-          <span className="font-normal text-muted-foreground text-base text-justify">
+        <Reveal className="mb-20" display="block" variant="slideDown">
+          <span className="text-justify font-normal text-base text-muted-foreground">
             Put simply:{" "}
-            <b className="text-primary font-medium">
+            <b className="font-medium text-primary">
               “A great interface fades away, leaving only the experience.”
             </b>
           </span>
         </Reveal>
 
-        <TextReveal variant="slideUp" className="mb-5 font-medium text-lg">
+        <TextReveal className="mb-5 font-medium text-lg" variant="slideUp">
           Accept it or not
         </TextReveal>
         <Reveal
+          className="mb-5 text-justify font-normal text-base text-muted-foreground"
           display="block"
           variant="slideDown"
-          className="mb-5 font-normal text-muted-foreground text-base text-justify"
         >
           Design is power. It shapes perception and influences decisions. A bad
           product with great UX can thrive, but a great product with bad UX will

@@ -33,7 +33,7 @@ const tableVariants = cva(
       variant: "default",
       size: "md",
     },
-  },
+  }
 );
 
 /**
@@ -115,7 +115,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
     <thead
       className={cn(
         "sticky top-0 z-10 border-b border-b-border bg-card",
-        className,
+        className
       )}
       data-slot="table-header"
       {...props}
@@ -203,7 +203,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
         "[&:has([role='button'])]:hover:cursor-pointer [&:has([role='button'])]:hover:bg-accent",
         "last:border-b-0",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-offset-[-2px]",
-        className,
+        className
       )}
       data-slot="table-row"
       {...props}
@@ -232,7 +232,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
         "whitespace-nowrap px-4 py-3 text-left font-medium text-muted-foreground leading-[1.5] tracking-[-0.01em]",
         "[&[align='center']]:text-center",
         "[&[align='right']]:text-right",
-        className,
+        className
       )}
       data-slot="table-head"
       {...props}
@@ -258,7 +258,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
         "px-4 py-3 align-middle text-foreground leading-[1.5]",
         "[&[align='center']]:text-center",
         "[&[align='right']]:text-right",
-        className,
+        className
       )}
       data-slot="table-cell"
       {...props}

@@ -32,38 +32,36 @@ const chartConfig = {
 const ANIMATION_DURATION = 500;
 const BAR_RADIUS: [number, number, number, number] = [0, 0, 0, 0];
 
-const CodeIllustration = ({ className }: { className?: string }) => {
-  return (
-    <div
-      className={cn(
-        "mask-[linear-gradient(180deg,transparent_0%,#000_10%,#000_70%,transparent_100%)] w-full",
-        className,
-      )}
-    >
-      <ul className="text-muted-foreground mx-auto w-fit font-mono text-2xl font-medium text-start pl-16">
-        {[
-          "Page Visits",
-          "Unique visitors",
-          "Bounce rate",
-          "Signups",
-          "Deleted items",
-          "Meters",
-          "Storage usage",
-        ].map((item) => (
-          <li
-            key={item}
-            className={cn(
-              item === "Signups" &&
-                "text-foreground before:absolute before:-translate-x-[110%] before:text-blue-500 before:content-['Track']",
-            )}
-          >
-            {item}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+const CodeIllustration = ({ className }: { className?: string }) => (
+  <div
+    className={cn(
+      "mask-[linear-gradient(180deg,transparent_0%,#000_10%,#000_70%,transparent_100%)] w-full",
+      className
+    )}
+  >
+    <ul className="mx-auto w-fit pl-16 text-start font-medium font-mono text-2xl text-muted-foreground">
+      {[
+        "Page Visits",
+        "Unique visitors",
+        "Bounce rate",
+        "Signups",
+        "Deleted items",
+        "Meters",
+        "Storage usage",
+      ].map((item) => (
+        <li
+          className={cn(
+            item === "Signups" &&
+              "before:-translate-x-[110%] text-foreground before:absolute before:text-blue-500 before:content-['Track']"
+          )}
+          key={item}
+        >
+          {item}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
 const workWithContent = workData.map((project) => {
   switch (project.id) {
@@ -71,28 +69,28 @@ const workWithContent = workData.map((project) => {
       return {
         ...project,
         showcase: (
-          <div className="w-[calc(100%-40px)] mt-5 h-full bg-accent/70 mask-[linear-gradient(180deg,#000_0%,#000_40%,transparent_100%)] mx-auto flex flex-col overflow-hidden">
-            <div className="border-b-[0.5px] h-fit border-border/70 p-2 pt-4 px-4 flex justify-between items-center ">
-              <span className="font-medium text-sm flex whitespace-nowrap gap-1">
+          <div className="mask-[linear-gradient(180deg,#000_0%,#000_40%,transparent_100%)] mx-auto mt-5 flex h-full w-[calc(100%-40px)] flex-col overflow-hidden bg-accent/70">
+            <div className="flex h-fit items-center justify-between border-border/70 border-b-[0.5px] p-2 px-4 pt-4">
+              <span className="flex gap-1 whitespace-nowrap font-medium text-sm">
                 <Image
-                  src="/icon-openpolicy.svg"
-                  className="dark:invert"
                   alt="Logo"
-                  width={16}
+                  className="dark:invert"
                   height={16}
+                  src="/icon-openpolicy.svg"
+                  width={16}
                 />
                 OpenPolicy
               </span>
-              <span className="text-muted-foreground text-xs font-mono">
+              <span className="font-mono text-muted-foreground text-xs">
                 12/12/2025
               </span>
             </div>
-            <div className="p-5 pb-0 text-xs text-justify text-muted-foreground">
-              <div className="font-medium text-primary mb-1">Heading 1</div>
+            <div className="p-5 pb-0 text-justify text-muted-foreground text-xs">
+              <div className="mb-1 font-medium text-primary">Heading 1</div>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non
               risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing
               nec, ultricies sed, dolor. Cras elementum ultrices diam.
-              <div className="font-medium text-primary mt-3 mb-1">
+              <div className="mt-3 mb-1 font-medium text-primary">
                 Heading 2
               </div>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non
@@ -104,7 +102,7 @@ const workWithContent = workData.map((project) => {
         ),
         content: (
           <>
-            <div className="text-muted-foreground text-justify">
+            <div className="text-justify text-muted-foreground">
               OpenPolicy is a new open-source platform designed to simplify the
               creation, management, and publishing of legal and public
               documents. Whether you're a startup needing a Privacy Policy or an
@@ -112,51 +110,51 @@ const workWithContent = workData.map((project) => {
               provides a solution that is both simple and secure.
             </div>
             <div className="mt-10 mb-5 font-medium">Features</div>
-            <ul className="list-disc list-outside space-y-2 pl-4 text-muted-foreground marker:text-primary">
+            <ul className="list-outside list-disc space-y-2 pl-4 text-muted-foreground marker:text-primary">
               <li>
-                <b className="text-primary font-medium">AI-Powered Writing</b>:
+                <b className="font-medium text-primary">AI-Powered Writing</b>:
                 Built-in AI Copilot for autocompletion and Command mode for
                 generating, editing, and summarizing text.
               </li>
               <li>
-                <b className="text-primary font-medium">Rich Text Editor</b>:
+                <b className="font-medium text-primary">Rich Text Editor</b>:
                 Advanced editor with support for markdown, tables, and
                 Excalidraw diagrams.
               </li>
               <li>
-                <b className="text-primary font-medium">
+                <b className="font-medium text-primary">
                   Multi-Workspace Support
                 </b>
                 : Organize documents by team, project, or client with isolated
                 workspaces. (Coming soon)
               </li>
               <li>
-                <b className="text-primary font-medium">Custom Domain</b>:
+                <b className="font-medium text-primary">Custom Domain</b>:
                 Connect your own domain (e.g., docs.acme.com) with automatic
                 SSL.
               </li>
               <li>
-                <b className="text-primary font-medium">Status Management</b>:
+                <b className="font-medium text-primary">Status Management</b>:
                 Draft, Publish, and Archive states.
               </li>
               <li>
-                <b className="text-primary font-medium">SEO Optimization</b>:
+                <b className="font-medium text-primary">SEO Optimization</b>:
                 Automatic dynamic metadata generation for better
                 discoverability.
               </li>
               <li>
-                <b className="text-primary font-medium">Custom branding</b>:
+                <b className="font-medium text-primary">Custom branding</b>:
                 Workspaces get unique slugs (e.g., acme.openpolicyhq.com).
               </li>
             </ul>
             <div className="mt-10 mb-5 font-medium">Why I built it?</div>
-            <div className="text-muted-foreground text-justify">
+            <div className="text-justify text-muted-foreground">
               I built OpenPolicy because I wanted to try out{" "}
               <a
+                className="font-medium text-primary hover:underline"
                 href="https://polar.sh"
-                className="text-primary font-medium hover:underline"
-                target="_blank"
                 rel="noopener noreferrer"
+                target="_blank"
               >
                 Polar.sh
               </a>
@@ -166,16 +164,16 @@ const workWithContent = workData.map((project) => {
               wasn't bad, so I decided to build it fully. I took inspiration
               from{" "}
               <a
+                className="font-medium text-primary hover:underline"
                 href="https://openstatus.dev"
-                className="text-primary font-medium hover:underline"
-                target="_blank"
                 rel="noopener noreferrer"
+                target="_blank"
               >
                 Openstatus
               </a>{" "}
               for the design and the functionalities.
             </div>
-            <div className="text-muted-foreground mt-5 text-justify">
+            <div className="mt-5 text-justify text-muted-foreground">
               My goal was really to work with things I never tried before, like
               the custom domain feature, which was surprisingly easy to
               implement. But then I doubled down on the production-readiness and
@@ -185,81 +183,81 @@ const workWithContent = workData.map((project) => {
               excited to see where this project goes in the future.
             </div>
             <Image
-              src="/preview-openpolicy.png"
-              className="w-full mt-10"
               alt="LocalCard"
-              width={4000}
+              className="mt-10 w-full"
               height={2000}
+              src="/preview-openpolicy.png"
+              width={4000}
             />
             <div className="mt-10 mb-5 font-medium">Tech stack</div>
-            <ul className="list-disc list-outside space-y-2 pl-4 text-muted-foreground marker:text-primary">
+            <ul className="list-outside list-disc space-y-2 pl-4 text-muted-foreground marker:text-primary">
               <li>
-                <b className="text-primary font-medium">Typescript</b>: Built on
+                <b className="font-medium text-primary">Typescript</b>: Built on
                 top of{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://nextjs.org"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Next.js
                 </a>{" "}
                 and{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://tailwindcss.com"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Tailwind CSS
                 </a>
                 .
               </li>
               <li>
-                <b className="text-primary font-medium">Database + Auth</b>:{" "}
+                <b className="font-medium text-primary">Database + Auth</b>:{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://supabase.com"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Supabase
                 </a>{" "}
                 was the best choice for this project.
               </li>
               <li>
-                <b className="text-primary font-medium">Rate limiting</b>: I
+                <b className="font-medium text-primary">Rate limiting</b>: I
                 decided to use{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://upstash.com"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Upstash Redis
                 </a>{" "}
                 to limit the number of requests per user.
               </li>
               <li>
-                <b className="text-primary font-medium">Error handling</b>: My
+                <b className="font-medium text-primary">Error handling</b>: My
                 go-to error handling tool is{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://sentry.io"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Sentry
                 </a>
                 .
               </li>
               <li>
-                <b className="text-primary font-medium">Editor</b>: Used{" "}
+                <b className="font-medium text-primary">Editor</b>: Used{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://platejs.org"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   PlateJS
                 </a>{" "}
@@ -273,25 +271,25 @@ const workWithContent = workData.map((project) => {
       return {
         ...project,
         showcase: (
-          <div className="w-[calc(100%-40px)] mx-auto h-full flex flex-col justify-center items-start">
+          <div className="mx-auto flex h-full w-[calc(100%-40px)] flex-col items-start justify-center">
             <Image
-              src="/icon-localcard.png"
-              className="w-16 mb-5"
               alt="LocalCard"
-              width={200}
+              className="mb-5 w-16"
               height={100}
+              src="/icon-localcard.png"
+              width={200}
             />
-            <div className="w-full p-4 bg-accent/70 border-border border grid gap-2 grid-cols-6">
+            <div className="grid w-full grid-cols-6 gap-2 border border-border bg-accent/70 p-4">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
+                  className="flex aspect-square w-full items-center justify-center border border-green-500/30 bg-green-500/20 text-green-500/50"
                   key={`localcard-present-${i}`}
-                  className="w-full aspect-square border-green-500/30 border bg-green-500/20 text-green-500/50 flex items-center justify-center"
                 >
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
                     className="size-6"
                     fill="currentColor"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
                     <title>Checkmark</title>
                     <path d="M48 48v416h416V48zm170 312.38l-80.6-89.57 23.79-21.41 56 62.22L350 153.46 374.54 174z" />
@@ -301,14 +299,14 @@ const workWithContent = workData.map((project) => {
 
               {Array.from({ length: 7 }).map((_, i) => (
                 <div
+                  className="flex aspect-square w-full items-center justify-center border border-border bg-(--mix-card-33-bg)"
                   key={`localcard-empty-${i}`}
-                  className="w-full aspect-square border-border border bg-(--mix-card-33-bg) flex items-center justify-center"
                 >
-                  <div className="size-5 text-muted-foreground stroke-1.5 border border-border" />
+                  <div className="size-5 border border-border stroke-1.5 text-muted-foreground" />
                 </div>
               ))}
 
-              <div className="w-full aspect-square border-border border bg-(--mix-card-33-bg) flex items-center justify-center">
+              <div className="flex aspect-square w-full items-center justify-center border border-border bg-(--mix-card-33-bg)">
                 <Gift className="size-6 text-green-500 dark:text-green-800" />
               </div>
             </div>
@@ -316,7 +314,7 @@ const workWithContent = workData.map((project) => {
         ),
         content: (
           <div>
-            <div className="text-muted-foreground text-justify">
+            <div className="text-justify text-muted-foreground">
               Co-founded LocalCard, a digital loyalty platform that enables
               local businesses to reward and retain customers using phone
               numbers for easy rewards. Customers do not need apps or physical
@@ -327,7 +325,7 @@ const workWithContent = workData.map((project) => {
               compete with larger chains.
             </div>
             <div className="mt-10 mb-5 font-medium">Who is it for?</div>
-            <div className="text-muted-foreground text-justify">
+            <div className="text-justify text-muted-foreground">
               We made LocalCard for small businesses here in Montréal, Quebec,
               Canada. Our goal was to provide a simple, affordable, and
               effective solution that helps small businesses compete with larger
@@ -336,32 +334,32 @@ const workWithContent = workData.map((project) => {
               (yes, everything was consented).
             </div>
             <Image
-              src="/localcard-device.png"
-              className="w-full mt-10 border-[0.5px] border-border/70"
               alt="LocalCard"
-              width={2000}
+              className="mt-10 w-full border-[0.5px] border-border/70"
               height={1000}
+              src="/localcard-device.png"
+              width={2000}
             />
-            <div className="text-muted-foreground text-xs mt-2">
+            <div className="mt-2 text-muted-foreground text-xs">
               *Sorry, it’s in French. (This was a demo for a potential client,
               their store was pink, hence the theme.)
             </div>
             <Image
-              src="/localcard-dev.JPG"
-              className="w-full mt-10 border-[0.5px] border-border/70"
               alt="LocalCard"
-              width={2000}
+              className="mt-10 w-full border-[0.5px] border-border/70"
               height={1000}
+              src="/localcard-dev.JPG"
+              width={2000}
             />
             <div className="mt-10 mb-5 font-medium">Did it fail?</div>
-            <div className="text-muted-foreground text-justify">
+            <div className="text-justify text-muted-foreground">
               We managed to get a couple of clients, including a local franchise
               with eight stores. They saw a significant increase in sales after
               implementing LocalCard. What set us apart was being web-based, so
               clients didn’t have to install a useless mobile app. Let’s be
               real, who wants to download an app at the checkout counter?
             </div>
-            <div className="text-muted-foreground text-justify mt-5">
+            <div className="mt-5 text-justify text-muted-foreground">
               But beyond that, I realized our pricing model wasn’t sustainable.
               We needed to conquer the whole Montréal to see meaningful revenue.
               So, slowly and sadly, we had to let go of LocalCard. We gave
@@ -369,7 +367,7 @@ const workWithContent = workData.map((project) => {
               export their data, and had to say goodbye to the theme.
             </div>
             <div className="mt-10 mb-5 font-medium">Results</div>
-            <div className="text-muted-foreground text-justify">
+            <div className="text-justify text-muted-foreground">
               I believe that it was a great experience, and I learned a lot from
               it. For exemple: validate your model before getting too far or you
               WILL lose clients.
@@ -381,13 +379,13 @@ const workWithContent = workData.map((project) => {
       return {
         ...project,
         showcase: (
-          <div className="w-full h-full items-center flex">
+          <div className="flex h-full w-full items-center">
             <CodeIllustration />
           </div>
         ),
         content: (
           <div>
-            <div className="text-muted-foreground text-justify">
+            <div className="text-justify text-muted-foreground">
               Measurely is an open-source analytics platform that makes
               tracking, analyzing, and visualizing metrics simple. With
               customizable metric types, real-time insights, and easy
@@ -396,127 +394,127 @@ const workWithContent = workData.map((project) => {
               the data.
             </div>
             <div className="mt-10 mb-5 font-medium">Features</div>
-            <ul className="list-disc list-outside space-y-2 pl-4 text-muted-foreground marker:text-primary">
+            <ul className="list-outside list-disc space-y-2 pl-4 text-muted-foreground marker:text-primary">
               <li>
-                <b className="text-primary font-medium">
+                <b className="font-medium text-primary">
                   Developer-Friendly API
                 </b>
                 : Seamlessly integrate Measurely with your applications using an
                 API key.
               </li>
               <li>
-                <b className="text-primary font-medium">Real-Time Monitoring</b>
+                <b className="font-medium text-primary">Real-Time Monitoring</b>
                 : View and analyze your metrics as they update in real-time.
               </li>
               <li>
-                <b className="text-primary font-medium">Custom Metric Types</b>:
-                <ul className="list-disc mt-2 mb-2 list-outside space-y-2 pl-4 text-muted-foreground marker:text-primary">
+                <b className="font-medium text-primary">Custom Metric Types</b>:
+                <ul className="mt-2 mb-2 list-outside list-disc space-y-2 pl-4 text-muted-foreground marker:text-primary">
                   <li>
-                    <b className="text-primary font-medium">Basic Metrics</b>:
+                    <b className="font-medium text-primary">Basic Metrics</b>:
                     Track single-value data points.
                   </li>
                   <li>
-                    <b className="text-primary font-medium">Dual Metrics</b>:
+                    <b className="font-medium text-primary">Dual Metrics</b>:
                     Analyze trends with both positive and negative values.
                   </li>
                   <li>
-                    <b className="text-primary font-medium">Advanced Options</b>
+                    <b className="font-medium text-primary">Advanced Options</b>
                     : Add offsets or custom tracking periods for granular
                     insights.
                   </li>
                 </ul>
               </li>
               <li>
-                <b className="text-primary font-medium">
+                <b className="font-medium text-primary">
                   Blocks for Data Visualization
                 </b>
                 : Create customizable charts and tables to visualize your data.
               </li>
               <li>
-                <b className="text-primary font-medium">Team Management</b>:
+                <b className="font-medium text-primary">Team Management</b>:
                 Collaborate with your team using role-based permissions.
               </li>
               <li>
-                <b className="text-primary font-medium">
+                <b className="font-medium text-primary">
                   Was implementing (integrations)
                 </b>
                 : AWS CloudWatch, Google Analytics, and LemonSqueeze.
               </li>
             </ul>
             <VideoPlayer
-              thumbnailUrl="/measurely-thumbnail.jpg"
-              videoUrl="https://www.youtube.com/embed/ky-__c0YUmI?autoplay=1&vq=hd1080"
-              title="Measurely"
-              description="What it is? Small demo of some features."
               className="mt-10"
+              description="What it is? Small demo of some features."
+              thumbnailUrl="/measurely-thumbnail.jpg"
+              title="Measurely"
+              videoUrl="https://www.youtube.com/embed/ky-__c0YUmI?autoplay=1&vq=hd1080"
             />
             <div className="mt-10 mb-5 font-medium">Tech Stack</div>
-            <ul className="list-disc list-outside space-y-2 pl-4 text-muted-foreground marker:text-primary">
+            <ul className="list-outside list-disc space-y-2 pl-4 text-muted-foreground marker:text-primary">
               <li>
-                <b className="text-primary font-medium">Frontend</b>: Built on
+                <b className="font-medium text-primary">Frontend</b>: Built on
                 top of{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://nextra.site"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Nextra
                 </a>
                 ,{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://nextjs.org"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Next.js
                 </a>{" "}
                 and{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://tailwindcss.com"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Tailwind CSS
                 </a>
                 .
               </li>
               <li>
-                <b className="text-primary font-medium">Backend</b>: Used{" "}
+                <b className="font-medium text-primary">Backend</b>: Used{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://golang.org"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Golang
                 </a>{" "}
                 for speed.
               </li>
               <li>
-                <b className="text-primary font-medium">Database</b>: We decided
+                <b className="font-medium text-primary">Database</b>: We decided
                 to use{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://upstash.com"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   PostgresSQL
                 </a>
               </li>
               <li>
-                <b className="text-primary font-medium">
+                <b className="font-medium text-primary">
                   Payment infrastructure
                 </b>
                 : Of course, we used{" "}
                 <a
+                  className="font-medium text-primary hover:underline"
                   href="https://stripe.com"
-                  className="text-primary font-medium hover:underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Stripe
                 </a>
@@ -524,7 +522,7 @@ const workWithContent = workData.map((project) => {
               </li>
             </ul>
             <ChartContainer
-              className="h-75 min-h-75 max-sm:h-75 max-sm:min-h-76 border-[0.5px] border-border/70 p-5 mt-10"
+              className="mt-10 h-75 min-h-75 border-[0.5px] border-border/70 p-5 max-sm:h-75 max-sm:min-h-76"
               config={chartConfig}
             >
               <BarChart
@@ -567,63 +565,63 @@ const workWithContent = workData.map((project) => {
               </BarChart>
             </ChartContainer>
             <div className="mt-10 mb-5 font-medium">SDKs</div>
-            <ul className="list-disc list-outside space-y-2 pl-4 text-muted-foreground marker:text-primary">
+            <ul className="list-outside list-disc space-y-2 pl-4 text-muted-foreground marker:text-primary">
               <li>
-                <b className="text-primary font-medium">
+                <b className="font-medium text-primary">
                   Javascript/Typescript
                 </b>
                 :{" "}
                 <a
+                  className="font-medium text-primary underline"
                   href="https://github.com/measurely-dev/measurely-js"
-                  className="text-primary font-medium underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Here
                 </a>
               </li>
               <li>
-                <b className="text-primary font-medium">Python</b>:{" "}
+                <b className="font-medium text-primary">Python</b>:{" "}
                 <a
+                  className="font-medium text-primary underline"
                   href="https://github.com/measurely-dev/measurely-py"
-                  className="text-primary font-medium underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Here
                 </a>
               </li>
               <li>
-                <b className="text-primary font-medium">Golang</b>:{" "}
+                <b className="font-medium text-primary">Golang</b>:{" "}
                 <a
+                  className="font-medium text-primary underline"
                   href="https://github.com/measurely-dev/measurely-go"
-                  className="text-primary font-medium underline"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Here
                 </a>
               </li>
             </ul>
             <div className="mt-10 mb-5 font-medium">Why we built it</div>
-            <div className="text-muted-foreground text-justify">
+            <div className="text-justify text-muted-foreground">
               So, throwback to December 2024, me and my business partner were
               looking for something to build together. We ran through a bunch of
               ideas, but none of them felt truly useful.
             </div>
-            <div className="text-muted-foreground text-justify mt-5">
+            <div className="mt-5 text-justify text-muted-foreground">
               Around Christmas, I started thinking about a problem we had on a
               previous project: metric tracking. We wanted something extremely
               customizable and quick to use, with a clean SDK and easy
               implementation.
             </div>
-            <div className="text-muted-foreground text-justify mt-5">
-              That’s when <b className="text-primary font-medium">Measurely</b>{" "}
+            <div className="mt-5 text-justify text-muted-foreground">
+              That’s when <b className="font-medium text-primary">Measurely</b>{" "}
               was born. We jumped straight into prototyping and building an MVP.
               I was designing in Figma while my partner handled the backend
               structure.
             </div>
-            <div className="text-muted-foreground text-justify mt-5">
+            <div className="mt-5 text-justify text-muted-foreground">
               After a couple months of hard work, we had an MVP we were proud of
               and opened a waitlist. The thing is, during that time we had
               school :( Most days we couldn’t dedicate enough time to the
@@ -631,14 +629,14 @@ const workWithContent = workData.map((project) => {
               Unfortunately, we couldn’t keep pushing Measurely because of our
               schedules.
             </div>
-            <div className="text-muted-foreground text-justify mt-5">
+            <div className="mt-5 text-justify text-muted-foreground">
               Since then, I told myself I’d never put school over my projects,
               and it worked. I kept grinding on other projects, sharpening my
               skills in frontend development.
             </div>
-            <div className="text-muted-foreground text-justify mt-5">
+            <div className="mt-5 text-justify text-muted-foreground">
               Maybe one day I’ll start working on Measurely again.{" "}
-              <b className="text-primary font-medium">Who knows?</b> For now,
+              <b className="font-medium text-primary">Who knows?</b> For now,
               I’ve got other projects to build.
             </div>
           </div>
@@ -648,13 +646,13 @@ const workWithContent = workData.map((project) => {
       return {
         ...project,
         showcase: (
-          <div className="w-full h-full flex justify-center items-center">
-            <div className="flex items-center justify-center text-7xl text-muted-foreground w-[40%] bg-accent/70 aspect-square border border-border">
+          <div className="flex h-full w-full items-center justify-center">
+            <div className="flex aspect-square w-[40%] items-center justify-center border border-border bg-accent/70 text-7xl text-muted-foreground">
               ?
             </div>
           </div>
         ),
-        content: <div></div>,
+        content: <div />,
       };
     default:
       return {

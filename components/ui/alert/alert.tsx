@@ -23,7 +23,7 @@ const alertVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );
 
 function Alert({
@@ -47,7 +47,7 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
       className={cn(
         "alert-title col-start-2 m-0 font-normal text-secondary-foreground text-sm leading-5 tracking-[-0.02em]",
         "max-sm:font-medium max-sm:text-[0.9375rem]",
-        className,
+        className
       )}
       data-slot="alert-title"
       {...props}
@@ -64,7 +64,7 @@ function AlertDescription({
       className={cn(
         "alert-description col-start-2 m-0 font-light text-muted-foreground text-sm leading-5",
         "max-sm:text-[0.9375rem] max-sm:leading-normal",
-        className,
+        className
       )}
       data-slot="alert-description"
       {...props}
@@ -77,7 +77,7 @@ function AlertAction({ className, ...props }: React.ComponentProps<"div">) {
     <div
       className={cn(
         "col-start-3 row-[1/span_2] flex h-full items-center justify-center gap-1",
-        className,
+        className
       )}
       data-slot="alert-action"
       {...props}

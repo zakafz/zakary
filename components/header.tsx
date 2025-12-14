@@ -4,7 +4,7 @@ import { Menu, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import * as React from "react";
+import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button/button";
 import { GitHub } from "./ui/github-icon";
@@ -30,7 +30,7 @@ export default function Header() {
   const { setTheme, theme } = useTheme();
   const pathname = usePathname();
 
-  const toggleTheme = React.useCallback(() => {
+  const toggleTheme = useCallback(() => {
     setTheme(theme === "dark" ? "light" : "dark");
   }, [setTheme, theme]);
 
@@ -41,10 +41,10 @@ export default function Header() {
   ];
 
   function ThemeIcon() {
-    const [mounted, setMounted] = React.useState(false);
-    React.useEffect(() => setMounted(true), []);
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
     if (!mounted) {
-      return <span className="size-4.5 shrink-0" aria-hidden />;
+      return <span aria-hidden className="size-4.5 shrink-0" />;
     }
     return theme === "dark" ? (
       <Sun className="size-4.5 shrink-0" />
@@ -55,26 +55,26 @@ export default function Header() {
 
   return (
     <TooltipProvider>
-      <div className="flex items-center justify-between h-14 w-full pt-2">
+      <div className="flex h-14 w-full items-center justify-between pt-2">
         {/*Section 1*/}
-        <div className="h-full flex items-center justify-center">
+        <div className="flex h-full items-center justify-center">
           <Link href={"/"}>
-            <div className="cursor-pointer group font-serif p-2 pt-1 flex justify-center items-center bg-primary relative text-primary-foreground font-medium">
-              <div className="italic text-lg">zakary</div>
-              <div className="absolute text-sm bg-accent -bottom-3 text-primary px-0.5 border border-border">
+            <div className="group relative flex cursor-pointer items-center justify-center bg-primary p-2 pt-1 font-medium font-serif text-primary-foreground">
+              <div className="text-lg italic">zakary</div>
+              <div className="-bottom-3 absolute border border-border bg-accent px-0.5 text-primary text-sm">
                 fofana
               </div>
             </div>
           </Link>
-          <div className="flex gap-2 items-center ml-6 mr-4 max-md:hidden">
+          <div className="mr-4 ml-6 flex items-center gap-2 max-md:hidden">
             {navItems.map((item) => (
               <div key={item.url}>
                 <Link
-                  href={item.url}
                   className={cn(
-                    "text-sm hover:bg-accent p-2 px-4 text-muted-foreground hover:text-primary",
-                    pathname === item.url ? "bg-accent text-primary" : "",
+                    "p-2 px-4 text-muted-foreground text-sm hover:bg-accent hover:text-primary",
+                    pathname === item.url ? "bg-accent text-primary" : ""
                   )}
+                  href={item.url}
                 >
                   {item.name}
                 </Link>
@@ -83,12 +83,12 @@ export default function Header() {
           </div>
         </div>
         {/*Section 2*/}
-        <div className="flex gap-4 items-center h-fit">
+        <div className="flex h-fit items-center gap-4">
           <Tooltip>
             <TooltipTrigger
               render={
-                <Link href="/contact" className="max-md:hidden">
-                  <Button variant={"outline"} size={"md"}>
+                <Link className="max-md:hidden" href="/contact">
+                  <Button size={"md"} variant={"outline"}>
                     Contact me
                   </Button>
                 </Link>
@@ -104,20 +104,20 @@ export default function Header() {
             </TooltipPortal>
           </Tooltip>
 
-          <Separator orientation="vertical" className={"h-6! max-md:hidden"} />
+          <Separator className={"h-6! max-md:hidden"} orientation="vertical" />
 
           <Link
-            target="_blank"
-            href="https://github.com/zakafz"
             className="max-md:hidden"
+            href="https://github.com/zakafz"
+            target="_blank"
           >
             <Tooltip>
               <TooltipTrigger
                 render={
                   <Button
                     className={"aspect-square"}
-                    variant="ghost"
                     size={"md"}
+                    variant="ghost"
                   >
                     <GitHub className="size-4.5 shrink-0 max-md:hidden" />
                   </Button>
@@ -125,7 +125,7 @@ export default function Header() {
               />
               <TooltipPortal>
                 <TooltipPositioner className="mt-2">
-                  <TooltipPopup className="shadow-none text-xs font-mono">
+                  <TooltipPopup className="font-mono text-xs shadow-none">
                     <TooltipArrow />
                     Check out my GitHub profile
                   </TooltipPopup>
@@ -134,16 +134,16 @@ export default function Header() {
             </Tooltip>
           </Link>
 
-          <Separator orientation="vertical" className={"h-5! max-md:hidden"} />
+          <Separator className={"h-5! max-md:hidden"} orientation="vertical" />
 
           <Tooltip>
             <TooltipTrigger
               render={
                 <Button
                   className={cn("aspect-square")}
-                  variant="ghost"
-                  size={"md"}
                   onClick={toggleTheme}
+                  size={"md"}
+                  variant="ghost"
                 >
                   <ThemeIcon />
                 </Button>
@@ -151,7 +151,7 @@ export default function Header() {
             />
             <TooltipPortal>
               <TooltipPositioner className="mt-2">
-                <TooltipPopup className="shadow-none text-xs font-mono">
+                <TooltipPopup className="font-mono text-xs shadow-none">
                   <TooltipArrow />
                   Change theme
                 </TooltipPopup>
@@ -159,7 +159,7 @@ export default function Header() {
             </TooltipPortal>
           </Tooltip>
 
-          <Separator orientation="vertical" className={"h-5! md:hidden"} />
+          <Separator className={"h-5! md:hidden"} orientation="vertical" />
 
           <Tooltip>
             <Sheet>
@@ -168,8 +168,8 @@ export default function Header() {
                   render={
                     <Button
                       className={cn("aspect-square md:hidden")}
-                      variant="outline"
                       size={"md"}
+                      variant="outline"
                     >
                       <Menu className="size-4.5 shrink-0" />
                     </Button>
@@ -177,18 +177,18 @@ export default function Header() {
                 />
               </SheetTrigger>
               <SheetContent>
-                <div className="flex flex-col gap-4 p-4 h-full">
+                <div className="flex h-full flex-col gap-4 p-4">
                   <SheetTitle className="font-medium text-sm">Menu</SheetTitle>
                   {navItems.map((item, index) => (
-                    <Link key={index} href={item.url}>
+                    <Link href={item.url} key={index}>
                       <Button
-                        variant="outline"
                         className={cn(
-                          "text-sm w-full font-mono",
+                          "w-full font-mono text-sm",
                           pathname === item.url
-                            ? "bg-primary text-primary-foreground pointer-events-none border-primary"
-                            : "",
+                            ? "pointer-events-none border-primary bg-primary text-primary-foreground"
+                            : ""
                         )}
+                        variant="outline"
                       >
                         {item.name}
                       </Button>
@@ -196,19 +196,19 @@ export default function Header() {
                   ))}
                   <Link href="/contact">
                     <Button
-                      variant="outline"
                       className={cn(
-                        "text-sm w-full font-mono pointer-events-none",
+                        "pointer-events-none w-full font-mono text-sm",
                         pathname === "/contact"
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "",
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : ""
                       )}
+                      variant="outline"
                     >
                       Contact me
                     </Button>
                   </Link>
                   <SheetClose asChild>
-                    <Button className="md:hidden mt-auto" variant="primary">
+                    <Button className="mt-auto md:hidden" variant="primary">
                       Close
                     </Button>
                   </SheetClose>
@@ -217,7 +217,7 @@ export default function Header() {
             </Sheet>
             <TooltipPortal>
               <TooltipPositioner className="mt-2">
-                <TooltipPopup className="shadow-none text-xs font-mono">
+                <TooltipPopup className="font-mono text-xs shadow-none">
                   <TooltipArrow />
                   Open menu
                 </TooltipPopup>

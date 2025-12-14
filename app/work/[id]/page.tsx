@@ -11,7 +11,7 @@ type Props = {
 
 export async function generateMetadata(
   { params }: Props,
-  parent: ResolvingMetadata,
+  parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { id } = (await params) as unknown as { id: string };
   const work = workData.find((w) => w.id === id);
@@ -43,7 +43,7 @@ export async function generateMetadata(
   };
 }
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   return workData.map((work) => ({
     id: work.id,
   }));

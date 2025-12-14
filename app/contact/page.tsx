@@ -28,16 +28,16 @@ export default function ContactPage() {
   return (
     <Container>
       <Header />
-      <div className="mx-auto min-h-[calc(100vh-56px-80px)] pt-10 md:pt-40 w-full">
+      <div className="mx-auto min-h-[calc(100vh-56px-80px)] w-full pt-10 md:pt-40">
         <TextReveal
+          className="mb-5 font-medium text-lg"
           display="block"
           variant="slideDown"
-          className="mb-5 font-medium text-lg"
         >
           Contact me
         </TextReveal>
         <Reveal display="block" variant="slideUp">
-          <div className="grid md:grid-cols-3 border-[0.5px] border-border/70 w-full">
+          <div className="grid w-full border-[0.5px] border-border/70 md:grid-cols-3">
             <Box
               description="I try to respond to all emails within 24 hours."
               icon={Mail}
@@ -60,7 +60,7 @@ export default function ContactPage() {
               </span>
             </Box>
             <Box
-              className="border-b-0 border-border/70 md:border-r-0"
+              className="border-border/70 border-b-0 md:border-r-0"
               description="Call me for a chat."
               icon={Phone}
               title="Phone"
@@ -77,17 +77,17 @@ export default function ContactPage() {
           </div>
         </Reveal>
         <div className="z-1 flex h-full flex-col justify-center gap-4 pt-10">
-          <h2 className="font-medium text-lg text-muted-foreground tracking-tight flex items-center gap-1">
+          <h2 className="flex items-center gap-1 font-medium text-lg text-muted-foreground tracking-tight">
             <TextReveal variant="slideUp">Find me</TextReveal>{" "}
             <TextReveal
-              variant="slideDown"
-              delay={0.7}
               className="text-foreground"
+              delay={0.7}
+              variant="slideDown"
             >
               online
             </TextReveal>
           </h2>
-          <Reveal variant="slideDown" delay={0.2}>
+          <Reveal delay={0.2} variant="slideDown">
             <div className="flex flex-wrap items-center gap-2">
               {socialLinks.map((link) => (
                 <a
@@ -128,18 +128,18 @@ function Box({
   return (
     <div
       className={cn(
-        "flex flex-col justify-between border-b-[0.5px] border-border/70 md:border-r-[0.5px] md:border-b-0",
-        className,
+        "flex flex-col justify-between border-border/70 border-b-[0.5px] md:border-r-[0.5px] md:border-b-0",
+        className
       )}
     >
-      <div className="flex items-center gap-x-3 border-b-[0.5px] border-border/70 bg-secondary/50 p-4 dark:bg-secondary/20">
+      <div className="flex items-center gap-x-3 border-border/70 border-b-[0.5px] bg-secondary/50 p-4 dark:bg-secondary/20">
         <props.icon className="size-5 text-muted-foreground" strokeWidth={1} />
         <h2 className="font-heading font-medium text-lg tracking-wider">
           {title}
         </h2>
       </div>
       <div className="flex items-center gap-x-2 p-4 py-12">{children}</div>
-      <div className="border-t-[0.5px] border-border/70 p-4">
+      <div className="border-border/70 border-t-[0.5px] p-4">
         <p className="text-muted-foreground text-sm">{description}</p>
       </div>
     </div>

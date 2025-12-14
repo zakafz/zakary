@@ -41,7 +41,7 @@ const badgeVariants = cva(
       variant: "default",
       size: "md",
     },
-  },
+  }
 );
 
 /**
@@ -112,7 +112,7 @@ function BadgeIcon({ className, ...props }: React.ComponentProps<"span">) {
     <span
       className={cn(
         "mr-1 inline-flex flex-shrink-0 items-center justify-center rounded-full p-0.5",
-        className,
+        className
       )}
       data-slot="badge-icon"
       {...props}

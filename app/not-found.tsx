@@ -14,12 +14,12 @@ export default function NotFound() {
           <Badge size={"lg"} variant={"outline"}>
             404
           </Badge>
-          <div className="mt-6 text-5xl font-medium">I think you're lost</div>
-          <div className="mt-5 text-muted-foreground max-w-3xl">
+          <div className="mt-6 font-medium text-5xl">I think you're lost</div>
+          <div className="mt-5 max-w-3xl text-muted-foreground">
             Looking for the contact page? Don't worry, I'm here to help. Just
             click the button below to go home or to get in touch.
           </div>
-          <div className="flex gap-4 mt-6">
+          <div className="mt-6 flex gap-4">
             <Link href="/">
               <Button>Home</Button>
             </Link>

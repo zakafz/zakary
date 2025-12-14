@@ -1,4 +1,4 @@
-export interface TableRowData {
+export type TableRowData = {
   id: string;
   name: string;
   url?: string;
@@ -6,7 +6,7 @@ export interface TableRowData {
   description?: string;
   section?: string;
   children?: TableRowData[];
-}
+};
 
 export const tools: TableRowData[] = [
   {
@@ -121,6 +121,22 @@ export const tools: TableRowData[] = [
         category: "Linter/Formatter",
         description: "Linter and formatter preset for Biome",
       },
+      {
+        id: "CSTK-6",
+        name: "Vercel",
+        url: "https://vercel.com/",
+        category: "Hosting",
+        description:
+          "Hosting platform for static sites and serverless functions",
+      },
+      {
+        id: "CSTK-7",
+        name: "Supabase",
+        url: "https://supabase.com/",
+        category: "Dev platform",
+        description:
+          "Postgres development platform",
+      },
     ],
   },
   {
@@ -182,7 +198,7 @@ export const tools: TableRowData[] = [
         id: "CLIB-8",
         name: "Shadcn create",
         url: "https://ui.shadcn.com/create",
-        category: "Component create",
+        category: "Project starter",
         description: "Fully customizable shadcn starter",
       },
     ],

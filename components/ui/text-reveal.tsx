@@ -11,16 +11,21 @@ export function TextReveal({ children, ...props }: TextRevealProps) {
 
   return (
     <Reveal {...props}>
-      {characters.map((char, index) => (
-        <span
-          key={`${char}-${index}`}
-          style={{
-            display: "inline-block",
-          }}
-        >
-          {char === " " ? "\u00A0" : char}
-        </span>
-      ))}
+      {characters.map((char, index) => {
+        // biome-ignore lint/nursery/noLeakedRender: for the animation
+        const content = char === " " ? "\u00A0" : char;
+
+        return (
+          <span
+            key={`${char}-${index}`}
+            style={{
+              display: "inline-block",
+            }}
+          >
+            {content}
+          </span>
+        );
+      })}
     </Reveal>
   );
 }

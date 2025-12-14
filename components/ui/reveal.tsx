@@ -17,7 +17,7 @@ type RevealVariant =
   | "rotate"
   | "elastic";
 
-export interface RevealProps {
+export type RevealProps = {
   children: React.ReactNode;
   display?: "inline-block" | "block";
   variant?: RevealVariant;
@@ -29,7 +29,7 @@ export interface RevealProps {
   once?: boolean;
   startOnView?: boolean;
   onComplete?: () => void;
-}
+};
 
 const containerVariants: Record<RevealVariant, Variants> = {
   fade: {
@@ -262,14 +262,15 @@ export function Reveal({
 
   return (
     <motion.div
-      ref={ref}
-      className={cn(display, className)}
-      variants={customContainerVariants}
-      initial="hidden"
       animate={shouldAnimate ? "visible" : "hidden"}
+      className={cn(display, className)}
+      initial="hidden"
       onAnimationComplete={() => {
-        if (onComplete) onComplete();
+        if (onComplete) {
+          onComplete();
+        }
       }}
+      ref={ref}
       style={{
         willChange: "transform, opacity",
         WebkitBackfaceVisibility: "hidden",
@@ -280,16 +281,17 @@ export function Reveal({
         contain: "layout style paint",
         ...style,
       }}
+      variants={customContainerVariants}
     >
       {React.Children.map(children, (child) => (
         <motion.div
-          variants={customItemVariants}
           style={{
             display:
               display === "block" && React.Children.count(children) === 1
                 ? "block"
                 : "inline-block",
-            transformOrigin: variant === "rotate" ? "center center" : undefined,
+            transformOrigin:
+              variant === "rotate" ? "center center" : ("" as string),
             willChange: "transform, opacity",
             WebkitBackfaceVisibility: "hidden",
             backfaceVisibility: "hidden",
@@ -297,6 +299,7 @@ export function Reveal({
             transform: "translate3d(0,0,0)",
             isolation: "isolate",
           }}
+          variants={customItemVariants}
         >
           {child}
         </motion.div>

@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Tailwind CSS configuration
  *

@@ -18,7 +18,7 @@ export function cn(...inputs: ClassValue[]) {
 export function getAge(
   birthYear: number,
   birthMonth0Based: number,
-  birthDay: number,
+  birthDay: number
 ) {
   const now = new Date(); // local timezone (America/Toronto on your machine)
   const birth = new Date(birthYear, birthMonth0Based, birthDay);

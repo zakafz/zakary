@@ -61,7 +61,7 @@ const buttonVariants = cva(
       variant: "primary",
       size: "md",
     },
-  },
+  }
 );
 
 function Spinner() {
@@ -133,8 +133,8 @@ function ArrowPointer({
   const arrowClasses = cn(
     "-mt-px -mr-2 relative top-0 ml-2 h-3 w-3.5 overflow-visible",
     "transition-all duration-200 ease-[var(--ease-in-out-cubic)]",
-    pointLeft && "-ml-2 mr-2",
-    pointExternal && "group-hover:-rotate-45 origin-[8%]",
+    pointLeft ? "-ml-2 mr-2" : "",
+    pointExternal ? "group-hover:-rotate-45 origin-[8%]" : ""
   );
 
   const pointClasses =
@@ -155,7 +155,7 @@ function ArrowPointer({
       <title>Arrow</title>
       <g fillRule="nonzero">
         <path
-          className={cn(pointClasses, pointLeft && pointLeftClasses)}
+          className={cn(pointClasses, pointLeft ? pointLeftClasses : "")}
           d={pointLeft ? "M7.2 1l-4 4 4 4" : "M-0.8 1l4 4-4 4"}
           stroke="currentColor"
           strokeLinecap="square"
@@ -163,7 +163,7 @@ function ArrowPointer({
           strokeWidth="2"
         />
         <path
-          className={cn(shaftClasses, pointLeft && shaftLeftClasses)}
+          className={cn(shaftClasses, pointLeft ? shaftLeftClasses : "")}
           d={pointLeft ? "M7.2 5H2.2" : "M0 5h4.8"}
           stroke="currentColor"
           strokeLinecap="square"
@@ -197,14 +197,14 @@ function Button({
 }: ButtonProps) {
   const decoratedChildren = (
     <>
-      {loading && <Spinner />}
-      {!loading && showArrow && pointLeft && (
+      {loading ? <Spinner /> : null}
+      {!loading && showArrow && pointLeft ? (
         <ArrowPointer pointExternal={pointExternal} pointLeft />
-      )}
+      ) : null}
       {props.children}
-      {!loading && showArrow && !pointLeft && (
+      {!loading && showArrow && !pointLeft ? (
         <ArrowPointer pointExternal={pointExternal} />
-      )}
+      ) : null}
     </>
   );
 
@@ -216,8 +216,8 @@ function Button({
       "data-slot": "button",
       className: cn(
         buttonVariants({ variant, size }),
-        loading && "loading",
-        className,
+        loading ? "loading" : "",
+        className
       ),
       disabled: props.disabled || loading,
       children: decoratedChildren,

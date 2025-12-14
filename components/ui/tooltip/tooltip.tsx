@@ -31,7 +31,7 @@ function TooltipPopup({ className, ...props }: Tooltip.Popup.Props) {
   return (
     <Tooltip.Popup
       className={cn(
-        "max-w-[20rem] px-3 py-2 text-primary shadow-none text-xs font-mono",
+        "max-w-[20rem] px-3 py-2 font-mono text-primary text-xs shadow-none",
         "rounded-[--radius] bg-[var(--mix-card-33-bg)]",
         "transition-[transform_0.125s_ease-out,opacity_0.125s_ease-out]",
         "relative mb-1 origin-[var(--transform-origin)] break-words",
@@ -39,7 +39,7 @@ function TooltipPopup({ className, ...props }: Tooltip.Popup.Props) {
         "data-[starting-style]:scale-[0.97] data-[starting-style]:opacity-0",
         "data-[ending-style]:scale-[0.97] data-[ending-style]:opacity-0",
         "data-[instant]:transition-none",
-        className,
+        className
       )}
       {...props}
     />
@@ -56,7 +56,7 @@ function TooltipArrow({ className, ...props }: Tooltip.Arrow.Props) {
         "data-[side=left]:right-2 data-[side=left]:rotate-90",
         "data-[side=right]:-left-2 data-[side=right]:-rotate-90",
         "[&_svg]:block [&_svg]:h-full [&_svg]:w-full",
-        className,
+        className
       )}
       data-slot="tooltip-arrow"
       {...props}

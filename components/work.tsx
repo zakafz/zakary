@@ -2,47 +2,25 @@
 import Link from "next/link";
 import { work as projects, type Work as WorkType } from "@/data/work";
 import { cn } from "@/lib/utils";
-import * as ButtonModule from "./ui/button/button";
-import * as CardModule from "./ui/card/card";
-import * as CarouselModule from "./ui/carousel/carousel";
+import { Button } from "./ui/button/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardTitle,
+} from "./ui/card/card";
+import { Carousel } from "./ui/carousel/carousel";
 import { Reveal } from "./ui/reveal";
 import { TextReveal } from "./ui/text-reveal";
-
-// biome-ignore lint/suspicious/noExplicitAny: This is a generic resolver.
-function resolve(module: { [key: string]: any }, name?: string) {
-  if (!module) return undefined;
-  if (name) {
-    return module[name] ?? module.default?.[name] ?? module.default ?? module;
-  }
-  return module.default ?? module;
-}
-
-const Carousel = {
-  Bleed: resolve(CarouselModule, "Bleed"),
-  Root: resolve(CarouselModule, "Root"),
-  Viewport: resolve(CarouselModule, "Viewport"),
-  Content: resolve(CarouselModule, "Content"),
-  Item: resolve(CarouselModule, "Item"),
-  Navigation: resolve(CarouselModule, "Navigation"),
-  Previous: resolve(CarouselModule, "Previous"),
-  Next: resolve(CarouselModule, "Next"),
-};
-
-const Card = resolve(CardModule, "Card");
-const CardTitle = resolve(CardModule, "CardTitle");
-const CardDescription = resolve(CardModule, "CardDescription");
-const CardContent = resolve(CardModule, "CardContent");
-const CardFooter = resolve(CardModule, "CardFooter");
-
-const Button = resolve(ButtonModule, "Button");
 
 export default function Work() {
   return (
     <div className="mt-32">
       <TextReveal
+        className="mb-5 font-medium text-lg"
         delay={1.2}
         variant="slideDown"
-        className="mb-5 font-medium text-lg"
       >
         My projects
       </TextReveal>
@@ -57,17 +35,17 @@ export default function Work() {
             <Carousel.Content>
               {projects.map((project: WorkType, index: number) => (
                 <Carousel.Item index={index} key={project.id}>
-                  <Reveal variant="slideUp" startOnView={false} delay={1.2}>
+                  <Reveal delay={1.2} startOnView={false} variant="slideUp">
                     <Card
-                      onClick={() => window.open(project.url, "_self")}
                       className="h-full max-w-90"
+                      onClick={() => window.open(project.url, "_self")}
                       variant="lift"
                     >
                       <div
                         className={cn(
                           "box-border w-full max-w-none",
                           "-mt-6.25 -mx-6.25 mb-0 h-75 w-[calc(100%+3rem+2px)] max-w-[100vw]",
-                          "transition-transform duration-250 ease-in-out-quad",
+                          "transition-transform duration-250 ease-in-out-quad"
                         )}
                       >
                         {project.showcase}
@@ -96,10 +74,10 @@ export default function Work() {
             </Carousel.Content>
           </Carousel.Viewport>
           <Reveal
-            display="block"
-            variant="slideUp"
-            startOnView={false}
             delay={1.2}
+            display="block"
+            startOnView={false}
+            variant="slideUp"
           >
             <Carousel.Navigation>
               <Carousel.Previous />

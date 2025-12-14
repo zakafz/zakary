@@ -42,9 +42,9 @@ export default function Blog() {
       <div className="min-h-[calc(100vh-56px-80px)] pt-[calc(160px-40px-68px)]">
         <Announcement />
         <TextReveal
+          className="mb-5 font-medium text-lg"
           startOnView={false}
           variant="slideDown"
-          className="mb-5 font-medium text-lg"
         >
           My blog
         </TextReveal>

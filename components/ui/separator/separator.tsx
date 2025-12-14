@@ -10,7 +10,7 @@ function SeparatorRoot({ className, ...props }: Separator.Props) {
         "border-none",
         "data-[orientation=horizontal]:h-[0.5px] data-[orientation=horizontal]:w-full",
         "data-[orientation=vertical]:h-full data-[orientation=vertical]:w-[0.5px]",
-        className,
+        className
       )}
       data-slot="separator"
       style={{

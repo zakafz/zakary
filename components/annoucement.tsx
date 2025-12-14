@@ -14,29 +14,29 @@ export default function Announcement() {
   return (
     <Alert className="mb-10 h-18 pl-2">
       <AlertTitle>
-        <Reveal variant="slideDown" className="flex gap-1">
+        <Reveal className="flex gap-1" variant="slideDown">
           <div className="size-5">
             <Image
-              src="/icon-openpolicy.svg"
-              className="size-5 dark:invert-100"
               alt="Logo"
-              width={200}
+              className="size-5 dark:invert-100"
               height={200}
+              src="/icon-openpolicy.svg"
+              width={200}
             />
           </div>
           OpenPolicy
         </Reveal>
       </AlertTitle>
       <AlertDescription>
-        <TextReveal variant="slideUp" staggerDelay={0.02}>
+        <TextReveal staggerDelay={0.02} variant="slideUp">
           Go check out my latest project
         </TextReveal>
       </AlertDescription>
       <AlertAction>
-        <Reveal variant="slideLeft" delay={0.5}>
+        <Reveal delay={0.5} variant="slideLeft">
           <Link href={"https://openpolicyhq.com"} target="_blank">
             <Button size="sm" variant="secondary">
-              Visit <span className="max-md:hidden ml-1">website</span>
+              Visit <span className="ml-1 max-md:hidden">website</span>
             </Button>
           </Link>
         </Reveal>

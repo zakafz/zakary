@@ -80,7 +80,8 @@ function ChartContainer({
           [data-chart="${chartId}"] .recharts-radial-bar-background-sector {
             fill: var(--muted);
           }
-          [data-chart="${chartId}"] .recharts-rectangle.recharts-tooltip-cursor {
+          [data-chart="${chartId}"]
+            .recharts-rectangle.recharts-tooltip-cursor {
             fill: var(--muted);
             opacity: 0.3;
           }
@@ -113,7 +114,7 @@ function ChartContainer({
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
-    ([, itemConfig]) => itemConfig.theme || itemConfig.color,
+    ([, itemConfig]) => itemConfig.theme || itemConfig.color
   );
 
   if (!colorConfig.length) {
@@ -137,7 +138,7 @@ ${colorConfig
   })
   .join("\n")}
 }
-`,
+`
           )
           .join("\n"),
       }}
@@ -184,7 +185,7 @@ function TooltipItem({
     name: string,
     item: unknown,
     index: number,
-    payload: unknown,
+    payload: unknown
   ) => ReactNode;
   itemConfig?: { icon?: ComponentType; label?: ReactNode };
   indicator: "line" | "dot" | "dashed";
@@ -214,7 +215,7 @@ function TooltipItem({
             className={cn(
               "shrink-0 rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)]",
               indicatorStyleClass,
-              nestedClass,
+              nestedClass
             )}
             style={
               {
@@ -228,7 +229,7 @@ function TooltipItem({
       <div
         className={cn(
           "flex min-w-0 flex-1 items-center justify-between gap-2 leading-none",
-          nestLabel && "items-end",
+          nestLabel ? "items-end" : ""
         )}
       >
         <div className="grid min-w-0 flex-1 gap-1.5">
@@ -237,11 +238,11 @@ function TooltipItem({
             {itemConfig?.label || item.name}
           </span>
         </div>
-        {formattedValue && (
+        {formattedValue ? (
           <span className="shrink-0 whitespace-nowrap font-medium font-mono text-foreground tabular-nums">
             {formattedValue}
           </span>
-        )}
+        ) : null}{" "}
       </div>
     </>
   );
@@ -252,7 +253,7 @@ function getTooltipLabelValue(
   labelKey: string | undefined,
   label: string | number | undefined,
   config: ChartConfig,
-  item: { payload?: Record<string, unknown> } | undefined,
+  item: { payload?: Record<string, unknown> } | undefined
 ): ReactNode {
   if (labelKey && item?.payload) {
     return item.payload[labelKey] as ReactNode;
@@ -300,7 +301,7 @@ function ChartTooltipContent({
     name: string,
     item: unknown,
     index: number,
-    payload: unknown,
+    payload: unknown
   ) => ReactNode;
   color?: string;
   nameKey?: string;
@@ -349,12 +350,13 @@ function ChartTooltipContent({
     <div
       className={cn(
         "grid min-w-32 items-start gap-1.5 rounded-[var(--radius)] bg-background px-2.5 py-1.5 text-xs shadow-[0_10px_15px_-3px_rgb(0_0_0_/_0.1),_0_4px_6px_-4px_rgb(0_0_0_/_0.1)]",
-        className,
+        className
       )}
       style={{
         border: "0.5px solid oklch(from var(--border) l c h / 0.6)",
       }}
     >
+      {/* biome-ignore lint/nursery/noLeakedRender: remove the error */}
       {nestLabel ? null : tooltipLabel}
       <div className="grid gap-1.5">
         {payload
@@ -371,18 +373,18 @@ function ChartTooltipContent({
             const indicatorColor: string | undefined =
               color ||
               item.color ||
-              (typeof item.fill === "string" ? item.fill : undefined) ||
+              (typeof item.fill === "string" ? item.fill : "") ||
               (typeof item.payload?.fill === "string"
                 ? (item.payload.fill as string)
-                : undefined) ||
+                : "") ||
               configColor ||
-              (item.dataKey ? `var(--color-${item.dataKey})` : undefined);
+              (item.dataKey ? `var(--color-${item.dataKey})` : "");
 
             return (
               <div
                 className={cn(
                   "flex w-full flex-wrap items-stretch gap-2",
-                  indicator === "dot" && "items-center",
+                  indicator === "dot" && "items-center"
                 )}
                 key={item.dataKey}
               >
@@ -437,7 +439,7 @@ function ChartLegendContent({
       className={cn(
         "flex items-center justify-center gap-4",
         verticalAlign === "top" ? "pb-3" : "pt-3",
-        className,
+        className
       )}
     >
       {payload
@@ -447,20 +449,22 @@ function ChartLegendContent({
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
           const legendColor =
             item.color ||
-            (item.dataKey ? `var(--color-${item.dataKey})` : undefined);
+            (item.dataKey ? `var(--color-${item.dataKey})` : null);
 
           return (
             <div className="flex items-center gap-1.5" key={item.value}>
-              {itemConfig?.icon && !hideIcon ? (
+              {!!itemConfig?.icon && !hideIcon ? (
                 <div className="h-3 w-3 text-muted-foreground">
                   <itemConfig.icon />
                 </div>
               ) : (
                 <div
                   className="h-2 w-2 shrink-0 rounded-sm"
-                  style={{
-                    backgroundColor: legendColor,
-                  }}
+                  style={
+                    legendColor
+                      ? { backgroundColor: legendColor }
+                      : ("" as CSSProperties)
+                  }
                 />
               )}
               <span className="text-xs">{itemConfig?.label}</span>
@@ -475,7 +479,7 @@ function ChartLegendContent({
 function getPayloadConfigFromPayload(
   config: ChartConfig,
   payload: unknown,
-  key: string,
+  key: string
 ) {
   if (typeof payload !== "object" || payload === null) {
     return;
@@ -486,7 +490,7 @@ function getPayloadConfigFromPayload(
     typeof payload.payload === "object" &&
     payload.payload !== null
       ? payload.payload
-      : undefined;
+      : null;
 
   let configLabelKey: string = key;
 

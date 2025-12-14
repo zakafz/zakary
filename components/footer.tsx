@@ -7,30 +7,30 @@ import { Separator } from "./ui/separator/separator";
 
 export default function Footer() {
   return (
-    <div className="border-t border-border/70 w-full mt-20 pt-5 pb-8 flex justify-between items-center">
-      <div className="text-xs font-mono text-muted-foreground">
+    <div className="mt-20 flex w-full items-center justify-between border-border/70 border-t pt-5 pb-8">
+      <div className="font-mono text-muted-foreground text-xs">
         <span className="max-md:hidden">All rights reserved</span> &copy;{" "}
         {new Date().getFullYear()} Zakary Fofana
       </div>
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         <Link href="https://github.com/zakafz/" target="_blank">
-          <Button variant={"ghost"} className="aspect-square">
+          <Button className="aspect-square" variant={"ghost"}>
             <GitHub className="size-4.5 shrink-0" />
           </Button>
         </Link>
 
-        <Separator orientation="vertical" className={"h-5!"} />
+        <Separator className={"h-5!"} orientation="vertical" />
 
         <Link href="https://www.linkedin.com/in/zakary-fofana/" target="_blank">
-          <Button variant={"ghost"} className="aspect-square">
+          <Button className="aspect-square" variant={"ghost"}>
             <LinkedIn className="size-4.5 shrink-0" />
           </Button>
         </Link>
 
-        <Separator orientation="vertical" className={"h-5!"} />
+        <Separator className={"h-5!"} orientation="vertical" />
 
         <Link href="mailto:hello@zakary.dev">
-          <Button variant={"ghost"} className="aspect-square">
+          <Button className="aspect-square" variant={"ghost"}>
             <Send className="size-4.5 shrink-0" />
           </Button>
         </Link>
