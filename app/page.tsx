@@ -39,16 +39,16 @@ export default function Home() {
             Fofana
           </TextReveal>
         </div>
-        <TextReveal
+        <Reveal
           variant="slideDown"
           staggerDelay={0.003}
-          delay={0.4}
-          className="mt-3 text-muted-foreground max-w-4xl"
+          delay={0.5}
+          className="mt-3 text-muted-foreground max-w-4xl text-justify"
         >
           Full-stack engineer, and self proclaimed design enthusiast.
           Specialized in Typescript, Next.js, Tailwind, Tauri and Electron.
           Based in Montréal, Canada.
-        </TextReveal>
+        </Reveal>
         <Reveal variant="slideUp" delay={1} className="flex gap-4 mt-6">
           <Link href="/contact">
             <Button>Contact me</Button>

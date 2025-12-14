@@ -131,7 +131,7 @@ export const tools: TableRowData[] = [
     children: [
       {
         id: "CLIB-1",
-        name: "coss UI by Cal.com",
+        name: "coss by Cal.com",
         url: "https://coss.com",
         category: "Library",
         description: "Component library built by Cal.com",
@@ -177,6 +177,13 @@ export const tools: TableRowData[] = [
         url: "https://animate-ui.com/docs/icons",
         category: "Library",
         description: "Animated icon library",
+      },
+      {
+        id: "CLIB-8",
+        name: "Shadcn create",
+        url: "https://ui.shadcn.com/create",
+        category: "Component create",
+        description: "Fully customizable shadcn starter",
       },
     ],
   },
