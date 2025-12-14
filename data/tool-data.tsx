@@ -114,6 +114,13 @@ export const tools: TableRowData[] = [
         category: "Language",
         description: "To make backend apps",
       },
+      {
+        id: "CSTK-5",
+        name: "Ultracite",
+        url: "https://www.ultracite.ai/",
+        category: "Linter/Formatter",
+        description: "Linter and formatter preset for Biome",
+      },
     ],
   },
   {
