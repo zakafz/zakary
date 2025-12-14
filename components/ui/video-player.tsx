@@ -56,7 +56,7 @@ const VideoPlayer = React.forwardRef<HTMLDivElement, VideoPlayerProps>(
               layout="fill"
             />
             {/* Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
 
             {/* Play Button */}
             <div className="absolute inset-0 flex items-center justify-center">
