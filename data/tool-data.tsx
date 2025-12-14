@@ -13,7 +13,7 @@ export const tools: TableRowData[] = [
     id: "APPS",
     name: "Applications",
     category: "Tools",
-    description: "Applications and ",
+    description: "Applications and tools I use daily",
     children: [
       {
         id: "APPS-1",
