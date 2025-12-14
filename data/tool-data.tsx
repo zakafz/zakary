@@ -78,6 +78,13 @@ export const tools: TableRowData[] = [
         category: "Music",
         description: "The ONLY acceptable music streaming service",
       },
+      {
+        id: "APPS-10",
+        name: "Figma",
+        url: "https://figma.com/",
+        category: "Design",
+        description: "Design tool for creating user interface",
+      },
     ],
   },
   {
