@@ -73,7 +73,7 @@ export default function Work() {
                         {project.showcase}
                       </div>
                       <CardContent>
-                        <CardTitle className="m-0 max-sm:text-[1.125rem] max-sm:leading-[1.3]">
+                        <CardTitle className="m-0 max-sm:text-[1.125rem] max-sm:leading-[1.3] font-serif text-2xl">
                           {project.title}
                         </CardTitle>
                         <CardDescription className="mt-0">

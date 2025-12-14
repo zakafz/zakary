@@ -56,8 +56,8 @@ export default function WorkPage() {
               />
             </Reveal>
             <Reveal variant="blur" className="flex flex-col">
-              <div className="text-2xl font-medium flex justify-between items-center">
-                <TextReveal variant="slideDown">{work.title}</TextReveal>
+              <div className="text-3xl font-medium flex justify-between items-center">
+                <TextReveal variant="slideDown" className="font-serif">{work.title}</TextReveal>
                 <Tooltip>
                   <TooltipTrigger
                     render={

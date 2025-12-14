@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "next-themes";
@@ -7,6 +7,13 @@ import { ThemeProvider } from "next-themes";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+});
+
+const sans = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+  weight: "variable",
 });
 
 const geistMono = Geist_Mono({
@@ -20,6 +27,7 @@ const serif = Instrument_Serif({
   display: "swap",
   weight: "400",
 });
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://zakary.dev"),
   title: {
@@ -82,7 +90,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} antialiased`}
+        className={`${sans.variable} ${geistMono.variable} ${serif.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
