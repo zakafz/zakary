@@ -121,7 +121,13 @@ function AccordionRow({ row, isOpen, onToggle }: AccordionRowProps) {
 
                   <TableBody>
                     {row.children?.map((childRow) => (
-                      <TableRow className={cn(GRID_COLS, 'dark:bg-(--mix-card-33-bg)/70')} key={childRow.id}>
+                      <TableRow
+                        className={cn(
+                          GRID_COLS,
+                          "dark:bg-(--mix-card-33-bg)/70"
+                        )}
+                        key={childRow.id}
+                      >
                         <TableCell className="px-3 py-2" />
                         <TableCell className="px-3 py-2 font-mono text-muted-foreground text-xs">
                           {childRow.id}

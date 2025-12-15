@@ -141,8 +141,7 @@ export const tools: TableRowData[] = [
         name: "Supabase",
         url: "https://supabase.com/",
         category: "Dev platform",
-        description:
-          "Postgres development platform",
+        description: "Postgres development platform",
       },
     ],
   },
