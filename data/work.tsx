@@ -9,6 +9,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart/chart";
+import { ImageZoom } from "@/components/ui/image-zoom";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { cn } from "@/lib/utils";
 import { workData } from "./work-data";
@@ -182,13 +183,15 @@ const workWithContent = workData.map((project) => {
               more features. Slowly but surely, we're making progress. And I'm
               excited to see where this project goes in the future.
             </div>
-            <Image
-              alt="LocalCard"
-              className="mt-10 w-full"
-              height={2000}
-              src="/preview-openpolicy.png"
-              width={4000}
-            />
+            <ImageZoom zoomMargin={20}>
+              <Image
+                alt="LocalCard"
+                className="mt-10 w-full"
+                height={2000}
+                src="/preview-openpolicy.png"
+                width={4000}
+              />
+            </ImageZoom>
             <div className="mt-10 mb-5 font-medium">Tech stack</div>
             <ul className="list-outside list-disc space-y-2 pl-4 text-muted-foreground marker:text-primary">
               <li>
@@ -333,24 +336,28 @@ const workWithContent = workData.map((project) => {
               their clients phone numbers to then send them promotional messages
               (yes, everything was consented).
             </div>
-            <Image
-              alt="LocalCard"
-              className="mt-10 w-full border-[0.5px] border-border/70"
-              height={1000}
-              src="/localcard-device.png"
-              width={2000}
-            />
+            <ImageZoom zoomMargin={20}>
+              <Image
+                alt="LocalCard"
+                className="mt-10 w-full border-[0.5px] border-border/70"
+                height={1000}
+                src="/localcard-device.png"
+                width={2000}
+              />
+            </ImageZoom>
             <div className="mt-2 text-muted-foreground text-xs">
               *Sorry, it’s in French. (This was a demo for a potential client,
               their store was pink, hence the theme.)
             </div>
-            <Image
-              alt="LocalCard"
-              className="mt-10 w-full border-[0.5px] border-border/70"
-              height={1000}
-              src="/localcard-dev.JPG"
-              width={2000}
-            />
+            <ImageZoom zoomMargin={20}>
+              <Image
+                alt="LocalCard"
+                className="mt-10 w-full border-[0.5px] border-border/70"
+                height={1000}
+                src="/localcard-dev.JPG"
+                width={2000}
+              />
+            </ImageZoom>
             <div className="mt-10 mb-5 font-medium">Did it fail?</div>
             <div className="text-justify text-muted-foreground">
               We managed to get a couple of clients, including a local franchise

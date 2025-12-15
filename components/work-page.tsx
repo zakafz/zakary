@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { type Work, work as workData } from "@/data/work";
 import { Badge } from "./ui/badge/badge";
 import { Button } from "./ui/button/button";
+import { ImageZoom } from "./ui/image-zoom";
 import { Reveal } from "./ui/reveal";
 import { TextReveal } from "./ui/text-reveal";
 import {
@@ -47,13 +48,15 @@ export default function WorkPage() {
         {work ? (
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
             <Reveal className="top-5 self-start lg:sticky" variant="blur">
-              <Image
-                alt={work.title}
-                className="w-full border-[0.5px] border-border/70"
-                height={3000}
-                src={work.image || "/openpolicy.png"}
-                width={3000}
-              />
+              <ImageZoom zoomMargin={20}>
+                <Image
+                  alt={work.title}
+                  className="w-full border-[0.5px] border-border/70"
+                  height={3000}
+                  src={work.image || "/openpolicy.png"}
+                  width={3000}
+                />
+              </ImageZoom>
             </Reveal>
             <Reveal className="flex flex-col" variant="blur">
               <div className="flex items-center justify-between font-medium text-3xl">
