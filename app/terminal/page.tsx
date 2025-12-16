@@ -7,7 +7,7 @@ export default function TerminalPage() {
   return (
     <Container>
       <Header />
-      <div className="min-h-[calc(100vh-56px-80px)] pt-[calc(160px-40px-68px)]">
+      <div className="min-h-[calc(100vh-56px-80px)] pt-10 md:pt-40">
         <FakeTerminal />
       </div>
       <Footer />
