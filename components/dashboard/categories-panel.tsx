@@ -243,7 +243,7 @@ export function CategoriesPanel() {
         return (
           <>
             <ChartContainer
-              className="mx-auto aspect-square max-h-[260px]"
+              className="mx-auto aspect-square w-full max-w-[260px]"
               config={chartConfig}
             >
               <PieChart>

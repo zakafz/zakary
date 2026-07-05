@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  FolderIcon,
   KeyRoundIcon,
   LayoutDashboardIcon,
   ListChecksIcon,
@@ -13,10 +14,17 @@ import { cn } from "@/lib/utils";
 import { FinancePanel } from "./finance-panel";
 import { OverviewPanel } from "./overview-panel";
 import { PasswordsPanel } from "./passwords-panel";
+import { ProjectsPanel } from "./projects-panel";
 import { SubscriptionsPanel } from "./subscriptions-panel";
 import { TasksPanel } from "./tasks-panel";
 
-type TabId = "overview" | "finance" | "subscriptions" | "tasks" | "passwords";
+type TabId =
+  | "overview"
+  | "finance"
+  | "projects"
+  | "subscriptions"
+  | "tasks"
+  | "passwords";
 
 type Tab = {
   id: TabId;
@@ -37,6 +45,12 @@ const TABS: Tab[] = [
     label: "Finance",
     icon: WalletIcon,
     description: "Accounts, spending and net worth.",
+  },
+  {
+    id: "projects",
+    label: "Projects",
+    icon: FolderIcon,
+    description: "Businesses and client projects.",
   },
   {
     id: "subscriptions",
@@ -67,6 +81,9 @@ export function DashboardTabs() {
     if (active === "finance") {
       return <FinancePanel />;
     }
+    if (active === "projects") {
+      return <ProjectsPanel />;
+    }
     if (active === "subscriptions") {
       return <SubscriptionsPanel />;
     }
@@ -80,7 +97,7 @@ export function DashboardTabs() {
     <div className="mt-6 flex flex-1 flex-col">
       <div
         aria-label="Dashboard sections"
-        className="flex gap-1 overflow-x-auto border-border border-b [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex gap-1 overflow-x-auto overflow-y-hidden border-border border-b [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         role="tablist"
       >
         {TABS.map((tab) => {

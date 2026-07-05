@@ -6,15 +6,9 @@ import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { ProjectTask } from "@/data/projects";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-
-type Task = {
-  id: string;
-  title: string;
-  done: boolean;
-  due_date: string | null;
-};
 
 type Filter = "all" | "active" | "done";
 
@@ -31,7 +25,7 @@ function TaskRow({
   onToggle,
   onRemove,
 }: {
-  task: Task;
+  task: ProjectTask;
   onToggle: (id: string, done: boolean) => void;
   onRemove: (id: string) => void;
 }) {
@@ -131,9 +125,9 @@ function TaskRow({
   );
 }
 
-export function TasksPanel() {
+export function ProjectTasks({ projectId }: { projectId: string }) {
   const supabase = createClient();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<ProjectTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
   const [title, setTitle] = useState("");
@@ -141,13 +135,14 @@ export function TasksPanel() {
   useEffect(() => {
     let active = true;
     supabase
-      .from("tasks")
+      .from("project_tasks")
       .select("*")
+      .eq("project_id", projectId)
       .order("done", { ascending: true })
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         if (active && data) {
-          setTasks(data as Task[]);
+          setTasks(data as ProjectTask[]);
         }
         if (active) {
           setLoading(false);
@@ -156,7 +151,7 @@ export function TasksPanel() {
     return () => {
       active = false;
     };
-  }, [supabase]);
+  }, [supabase, projectId]);
 
   const filtered = tasks.filter((t) => {
     if (filter === "active") {
@@ -177,23 +172,23 @@ export function TasksPanel() {
     const value = title.trim();
     setTitle("");
     const { data } = await supabase
-      .from("tasks")
-      .insert({ title: value })
+      .from("project_tasks")
+      .insert({ project_id: projectId, title: value })
       .select()
       .single();
     if (data) {
-      setTasks((prev) => [data as Task, ...prev]);
+      setTasks((prev) => [data as ProjectTask, ...prev]);
     }
   }
 
   async function toggle(id: string, done: boolean) {
     setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done } : t)));
-    await supabase.from("tasks").update({ done }).eq("id", id);
+    await supabase.from("project_tasks").update({ done }).eq("id", id);
   }
 
   async function remove(id: string) {
     setTasks((prev) => prev.filter((t) => t.id !== id));
-    await supabase.from("tasks").delete().eq("id", id);
+    await supabase.from("project_tasks").delete().eq("id", id);
   }
 
   return (

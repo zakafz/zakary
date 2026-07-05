@@ -13,6 +13,7 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,7 @@ import {
   makeVerifier,
 } from "@/lib/crypto";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 
 type PasswordEntry = {
   id: string;
@@ -99,18 +101,27 @@ function EntryRow({
 
   return (
     <div className="relative overflow-hidden">
-      <button
-        aria-label={`Delete ${entry.name}`}
-        className="absolute inset-y-0 right-0 flex items-center justify-center bg-destructive text-white"
-        onClick={() => onRemove(entry.id)}
-        style={{ width: REVEAL }}
-        type="button"
+      <ConfirmDelete
+        description={
+          <>
+            This permanently removes the “{entry.name}” entry from your vault.
+            This can’t be undone.
+          </>
+        }
+        onConfirm={() => onRemove(entry.id)}
+        title="Delete password?"
+        triggerClassName="absolute inset-y-0 right-0 flex items-center justify-center bg-destructive pr-1 text-white"
+        triggerLabel={`Delete ${entry.name}`}
+        triggerStyle={{ width: REVEAL }}
       >
         <Trash2Icon className="size-5" />
-      </button>
+      </ConfirmDelete>
 
       <div
-        className="flex touch-pan-y items-center gap-3 bg-background py-3"
+        className={cn(
+          "flex touch-pan-y items-center gap-3 bg-background py-3",
+          offset < 0 && "pr-4"
+        )}
         onPointerCancel={onPointerUp}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -207,7 +218,7 @@ function VaultGate({
             value={master}
           />
           {error ? <p className="text-destructive text-sm">{error}</p> : null}
-          <Button className="w-full" disabled={busy} type="submit">
+          <Button className="w-full rounded-none" disabled={busy} type="submit">
             {creating ? "Create vault" : "Unlock"}
           </Button>
         </form>
