@@ -292,7 +292,7 @@ export function Root({
         <div
           aria-atomic="true"
           aria-live="polite"
-          className="-m-px absolute h-px w-px overflow-hidden whitespace-nowrap border-0 p-0"
+          className="absolute -m-px h-px w-px overflow-hidden whitespace-nowrap border-0 p-0"
           style={{ clip: "rect(0, 0, 0, 0)" }}
         >
           Item {currentIndex + 1} of {totalItems}
@@ -319,7 +319,7 @@ export function Bleed({ className, children, ...props }: CarouselBleedProps) {
     <BleedRefContext.Provider value={bleedRef}>
       <div
         className={cn(
-          "-ml-[50vw] -mr-[50vw] relative right-1/2 left-1/2 w-screen",
+          "relative right-1/2 left-1/2 -mr-[50vw] -ml-[50vw] w-screen",
           className
         )}
         ref={bleedRef}
@@ -598,7 +598,7 @@ export function Indicators({ className, ...props }: CarouselIndicatorsProps) {
     <div
       aria-label="Choose slide to display"
       className={cn(
-        "-translate-x-1/2 absolute bottom-4 left-1/2 z-10 flex gap-2",
+        "absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2",
         className
       )}
       role="tablist"

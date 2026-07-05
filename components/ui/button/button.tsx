@@ -52,7 +52,7 @@ const buttonVariants = cva(
         icon: [
           "aspect-square h-auto w-auto p-1.5 text-sm",
           "before:absolute before:top-1/2 before:left-1/2 before:block before:content-['']",
-          "before:-translate-x-1/2 before:-translate-y-1/2 before:h-full before:w-full",
+          "before:h-full before:w-full before:-translate-x-1/2 before:-translate-y-1/2",
           "before:-z-10 before:min-h-[44px] before:min-w-[44px]",
         ],
       },
@@ -131,10 +131,10 @@ function ArrowPointer({
   pointExternal?: boolean;
 }) {
   const arrowClasses = cn(
-    "-mt-px -mr-2 relative top-0 ml-2 h-3 w-3.5 overflow-visible",
+    "relative top-0 -mt-px -mr-2 ml-2 h-3 w-3.5 overflow-visible",
     "transition-all duration-200 ease-[var(--ease-in-out-cubic)]",
-    pointLeft ? "-ml-2 mr-2" : "",
-    pointExternal ? "group-hover:-rotate-45 origin-[8%]" : ""
+    pointLeft ? "mr-2 -ml-2" : "",
+    pointExternal ? "origin-[8%] group-hover:-rotate-45" : ""
   );
 
   const pointClasses =

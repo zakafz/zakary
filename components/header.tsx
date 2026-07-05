@@ -62,7 +62,7 @@ export default function Header() {
           <Link href={"/"}>
             <div className="group relative flex cursor-pointer items-center justify-center bg-primary p-2 pt-1 font-medium font-serif text-primary-foreground">
               <div className="text-lg italic">zakary</div>
-              <div className="-bottom-3 absolute border border-border bg-accent px-0.5 text-primary text-sm">
+              <div className="absolute -bottom-3 border border-border bg-accent px-0.5 text-primary text-sm">
                 fofana
               </div>
             </div>
