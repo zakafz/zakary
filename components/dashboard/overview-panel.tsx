@@ -7,6 +7,13 @@ import {
   WalletIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart/chart";
 import { CATEGORIES, type TransactionCategory } from "@/data/finance";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -216,49 +223,72 @@ function NextPaymentCard({ data }: { data: Data }) {
   );
 }
 
+const trendConfig = {
+  cumulative: { label: "Spent", color: "var(--primary)" },
+} satisfies ChartConfig;
+
 function TrendChart({ data }: { data: Data }) {
-  const max = Math.max(...data.trend.map((d) => d.total), 1);
   const today = new Date().getDate();
   const monthLabel = new Date().toLocaleDateString("en-CA", { month: "long" });
+
+  // Running total through today; future days are left out so the line ends
+  // at "spent so far this month" instead of flat-lining to the month's end.
+  let running = 0;
+  const points = data.trend
+    .filter((d) => d.day <= today)
+    .map((d) => {
+      running += d.total;
+      return { day: d.day, cumulative: running };
+    });
+  const total = running;
+  const lastDay = data.trend.at(-1)?.day ?? 30;
+  const ticks = [1, 5, 10, 15, 20, 25, lastDay].filter((t) => t <= lastDay);
+
   return (
     <Card>
       <div className="flex items-baseline justify-between gap-2">
-        <Heading>Daily spending</Heading>
+        <Heading>Spent this month</Heading>
         <span className="text-muted-foreground text-xs">{monthLabel}</span>
       </div>
-      <div className="mt-4 flex h-36 items-end gap-px border-border/60 border-b">
-        {data.trend.map((d) => {
-          const pct = (d.total / max) * 100;
-          const isToday = d.day === today;
-          return (
-            <div
-              className={cn(
-                "h-full flex-1 transition-colors hover:bg-secondary",
-                d.total === 0 && "self-stretch"
-              )}
-              key={d.key}
-              title={`${monthLabel} ${d.day} · ${money.format(d.total)}`}
-            >
-              <div className="flex h-full flex-col justify-end">
-                <div
-                  className={cn(isToday ? "bg-primary" : "bg-primary/40")}
-                  style={{ height: `${Math.max(pct, d.total > 0 ? 4 : 0)}%` }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <div className="mt-1 flex gap-px">
-        {data.trend.map((d) => (
-          <span
-            className="flex-1 text-center text-[10px] text-muted-foreground tabular-nums"
-            key={d.key}
-          >
-            {d.day === 1 || d.day % 5 === 0 ? d.day : ""}
-          </span>
-        ))}
-      </div>
+      <span className="mt-1 font-semibold text-2xl tabular-nums">
+        {money.format(total)}
+      </span>
+      <ChartContainer className="mt-2 h-40 w-full" config={trendConfig}>
+        <AreaChart
+          data={points}
+          margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+        >
+          <CartesianGrid horizontal={false} vertical={false} />
+          <XAxis
+            axisLine={false}
+            dataKey="day"
+            domain={[1, lastDay]}
+            fontSize={10}
+            interval="preserveStartEnd"
+            tickLine={false}
+            tickMargin={8}
+            ticks={ticks}
+            type="number"
+          />
+          <YAxis domain={[0, "dataMax"]} hide />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                formatter={(value) => money.format(Number(value))}
+                labelFormatter={(v) => `${monthLabel} ${v}`}
+              />
+            }
+          />
+          <Area
+            dataKey="cumulative"
+            fill="var(--primary)"
+            fillOpacity={0.15}
+            stroke="var(--primary)"
+            strokeWidth={2}
+            type="monotone"
+          />
+        </AreaChart>
+      </ChartContainer>
     </Card>
   );
 }

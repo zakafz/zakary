@@ -2,6 +2,7 @@
 
 import {
   GripVerticalIcon,
+  MoreVerticalIcon,
   PencilIcon,
   PlusIcon,
   SearchIcon,
@@ -9,7 +10,7 @@ import {
   UsersIcon,
   XIcon,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import {
@@ -28,6 +29,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -53,9 +59,9 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
-const REVEAL = 72;
 const NAME_W = 168;
 const EARNED_W = 96;
+const ACTIONS_W = 44;
 
 type AddClientEntry = (payload: {
   clientId: string;
@@ -238,6 +244,59 @@ function HeaderCell({
 
 /* ------------------------------- row ------------------------------------- */
 
+function RowMenu({
+  client,
+  onEdit,
+  onDelete,
+}: {
+  client: ProjectClient;
+  onEdit: (client: ProjectClient) => void;
+  onDelete: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Popover onOpenChange={setOpen} open={open}>
+      <PopoverTrigger asChild>
+        <button
+          aria-label={`Options for ${client.name}`}
+          className="flex size-8 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+          type="button"
+        >
+          <MoreVerticalIcon className="size-4" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-36 rounded-none p-1">
+        <button
+          className="flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm transition-colors hover:bg-secondary"
+          onClick={() => {
+            setOpen(false);
+            onEdit(client);
+          }}
+          type="button"
+        >
+          <PencilIcon className="size-4" />
+          Edit
+        </button>
+        <ConfirmDelete
+          description={
+            <>
+              This removes “{client.name}”. Their logged entries stay in the
+              project totals.
+            </>
+          }
+          onConfirm={() => onDelete(client.id)}
+          title="Delete client?"
+          triggerClassName="flex w-full items-center gap-2 px-2 py-1.5 text-left text-destructive text-sm transition-colors hover:bg-destructive/10"
+          triggerLabel={`Delete ${client.name}`}
+        >
+          <Trash2Icon className="size-4" />
+          Delete
+        </ConfirmDelete>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function ClientRow({
   client,
   columns,
@@ -251,113 +310,40 @@ function ClientRow({
   onEdit: (client: ProjectClient) => void;
   onDelete: (id: string) => void;
 }) {
-  const [offset, setOffset] = useState(0);
-  const [dragging, setDragging] = useState(false);
-  const startX = useRef(0);
-  const startOffset = useRef(0);
-
-  function onPointerDown(e: React.PointerEvent) {
-    if ((e.target as HTMLElement).closest("button")) {
-      return;
-    }
-    startX.current = e.clientX;
-    startOffset.current = offset;
-    setDragging(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
-  }
-  function onPointerMove(e: React.PointerEvent) {
-    if (!dragging) {
-      return;
-    }
-    const delta = e.clientX - startX.current;
-    setOffset(Math.max(-REVEAL, Math.min(REVEAL, startOffset.current + delta)));
-  }
-  function onPointerUp() {
-    if (!dragging) {
-      return;
-    }
-    setDragging(false);
-    setOffset((current) => {
-      if (current < -REVEAL / 2) {
-        return -REVEAL;
-      }
-      if (current > REVEAL / 2) {
-        return REVEAL;
-      }
-      return 0;
-    });
-  }
-
-  function edit() {
-    setOffset(0);
-    onEdit(client);
-  }
-
   return (
-    <div className="relative overflow-hidden border-border/60 border-b">
-      <button
-        aria-label={`Edit ${client.name}`}
-        className="absolute inset-y-0 left-0 flex items-center justify-center bg-primary pl-1 text-primary-foreground"
-        onClick={edit}
-        style={{ width: REVEAL }}
-        type="button"
-      >
-        <PencilIcon className="size-5" />
-      </button>
-      <ConfirmDelete
-        description={
-          <>
-            This removes “{client.name}”. Their logged entries stay in the
-            project totals.
-          </>
-        }
-        onConfirm={() => onDelete(client.id)}
-        title="Delete client?"
-        triggerClassName="absolute inset-y-0 right-0 flex items-center justify-center bg-destructive pr-1 text-white"
-        triggerLabel={`Delete ${client.name}`}
-        triggerStyle={{ width: REVEAL }}
-      >
-        <Trash2Icon className="size-5" />
-      </ConfirmDelete>
-
+    <div className="flex items-center border-border/60 border-b bg-background">
       <div
-        className="flex touch-pan-y items-start bg-background"
-        onPointerCancel={onPointerUp}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        style={{
-          transform: `translateX(${offset}px)`,
-          transition: dragging ? "none" : "transform 0.2s ease",
-        }}
+        className="shrink-0 truncate px-3 py-2 font-medium text-[15px]"
+        style={{ width: NAME_W, minWidth: NAME_W }}
       >
+        {client.name}
+      </div>
+      {columns.map((column) => (
         <div
-          className="shrink-0 px-3 py-2.5 font-medium text-[15px]"
-          style={{ width: NAME_W, minWidth: NAME_W }}
+          className="shrink-0 px-3 py-2 text-sm"
+          key={column.id}
+          style={{
+            width: colWidth(column.type),
+            minWidth: colWidth(column.type),
+          }}
         >
-          {client.name}
+          <ClientCellValue column={column} value={client.data?.[column.id]} />
         </div>
-        {columns.map((column) => (
-          <div
-            className="shrink-0 px-3 py-2.5 text-sm"
-            key={column.id}
-            style={{
-              width: colWidth(column.type),
-              minWidth: colWidth(column.type),
-            }}
-          >
-            <ClientCellValue column={column} value={client.data?.[column.id]} />
-          </div>
-        ))}
-        <div
-          className={cn(
-            "shrink-0 px-3 py-2.5 text-right font-semibold text-[15px] tabular-nums",
-            earned < 0 ? "text-destructive" : "text-success"
-          )}
-          style={{ width: EARNED_W, minWidth: EARNED_W }}
-        >
-          {currency.format(earned)}
-        </div>
+      ))}
+      <div
+        className={cn(
+          "shrink-0 px-3 py-2 text-right font-semibold text-[15px] tabular-nums",
+          earned < 0 ? "text-destructive" : "text-success"
+        )}
+        style={{ width: EARNED_W, minWidth: EARNED_W }}
+      >
+        {currency.format(earned)}
+      </div>
+      <div
+        className="flex shrink-0 items-center justify-center"
+        style={{ width: ACTIONS_W, minWidth: ACTIONS_W }}
+      >
+        <RowMenu client={client} onDelete={onDelete} onEdit={onEdit} />
       </div>
     </div>
   );
@@ -662,7 +648,10 @@ export function ProjectClients({
     : clients;
 
   const gridWidth =
-    NAME_W + EARNED_W + columns.reduce((acc, c) => acc + colWidth(c.type), 0);
+    NAME_W +
+    EARNED_W +
+    ACTIONS_W +
+    columns.reduce((acc, c) => acc + colWidth(c.type), 0);
 
   return (
     <div className="flex flex-col">
@@ -684,7 +673,7 @@ export function ProjectClients({
         </Button>
       </form>
 
-      <div className="mt-2 flex items-center gap-2">
+      <div className="mt-3 flex items-center gap-2">
         <div className="relative flex-1">
           <SearchIcon className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
           <Input
@@ -708,7 +697,7 @@ export function ProjectClients({
         </Button>
       </div>
 
-      <div className="mt-3">
+      <div className="mt-4">
         {loading ? (
           <p className="py-8 text-center text-muted-foreground text-sm">
             Loading…
@@ -749,6 +738,10 @@ export function ProjectClients({
                 >
                   Net
                 </div>
+                <div
+                  className="shrink-0"
+                  style={{ width: ACTIONS_W, minWidth: ACTIONS_W }}
+                />
               </div>
 
               {filtered.map((client) => (
