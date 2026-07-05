@@ -1,6 +1,5 @@
 "use client";
 
-import { useControlled } from "@base-ui-components/utils/useControlled";
 import {
   createContext,
   useCallback,
@@ -10,6 +9,34 @@ import {
   useState,
 } from "react";
 import { cn } from "@/lib/utils";
+
+function useControlled<T>({
+  controlled,
+  default: defaultProp,
+  name,
+  state = "value",
+}: {
+  controlled?: T;
+  default: T;
+  name: string;
+  state?: string;
+}) {
+  const [valueState, setValueState] = useState<T>(defaultProp);
+  const isControlled = controlled !== undefined;
+  const value = isControlled ? controlled : valueState;
+
+  const setValue = useCallback(
+    (newValue: T | ((prev: T) => T)) => {
+      if (!isControlled) {
+        setValueState(newValue);
+      }
+    },
+    [isControlled]
+  );
+
+  return [value, setValue] as const;
+}
+
 
 type CarouselContextValue = {
   currentIndex: number;
@@ -292,7 +319,7 @@ export function Root({
         <div
           aria-atomic="true"
           aria-live="polite"
-          className="-m-px absolute h-px w-px overflow-hidden whitespace-nowrap border-0 p-0"
+          className="absolute -m-px h-px w-px overflow-hidden whitespace-nowrap border-0 p-0"
           style={{ clip: "rect(0, 0, 0, 0)" }}
         >
           Item {currentIndex + 1} of {totalItems}
@@ -319,7 +346,7 @@ export function Bleed({ className, children, ...props }: CarouselBleedProps) {
     <BleedRefContext.Provider value={bleedRef}>
       <div
         className={cn(
-          "-ml-[50vw] -mr-[50vw] relative right-1/2 left-1/2 w-screen",
+          "relative right-1/2 left-1/2 -mr-[50vw] -ml-[50vw] w-screen",
           className
         )}
         ref={bleedRef}
@@ -598,7 +625,7 @@ export function Indicators({ className, ...props }: CarouselIndicatorsProps) {
     <div
       aria-label="Choose slide to display"
       className={cn(
-        "-translate-x-1/2 absolute bottom-4 left-1/2 z-10 flex gap-2",
+        "absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2",
         className
       )}
       role="tablist"

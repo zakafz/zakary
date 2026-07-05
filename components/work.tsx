@@ -44,7 +44,7 @@ export default function Work() {
                       <div
                         className={cn(
                           "box-border w-full max-w-none",
-                          "-mt-6.25 -mx-6.25 mb-0 h-75 w-[calc(100%+3rem+2px)] max-w-[100vw]",
+                          "-mx-6.25 -mt-6.25 mb-0 h-75 w-[calc(100%+3rem+2px)] max-w-[100vw]",
                           "transition-transform duration-250 ease-in-out-quad"
                         )}
                       >

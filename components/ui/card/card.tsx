@@ -169,8 +169,8 @@ function CardImage({
       alt={alt}
       className={cn(
         "card-image box-border aspect-video w-full max-w-none object-cover",
-        "-mt-6 mx-0 mb-0 h-[250px]",
-        "md:-mt-[calc(1.5rem+1px)] md:-mx-[calc(1.5rem+1px)] md:mb-0 md:h-[300px] md:w-[calc(100%+3rem+2px)] md:max-w-[100vw]",
+        "mx-0 -mt-6 mb-0 h-[250px]",
+        "md:-mx-[calc(1.5rem+1px)] md:-mt-[calc(1.5rem+1px)] md:mb-0 md:h-[300px] md:w-[calc(100%+3rem+2px)] md:max-w-[100vw]",
         "rounded-t-[var(--radius)] transition-transform duration-[250ms] ease-[var(--ease-in-out-quad)]",
         className
       )}

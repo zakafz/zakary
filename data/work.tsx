@@ -53,7 +53,7 @@ const CodeIllustration = ({ className }: { className?: string }) => (
         <li
           className={cn(
             item === "Signups" &&
-              "before:-translate-x-[110%] text-foreground before:absolute before:text-blue-500 before:content-['Track']"
+              "text-foreground before:absolute before:-translate-x-[110%] before:text-blue-500 before:content-['Track']"
           )}
           key={item}
         >
