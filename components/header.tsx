@@ -38,7 +38,6 @@ export default function Header() {
     { name: "About", url: "/about" },
     { name: "Blog", url: "/blog" },
     { name: "Tools", url: "/tools" },
-    { name: "Terminal", url: "/terminal" },
   ];
 
   function ThemeIcon() {
