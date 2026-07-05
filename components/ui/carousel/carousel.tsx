@@ -1,6 +1,5 @@
 "use client";
 
-import { useControlled } from "@base-ui-components/utils/useControlled";
 import {
   createContext,
   useCallback,
@@ -10,6 +9,34 @@ import {
   useState,
 } from "react";
 import { cn } from "@/lib/utils";
+
+function useControlled<T>({
+  controlled,
+  default: defaultProp,
+  name,
+  state = "value",
+}: {
+  controlled?: T;
+  default: T;
+  name: string;
+  state?: string;
+}) {
+  const [valueState, setValueState] = useState<T>(defaultProp);
+  const isControlled = controlled !== undefined;
+  const value = isControlled ? controlled : valueState;
+
+  const setValue = useCallback(
+    (newValue: T | ((prev: T) => T)) => {
+      if (!isControlled) {
+        setValueState(newValue);
+      }
+    },
+    [isControlled]
+  );
+
+  return [value, setValue] as const;
+}
+
 
 type CarouselContextValue = {
   currentIndex: number;
