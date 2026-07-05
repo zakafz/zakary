@@ -7,7 +7,7 @@ import {
   WalletIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   type ChartConfig,
   ChartContainer,
@@ -224,53 +224,53 @@ function NextPaymentCard({ data }: { data: Data }) {
 }
 
 const trendConfig = {
-  cumulative: { label: "Spent", color: "var(--primary)" },
+  total: { label: "Spent", color: "var(--primary)" },
 } satisfies ChartConfig;
 
-function TrendChart({ data }: { data: Data }) {
-  const today = new Date().getDate();
-  const monthLabel = new Date().toLocaleDateString("en-CA", { month: "long" });
+/** Compact currency for the Y axis: $0, $50, $1.2k. */
+function axisMoney(v: number) {
+  if (v >= 1000) {
+    return `$${(v / 1000).toFixed(v >= 10_000 ? 0 : 1)}k`;
+  }
+  return `$${Math.round(v)}`;
+}
 
-  // Running total through today; future days are left out so the line ends
-  // at "spent so far this month" instead of flat-lining to the month's end.
-  let running = 0;
-  const points = data.trend
-    .filter((d) => d.day <= today)
-    .map((d) => {
-      running += d.total;
-      return { day: d.day, cumulative: running };
-    });
-  const total = running;
+function TrendChart({ data }: { data: Data }) {
+  const monthLabel = new Date().toLocaleDateString("en-CA", { month: "long" });
+  const points = data.trend.map((d) => ({ day: d.day, total: d.total }));
   const lastDay = data.trend.at(-1)?.day ?? 30;
   const ticks = [1, 5, 10, 15, 20, 25, lastDay].filter((t) => t <= lastDay);
 
   return (
     <Card>
       <div className="flex items-baseline justify-between gap-2">
-        <Heading>Spent this month</Heading>
+        <Heading>Daily spending</Heading>
         <span className="text-muted-foreground text-xs">{monthLabel}</span>
       </div>
       <span className="mt-1 font-semibold text-2xl tabular-nums">
-        {money.format(total)}
+        {money.format(data.thisMonth)}
       </span>
       <ChartContainer className="mt-2 h-40 w-full" config={trendConfig}>
-        <AreaChart
+        <BarChart
           data={points}
-          margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+          margin={{ top: 8, right: 4, bottom: 0, left: -8 }}
         >
-          <CartesianGrid horizontal={false} vertical={false} />
+          <CartesianGrid horizontal vertical={false} />
           <XAxis
             axisLine={false}
             dataKey="day"
-            domain={[1, lastDay]}
             fontSize={10}
-            interval="preserveStartEnd"
             tickLine={false}
             tickMargin={8}
             ticks={ticks}
-            type="number"
           />
-          <YAxis domain={[0, "dataMax"]} hide />
+          <YAxis
+            axisLine={false}
+            fontSize={10}
+            tickFormatter={axisMoney}
+            tickLine={false}
+            width={44}
+          />
           <ChartTooltip
             content={
               <ChartTooltipContent
@@ -279,15 +279,8 @@ function TrendChart({ data }: { data: Data }) {
               />
             }
           />
-          <Area
-            dataKey="cumulative"
-            fill="var(--primary)"
-            fillOpacity={0.15}
-            stroke="var(--primary)"
-            strokeWidth={2}
-            type="monotone"
-          />
-        </AreaChart>
+          <Bar dataKey="total" fill="var(--primary)" />
+        </BarChart>
       </ChartContainer>
     </Card>
   );
