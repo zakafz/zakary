@@ -37,6 +37,13 @@ const CAT_COLOR: Record<TransactionCategory, string> = {
 
 const OVER_COLOR = "#f87171";
 
+// Normalise any budget period to a monthly figure for the summary.
+const TO_MONTHLY: Record<Period, number> = {
+  weekly: 52 / 12,
+  monthly: 1,
+  yearly: 1 / 12,
+};
+
 const currency = new Intl.NumberFormat("en-CA", {
   style: "currency",
   currency: "CAD",
@@ -154,8 +161,63 @@ export function BudgetPanel() {
       .reduce((acc, p) => acc + Math.abs(p.amount), 0);
   }
 
+  const monthlyBudget = CATEGORIES.reduce(
+    (acc, c) => acc + budgets[c.id].amount * TO_MONTHLY[budgets[c.id].period],
+    0
+  );
+  const monthStart = periodStart("monthly");
+  const spentThisMonth = purchases
+    .filter((p) => p.date >= monthStart)
+    .reduce((acc, p) => acc + Math.abs(p.amount), 0);
+  const remaining = monthlyBudget - spentThisMonth;
+  const overBudget = remaining < 0;
+  const usedPct =
+    monthlyBudget > 0
+      ? Math.min(100, (spentThisMonth / monthlyBudget) * 100)
+      : 0;
+
   return (
     <div className="mt-6 flex flex-col gap-3">
+      <div className="flex flex-col gap-3 border border-border p-4">
+        <div className="flex items-end justify-between gap-2">
+          <div className="flex flex-col gap-1">
+            <span className="text-muted-foreground text-xs uppercase tracking-wide">
+              Monthly budget
+            </span>
+            <span className="font-semibold text-3xl tabular-nums">
+              {currency.format(monthlyBudget)}
+            </span>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-muted-foreground text-xs uppercase tracking-wide">
+              {overBudget ? "Over by" : "Left this month"}
+            </span>
+            <span
+              className={cn(
+                "font-semibold text-xl tabular-nums",
+                overBudget ? "text-destructive" : "text-success"
+              )}
+            >
+              {currency.format(Math.abs(remaining))}
+            </span>
+          </div>
+        </div>
+
+        <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+          <div
+            className="h-full rounded-full transition-[width]"
+            style={{
+              width: `${usedPct}%`,
+              backgroundColor: overBudget ? OVER_COLOR : "var(--primary)",
+            }}
+          />
+        </div>
+
+        <span className="text-muted-foreground text-sm tabular-nums">
+          {currency.format(spentThisMonth)} spent this month
+        </span>
+      </div>
+
       {CATEGORIES.map((c) => {
         const budget = budgets[c.id];
         const used = usedFor(c.id, budget.period);
