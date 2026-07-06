@@ -1,6 +1,7 @@
 "use client";
 
 import {
+    Columns,
   GripVerticalIcon,
   MoreVerticalIcon,
   PencilIcon,
@@ -114,7 +115,7 @@ function AddColumnDialog({
           type="button"
           variant="outline"
         >
-          <PlusIcon />
+          <Columns />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">

@@ -12,7 +12,7 @@ import {
   Trash2Icon,
   UtensilsIcon,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BudgetPanel } from "@/components/dashboard/budget-panel";
 import { CategoriesPanel } from "@/components/dashboard/categories-panel";
 import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
@@ -531,47 +531,46 @@ export function FinancePanel() {
     };
   }, [supabase]);
 
+  // Fetch one row beyond the page so we can tell whether more exist without a
+  // separate count query. Avoids the off-by-one where an exact multiple of
+  // PAGE_SIZE rows looks like "there's more" and then loads nothing.
+  const fetchPage = useCallback(
+    async (start: number) => {
+      const { data } = await supabase
+        .from("transactions")
+        .select("*")
+        .order("date", { ascending: false })
+        .order("created_at", { ascending: false })
+        .range(start, start + PAGE_SIZE);
+      const rows = (data ?? []) as Transaction[];
+      return { rows: rows.slice(0, PAGE_SIZE), more: rows.length > PAGE_SIZE };
+    },
+    [supabase]
+  );
+
   useEffect(() => {
     let active = true;
-    supabase
-      .from("transactions")
-      .select("*")
-      .order("date", { ascending: false })
-      .order("created_at", { ascending: false })
-      .range(0, PAGE_SIZE - 1)
-      .then(({ data }) => {
-        if (active && data) {
-          setTransactions(data as Transaction[]);
-          setHasMore(data.length === PAGE_SIZE);
-        }
-        if (active) {
-          setLoading(false);
-        }
-      });
+    fetchPage(0).then(({ rows, more }) => {
+      if (active) {
+        setTransactions(rows);
+        setHasMore(more);
+        setLoading(false);
+      }
+    });
     return () => {
       active = false;
     };
-  }, [supabase]);
+  }, [fetchPage]);
 
   async function loadMore() {
     setLoadingMore(true);
-    const { data } = await supabase
-      .from("transactions")
-      .select("*")
-      .order("date", { ascending: false })
-      .order("created_at", { ascending: false })
-      .range(transactions.length, transactions.length + PAGE_SIZE - 1);
+    const { rows, more } = await fetchPage(transactions.length);
     setLoadingMore(false);
-
-    if (!data) {
-      return;
-    }
     setTransactions((prev) => {
       const seen = new Set(prev.map((t) => t.id));
-      const next = (data as Transaction[]).filter((t) => !seen.has(t.id));
-      return [...prev, ...next];
+      return [...prev, ...rows.filter((t) => !seen.has(t.id))];
     });
-    setHasMore(data.length === PAGE_SIZE);
+    setHasMore(more);
   }
 
   function handleAdded(saved: Transaction) {
