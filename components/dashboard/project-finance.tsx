@@ -211,36 +211,32 @@ export function ProjectFinance({
         </Button>
       </div>
 
-      <div className="mt-3 grid grid-cols-3 gap-3 border border-border p-3">
-        <div className="flex flex-col gap-0.5">
-          <span className="text-muted-foreground text-xs uppercase tracking-wide">
-            In
-          </span>
-          <span className="font-semibold text-[15px] text-success tabular-nums">
-            {currency.format(income)}
-          </span>
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <span className="text-muted-foreground text-xs uppercase tracking-wide">
-            Out
-          </span>
-          <span className="font-semibold text-[15px] tabular-nums">
-            {currency.format(expense)}
-          </span>
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <span className="text-muted-foreground text-xs uppercase tracking-wide">
-            Net
-          </span>
-          <span
-            className={cn(
-              "font-semibold text-[15px] tabular-nums",
-              net < 0 ? "text-destructive" : "text-success"
-            )}
+      <div className="mt-3 flex flex-col divide-y divide-border/60 border border-border">
+        {(
+          [
+            { label: "In", value: income, tone: "text-success" },
+            { label: "Out", value: expense, tone: "" },
+            {
+              label: "Net",
+              value: net,
+              tone: net < 0 ? "text-destructive" : "text-success",
+            },
+          ] as const
+        ).map((row) => (
+          <div
+            className="flex items-center justify-between px-3 py-2"
+            key={row.label}
           >
-            {currency.format(net)}
-          </span>
-        </div>
+            <span className="text-muted-foreground text-xs uppercase tracking-wide">
+              {row.label}
+            </span>
+            <span
+              className={cn("font-semibold text-[15px] tabular-nums", row.tone)}
+            >
+              {currency.format(row.value)}
+            </span>
+          </div>
+        ))}
       </div>
 
       {adding ? (
