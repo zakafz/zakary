@@ -89,7 +89,7 @@ export function ProjectNotes({ projectId }: { projectId: string }) {
 
       <div className="mt-3 flex flex-col gap-2">
         {loading ? (
-          <p className="py-8 text-center text-muted-foreground text-sm">
+          <p className="shimmer py-8 text-center text-muted-foreground text-sm">
             Loading…
           </p>
         ) : null}

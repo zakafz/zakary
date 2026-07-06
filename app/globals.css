@@ -1,6 +1,7 @@
 @import "tailwindcss/preflight" layer(base);
 @import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);
+@import "shadcn/tailwind.css";
 
 .root {
   isolation: isolate;

@@ -226,7 +226,7 @@ export function CategoriesPanel() {
       {(() => {
         if (loading) {
           return (
-            <p className="py-16 text-center text-muted-foreground text-sm">
+            <p className="shimmer py-16 text-center text-muted-foreground text-sm">
               Loading…
             </p>
           );

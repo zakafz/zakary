@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { CalendarIcon, CheckIcon } from "lucide-react";
+import { CalendarIcon, CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -28,6 +28,37 @@ const INPUT =
   "flex h-9 w-full rounded-none border border-border bg-transparent px-3 py-1 text-sm outline-none focus-visible:border-ring";
 
 /* ----------------------------- read-only view ---------------------------- */
+
+/** A phone number that copies itself to the clipboard on click. */
+function CopyPhone({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1200);
+    } catch {
+      // Clipboard unavailable — nothing to do.
+    }
+  }
+
+  return (
+    <button
+      className="group inline-flex items-center gap-1.5 whitespace-nowrap text-left transition-colors hover:text-foreground"
+      onClick={copy}
+      title={copied ? "Copied" : "Copy number"}
+      type="button"
+    >
+      {value}
+      {copied ? (
+        <CheckIcon className="size-3.5 shrink-0 text-success" />
+      ) : (
+        <CopyIcon className="size-3.5 shrink-0 text-muted-foreground/50 transition-opacity group-hover:text-muted-foreground" />
+      )}
+    </button>
+  );
+}
 
 export function ClientCellValue({
   column,
@@ -68,6 +99,15 @@ export function ClientCellValue({
     const raw = asString(value);
     return raw ? (
       <span>{format(new Date(`${raw}T00:00:00`), "MMM d, yyyy")}</span>
+    ) : (
+      <span className="text-muted-foreground/40">—</span>
+    );
+  }
+
+  if (column.type === "phone") {
+    const phone = asString(value);
+    return phone ? (
+      <CopyPhone value={phone} />
     ) : (
       <span className="text-muted-foreground/40">—</span>
     );

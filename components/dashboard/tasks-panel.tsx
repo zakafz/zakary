@@ -236,7 +236,7 @@ export function TasksPanel() {
 
       <div className="mt-2 flex flex-col gap-2">
         {loading ? (
-          <p className="py-12 text-center text-muted-foreground text-sm">
+          <p className="shimmer py-12 text-center text-muted-foreground text-sm">
             Loading…
           </p>
         ) : null}

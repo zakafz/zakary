@@ -471,7 +471,7 @@ export function OverviewPanel() {
 
   if (!data) {
     return (
-      <p className="py-12 text-center text-muted-foreground text-sm">
+      <p className="shimmer py-12 text-center text-muted-foreground text-sm">
         Loading…
       </p>
     );
