@@ -133,6 +133,24 @@ export const currency = new Intl.NumberFormat("en-CA", {
   currency: "CAD",
 });
 
+const TRAILING_ZEROS = /\.?0+$/;
+
+/**
+ * Compact currency for tight summary cards: $1.55K, $3.4K, $1.2M. Values under
+ * 1,000 keep their exact amount. Trailing zeros are trimmed.
+ */
+export function compactCurrency(n: number) {
+  const sign = n < 0 ? "-" : "";
+  const abs = Math.abs(n);
+  if (abs < 1000) {
+    return currency.format(n);
+  }
+  const [value, suffix] =
+    abs >= 1_000_000 ? [abs / 1_000_000, "M"] : [abs / 1000, "K"];
+  const text = value.toFixed(2).replace(TRAILING_ZEROS, "");
+  return `${sign}$${text}${suffix}`;
+}
+
 export function shortDate(iso: string) {
   return new Date(`${iso}T00:00:00`).toLocaleDateString("en-CA", {
     month: "short",
