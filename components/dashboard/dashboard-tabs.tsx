@@ -6,12 +6,14 @@ import {
   LayoutDashboardIcon,
   ListChecksIcon,
   type LucideIcon,
+  NotebookIcon,
   RepeatIcon,
   WalletIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { FinancePanel } from "./finance-panel";
+import { NotesPanel } from "./notes-panel";
 import { OverviewPanel } from "./overview-panel";
 import { PasswordsPanel } from "./passwords-panel";
 import { ProjectsPanel } from "./projects-panel";
@@ -24,6 +26,7 @@ type TabId =
   | "projects"
   | "subscriptions"
   | "tasks"
+  | "notes"
   | "passwords";
 
 type Tab = {
@@ -65,6 +68,12 @@ const TABS: Tab[] = [
     description: "Things to do and track.",
   },
   {
+    id: "notes",
+    label: "Notes",
+    icon: NotebookIcon,
+    description: "Searchable notes, in Markdown.",
+  },
+  {
     id: "passwords",
     label: "Passwords",
     icon: KeyRoundIcon,
@@ -89,6 +98,9 @@ export function DashboardTabs() {
     }
     if (active === "tasks") {
       return <TasksPanel />;
+    }
+    if (active === "notes") {
+      return <NotesPanel />;
     }
     return <PasswordsPanel />;
   }

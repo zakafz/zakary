@@ -8,6 +8,15 @@ import { createClient } from "@/lib/supabase/server";
 export const metadata: Metadata = {
   title: "Dashboard",
   robots: { index: false, follow: false },
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Dashboard",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export default async function DashboardPage() {

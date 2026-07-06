@@ -77,7 +77,7 @@ export function PinLock({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-10 bg-background px-6">
+    <div className="fixed inset-0 z-50 mb-20 flex flex-col items-center justify-center gap-10 bg-background px-6">
       <div className="flex flex-col items-center gap-2 text-center">
         <LockIcon className="size-7 text-muted-foreground" />
         <h1 className="font-serif text-2xl italic">Locked</h1>

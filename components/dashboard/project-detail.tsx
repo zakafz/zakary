@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import { ProjectClients } from "@/components/dashboard/project-clients";
 import { ProjectDialog } from "@/components/dashboard/project-dialog";
 import { ProjectFinance } from "@/components/dashboard/project-finance";
-import { ProjectNotes } from "@/components/dashboard/project-notes";
 import { ProjectTasks } from "@/components/dashboard/project-tasks";
 import {
   AlertDialog,
@@ -148,8 +147,8 @@ function Logo({ project, size }: { project: Project; size: number }) {
   );
 }
 
-const BUSINESS_TABS = ["clients", "finance", "tasks", "notes"] as const;
-const PROJECT_TABS = ["finance", "tasks", "notes"] as const;
+const BUSINESS_TABS = ["clients", "finance", "tasks"] as const;
+const PROJECT_TABS = ["finance", "tasks"] as const;
 
 export function ProjectDetail({
   project,
@@ -349,7 +348,6 @@ export function ProjectDetail({
           />
         ) : null}
         {tab === "tasks" ? <ProjectTasks projectId={project.id} /> : null}
-        {tab === "notes" ? <ProjectNotes projectId={project.id} /> : null}
       </div>
 
       <ProjectDialog

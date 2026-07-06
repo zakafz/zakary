@@ -116,13 +116,6 @@ export type ProjectTask = {
   due_date: string | null;
 };
 
-export type ProjectNote = {
-  id: string;
-  project_id: string;
-  body: string;
-  created_at: string;
-};
-
 export const PROJECT_TYPE_LABEL: Record<ProjectType, string> = {
   business: "Business",
   project: "Project",
