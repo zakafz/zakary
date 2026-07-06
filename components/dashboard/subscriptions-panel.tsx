@@ -9,6 +9,8 @@ import {
   CreditCardIcon,
   DumbbellIcon,
   Gamepad2Icon,
+  ImageIcon,
+  Loader2Icon,
   type LucideIcon,
   MusicIcon,
   NewspaperIcon,
@@ -22,6 +24,7 @@ import {
   TvIcon,
   ZapIcon,
 } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
 import { EmptyState } from "@/components/dashboard/empty-state";
@@ -98,8 +101,15 @@ const SUB_ICONS: Record<string, LucideIcon> = {
 
 const ICON_KEYS = Object.keys(SUB_ICONS);
 const DEFAULT_ICON = "repeat";
+const ICON_BUCKET = "subscription-icons";
+const HTTP_URL = /^https?:\/\//;
 
-function subIcon(key: string | null): LucideIcon {
+/** An uploaded image icon is stored as a URL; curated icons are short keys. */
+export function isImageIcon(icon: string | null): icon is string {
+  return !!icon && HTTP_URL.test(icon);
+}
+
+export function subIcon(key: string | null): LucideIcon {
   return (key && SUB_ICONS[key]) || RepeatIcon;
 }
 
@@ -268,8 +278,18 @@ function SubscriptionRow({
           transition: dragging ? "none" : "transform 0.2s ease",
         }}
       >
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
-          <Icon className="size-5" />
+        <div className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary text-secondary-foreground">
+          {isImageIcon(sub.icon) ? (
+            <Image
+              alt=""
+              className="object-cover"
+              fill
+              sizes="44px"
+              src={sub.icon}
+            />
+          ) : (
+            <Icon className="size-5" />
+          )}
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
           <p className="truncate font-semibold text-[15px] leading-tight">
@@ -300,11 +320,31 @@ function SubscriptionDialog({
   onSaved: (sub: Subscription, isNew: boolean) => void;
 }) {
   const supabase = createClient();
+  const fileInput = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [name, setName] = useState(editing?.name ?? "");
   const [amount, setAmount] = useState(editing ? String(editing.amount) : "");
   const [cycle, setCycle] = useState<Cycle>(editing?.cycle ?? "monthly");
   const [icon, setIcon] = useState(editing?.icon ?? DEFAULT_ICON);
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop() ?? "png";
+    const path = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage
+      .from(ICON_BUCKET)
+      .upload(path, file, { upsert: false });
+    if (!error) {
+      const { data } = supabase.storage.from(ICON_BUCKET).getPublicUrl(path);
+      setIcon(data.publicUrl);
+    }
+    setUploading(false);
+  }
   const [nextBilling, setNextBilling] = useState<Date>(
     editing?.next_billing
       ? nextOccurrence(editing.next_billing, editing.cycle)
@@ -397,11 +437,57 @@ function SubscriptionDialog({
             <span className="font-medium text-muted-foreground text-sm">
               Icon
             </span>
+            <div className="flex items-center gap-3">
+              <button
+                aria-label="Upload image icon"
+                aria-pressed={isImageIcon(icon)}
+                className={cn(
+                  "relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-secondary text-muted-foreground transition-colors",
+                  isImageIcon(icon) ? "border-primary" : "border-border"
+                )}
+                onClick={() => fileInput.current?.click()}
+                type="button"
+              >
+                {(() => {
+                  if (uploading) {
+                    return <Loader2Icon className="size-5 animate-spin" />;
+                  }
+                  if (isImageIcon(icon)) {
+                    return (
+                      <Image
+                        alt=""
+                        className="object-cover"
+                        fill
+                        sizes="44px"
+                        src={icon}
+                      />
+                    );
+                  }
+                  return <ImageIcon className="size-5" />;
+                })()}
+              </button>
+              <span className="text-muted-foreground text-sm">
+                {isImageIcon(icon)
+                  ? "Tap to replace, or pick an icon below"
+                  : "Upload an image, or pick an icon below"}
+              </span>
+              <input
+                accept="image/*"
+                className="hidden"
+                onChange={handleFile}
+                ref={fileInput}
+                type="file"
+              />
+            </div>
             <IconPicker onChange={setIcon} value={icon} />
           </div>
           <DatePicker onChange={setNextBilling} value={nextBilling} />
           <DialogFooter>
-            <Button className="w-full" disabled={saving} type="submit">
+            <Button
+              className="w-full"
+              disabled={saving || uploading}
+              type="submit"
+            >
               {submitLabel}
             </Button>
           </DialogFooter>

@@ -3,11 +3,16 @@
 import {
   ArrowDownRightIcon,
   ArrowUpRightIcon,
-  CalendarClockIcon,
+  ListChecksIcon,
   WalletIcon,
 } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  isImageIcon,
+  subIcon,
+} from "@/components/dashboard/subscriptions-panel";
 import {
   type ChartConfig,
   ChartContainer,
@@ -111,11 +116,19 @@ type Sub = {
   amount: number;
   cycle: Cycle;
   next_billing: string | null;
+  icon: string | null;
 };
 type Budget = { category: TransactionCategory; amount: number; period: Period };
 
-type NextPayment = { name: string; amount: number; date: Date; days: number };
+type NextPayment = {
+  name: string;
+  amount: number;
+  date: Date;
+  days: number;
+  icon: string | null;
+};
 type CategoryLine = { slice: Slice; spent: number; budget: number };
+type Task = { id: string; title: string; due_date: string | null };
 
 type Data = {
   thisMonth: number;
@@ -124,6 +137,7 @@ type Data = {
   trend: { key: string; day: number; total: number }[];
   nextPayment: NextPayment | null;
   categories: CategoryLine[];
+  tasks: Task[];
 };
 
 function Card({
@@ -183,6 +197,22 @@ function SpentCard({ data }: { data: Data }) {
   );
 }
 
+function SubLogo({ icon }: { icon: string | null }) {
+  if (isImageIcon(icon)) {
+    return (
+      <div className="relative size-8 shrink-0 overflow-hidden rounded-md border border-border">
+        <Image alt="" className="object-cover" fill sizes="32px" src={icon} />
+      </div>
+    );
+  }
+  const Icon = subIcon(icon);
+  return (
+    <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-secondary text-secondary-foreground">
+      <Icon className="size-4" />
+    </div>
+  );
+}
+
 function NextPaymentCard({ data }: { data: Data }) {
   const next = data.nextPayment;
   return (
@@ -191,7 +221,7 @@ function NextPaymentCard({ data }: { data: Data }) {
       {next ? (
         <>
           <div className="mt-1 flex items-center gap-2">
-            <CalendarClockIcon className="size-4 shrink-0 text-muted-foreground" />
+            <SubLogo icon={next.icon} />
             <span className="min-w-0 flex-1 truncate font-semibold text-lg">
               {next.name}
             </span>
@@ -282,6 +312,49 @@ function TrendChart({ data }: { data: Data }) {
           <Bar dataKey="total" fill="var(--primary)" />
         </BarChart>
       </ChartContainer>
+    </Card>
+  );
+}
+
+function TasksCard({ data }: { data: Data }) {
+  return (
+    <Card>
+      <Heading>Tasks to do</Heading>
+      {data.tasks.length > 0 ? (
+        <div className="mt-3 flex flex-col divide-y divide-border">
+          {data.tasks.map((task) => {
+            const due = task.due_date
+              ? new Date(`${task.due_date}T00:00:00`).toLocaleDateString(
+                  "en-CA",
+                  { month: "short", day: "numeric" }
+                )
+              : null;
+            return (
+              <div
+                className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"
+                key={task.id}
+              >
+                <span className="size-4 shrink-0 border border-muted-foreground/50" />
+                <p className="min-w-0 flex-1 truncate text-[15px]">
+                  {task.title}
+                </p>
+                {due ? (
+                  <span className="shrink-0 text-muted-foreground text-sm">
+                    {due}
+                  </span>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="mt-3 flex flex-col items-center gap-2 py-6 text-center">
+          <ListChecksIcon className="size-6 text-muted-foreground" />
+          <span className="text-muted-foreground text-sm">
+            All caught up. No tasks to do.
+          </span>
+        </div>
+      )}
     </Card>
   );
 }
@@ -383,13 +456,24 @@ function soonestPayment(subs: Sub[]): NextPayment | null {
     }
     const date = nextOccurrence(s.next_billing, s.cycle);
     if (!next || date < next.date) {
-      next = { name: s.name, amount: s.amount, date, days: daysUntil(date) };
+      next = {
+        name: s.name,
+        amount: s.amount,
+        date,
+        days: daysUntil(date),
+        icon: s.icon,
+      };
     }
   }
   return next;
 }
 
-function computeData(txns: Txn[], subs: Sub[], budgets: Budget[]): Data {
+function computeData(
+  txns: Txn[],
+  subs: Sub[],
+  budgets: Budget[],
+  tasks: Task[]
+): Data {
   const now = new Date();
   const currentKey = monthKey(now);
   const prevKey = monthKey(new Date(now.getFullYear(), now.getMonth() - 1, 1));
@@ -411,6 +495,7 @@ function computeData(txns: Txn[], subs: Sub[], budgets: Budget[]): Data {
     trend: days.map((d) => ({ ...d, total: dailyTotals.get(d.key) ?? 0 })),
     nextPayment: soonestPayment(subs),
     categories: categoryLines(monthByCategory, budgets),
+    tasks,
   };
 }
 
@@ -418,7 +503,8 @@ function isEmpty(data: Data) {
   return (
     data.thisMonth === 0 &&
     data.trend.every((m) => m.total === 0) &&
-    !data.nextPayment
+    !data.nextPayment &&
+    data.tasks.length === 0
   );
 }
 
@@ -450,9 +536,15 @@ export function OverviewPanel() {
         .gte("date", since),
       supabase
         .from("subscriptions")
-        .select("name, amount, cycle, next_billing"),
+        .select("name, amount, cycle, next_billing, icon"),
       supabase.from("budgets").select("category, amount, period"),
-    ]).then(([txnRes, subRes, budgetRes]) => {
+      supabase
+        .from("tasks")
+        .select("id, title, due_date")
+        .eq("done", false)
+        .order("created_at", { ascending: false })
+        .limit(5),
+    ]).then(([txnRes, subRes, budgetRes, taskRes]) => {
       if (!active) {
         return;
       }
@@ -460,7 +552,8 @@ export function OverviewPanel() {
         computeData(
           (txnRes.data ?? []) as Txn[],
           (subRes.data ?? []) as Sub[],
-          (budgetRes.data ?? []) as Budget[]
+          (budgetRes.data ?? []) as Budget[],
+          (taskRes.data ?? []) as Task[]
         )
       );
     });
@@ -489,6 +582,7 @@ export function OverviewPanel() {
       </div>
       <TrendChart data={data} />
       {data.categories.length > 0 ? <CategoryBars data={data} /> : null}
+      <TasksCard data={data} />
     </div>
   );
 }

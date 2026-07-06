@@ -1,15 +1,33 @@
 "use client";
 
-import { ChevronLeftIcon, PencilIcon, Trash2Icon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  MoreVerticalIcon,
+  PencilIcon,
+  Trash2Icon,
+} from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
 import { ProjectClients } from "@/components/dashboard/project-clients";
 import { ProjectDialog } from "@/components/dashboard/project-dialog";
 import { ProjectFinance } from "@/components/dashboard/project-finance";
 import { ProjectNotes } from "@/components/dashboard/project-notes";
 import { ProjectTasks } from "@/components/dashboard/project-tasks";
-import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   compactCurrency,
   PROJECT_TYPE_LABEL,
@@ -147,6 +165,8 @@ export function ProjectDetail({
   const supabase = createClient();
   const [entries, setEntries] = useState<ProjectEntry[]>([]);
   const [editOpen, setEditOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const isBusiness = project.type === "business";
   const tabs = isBusiness ? BUSINESS_TABS : PROJECT_TABS;
   const [tab, setTab] = useState<string>(tabs[0]);
@@ -199,16 +219,15 @@ export function ProjectDetail({
 
   return (
     <div className="flex flex-col">
-      <div className="flex items-center gap-3">
-        <Button
+      <div className="flex items-center gap-2">
+        <button
           aria-label="Back"
-          className="rounded-none"
+          className="-ml-1.5 inline-flex size-7 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
           onClick={onBack}
-          size="icon"
-          variant="ghost"
+          type="button"
         >
-          <ChevronLeftIcon />
-        </Button>
+          <ChevronLeftIcon className="size-5" />
+        </button>
         <Logo project={project} size={40} />
         <div className="flex min-w-0 flex-1 flex-col">
           <h2 className="truncate font-semibold text-lg leading-tight">
@@ -218,31 +237,60 @@ export function ProjectDetail({
             {PROJECT_TYPE_LABEL[project.type]}
           </span>
         </div>
-        <Button
-          aria-label="Edit project"
-          className="rounded-none"
-          onClick={() => setEditOpen(true)}
-          size="icon"
-          variant="ghost"
-        >
-          <PencilIcon />
-        </Button>
-        <ConfirmDelete
-          confirmLabel="Delete project"
-          description={
-            <>
+        <Popover onOpenChange={setMenuOpen} open={menuOpen}>
+          <PopoverTrigger
+            aria-label="Project options"
+            className="inline-flex size-9 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <MoreVerticalIcon className="size-5" />
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-36 rounded-none p-1">
+            <button
+              className="flex w-full items-center gap-2 rounded-none px-2 py-1.5 text-left text-sm transition-colors hover:bg-secondary"
+              onClick={() => {
+                setMenuOpen(false);
+                setEditOpen(true);
+              }}
+              type="button"
+            >
+              <PencilIcon className="size-3.5" />
+              Edit
+            </button>
+            <button
+              className="flex w-full items-center gap-2 rounded-none px-2 py-1.5 text-left text-destructive text-sm transition-colors hover:bg-destructive/10"
+              onClick={() => {
+                setMenuOpen(false);
+                setDeleteOpen(true);
+              }}
+              type="button"
+            >
+              <Trash2Icon className="size-3.5" />
+              Delete
+            </button>
+          </PopoverContent>
+        </Popover>
+      </div>
+
+      <AlertDialog onOpenChange={setDeleteOpen} open={deleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete project?</AlertDialogTitle>
+            <AlertDialogDescription>
               This permanently deletes “{project.name}” and everything in it —
               clients, entries, tasks and notes. This can’t be undone.
-            </>
-          }
-          onConfirm={deleteProject}
-          title="Delete project?"
-          triggerClassName="inline-flex size-9 items-center justify-center text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-          triggerLabel={`Delete ${project.name}`}
-        >
-          <Trash2Icon className="size-4" />
-        </ConfirmDelete>
-      </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90"
+              onClick={deleteProject}
+            >
+              Delete project
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="mt-6">
         <Overview expense={expense} income={income} project={project} />
