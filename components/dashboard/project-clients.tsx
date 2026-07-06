@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Columns,
   GripVerticalIcon,
   MoreVerticalIcon,
   PencilIcon,
@@ -72,14 +73,24 @@ type AddClientEntry = (payload: {
   receiptUrl: string | null;
 }) => Promise<void>;
 
-function colWidth(type: ColumnType) {
-  if (type === "text" || type === "tags") {
+function baseWidth(type: ColumnType) {
+  if (type === "text") {
     return 200;
   }
-  if (type === "date") {
-    return 150;
+  if (type === "tags") {
+    return 120;
   }
-  return 140;
+  // number, phone, date
+  return 132;
+}
+
+/**
+ * Column width: the type's base, but never narrower than what the header name
+ * needs so a column title always fits on one line without being truncated.
+ */
+function colWidth(column: ProjectColumn) {
+  const forName = column.name.length * 8 + 28; // ~char width + horizontal padding
+  return Math.max(baseWidth(column.type), forName);
 }
 
 /* ------------------------------ add column ------------------------------- */
@@ -114,7 +125,7 @@ function AddColumnDialog({
           type="button"
           variant="outline"
         >
-          <PlusIcon />
+          <Columns />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
@@ -183,14 +194,14 @@ function HeaderCell({
   }
 
   const style = {
-    width: colWidth(column.type),
-    minWidth: colWidth(column.type),
+    width: colWidth(column),
+    minWidth: colWidth(column),
   };
 
   if (!editing) {
     return (
       <div
-        className="shrink-0 px-3 py-2 font-medium text-muted-foreground text-sm"
+        className="shrink-0 whitespace-nowrap px-3 py-1.5 font-medium text-muted-foreground text-sm"
         style={style}
       >
         {column.name}
@@ -259,7 +270,7 @@ function RowMenu({
       <PopoverTrigger asChild>
         <button
           aria-label={`Options for ${client.name}`}
-          className="flex size-8 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+          className="flex size-7 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
           type="button"
         >
           <MoreVerticalIcon className="size-4" />
@@ -313,18 +324,18 @@ function ClientRow({
   return (
     <div className="flex items-center border-border/60 border-b bg-background">
       <div
-        className="shrink-0 truncate px-3 py-2 font-medium text-[15px]"
+        className="shrink-0 truncate px-3 py-1.5 font-medium text-[15px]"
         style={{ width: NAME_W, minWidth: NAME_W }}
       >
         {client.name}
       </div>
       {columns.map((column) => (
         <div
-          className="shrink-0 px-3 py-2 text-sm"
+          className="shrink-0 px-3 py-1.5 text-sm"
           key={column.id}
           style={{
-            width: colWidth(column.type),
-            minWidth: colWidth(column.type),
+            width: colWidth(column),
+            minWidth: colWidth(column),
           }}
         >
           <ClientCellValue column={column} value={client.data?.[column.id]} />
@@ -332,7 +343,7 @@ function ClientRow({
       ))}
       <div
         className={cn(
-          "shrink-0 px-3 py-2 text-right font-semibold text-[15px] tabular-nums",
+          "shrink-0 px-3 py-1.5 text-right font-semibold text-[15px] tabular-nums",
           earned < 0 ? "text-destructive" : "text-success"
         )}
         style={{ width: EARNED_W, minWidth: EARNED_W }}
@@ -651,7 +662,7 @@ export function ProjectClients({
     NAME_W +
     EARNED_W +
     ACTIONS_W +
-    columns.reduce((acc, c) => acc + colWidth(c.type), 0);
+    columns.reduce((acc, c) => acc + colWidth(c), 0);
 
   return (
     <div className="flex flex-col">
@@ -715,7 +726,7 @@ export function ProjectClients({
             <div style={{ minWidth: gridWidth }}>
               <div className="flex items-stretch border-border border-b bg-card">
                 <div
-                  className="shrink-0 px-3 py-2 font-medium text-muted-foreground text-sm"
+                  className="shrink-0 whitespace-nowrap px-3 py-1.5 font-medium text-muted-foreground text-sm"
                   style={{ width: NAME_W, minWidth: NAME_W }}
                 >
                   Client
@@ -733,7 +744,7 @@ export function ProjectClients({
                   />
                 ))}
                 <div
-                  className="ml-auto shrink-0 px-3 py-2 text-right font-medium text-muted-foreground text-sm"
+                  className="ml-auto shrink-0 whitespace-nowrap px-3 py-1.5 text-right font-medium text-muted-foreground text-sm"
                   style={{ width: EARNED_W, minWidth: EARNED_W }}
                 >
                   Net

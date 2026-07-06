@@ -6,12 +6,12 @@ import { useEffect, useState } from "react";
 import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
 import { ProjectClients } from "@/components/dashboard/project-clients";
 import { ProjectDialog } from "@/components/dashboard/project-dialog";
-import { ProjectEntries } from "@/components/dashboard/project-entries";
+import { ProjectFinance } from "@/components/dashboard/project-finance";
 import { ProjectNotes } from "@/components/dashboard/project-notes";
 import { ProjectTasks } from "@/components/dashboard/project-tasks";
 import { Button } from "@/components/ui/button";
 import {
-  currency,
+  compactCurrency,
   PROJECT_TYPE_LABEL,
   type Project,
   type ProjectEntry,
@@ -68,12 +68,12 @@ function Overview({
     const net = income - expense;
     return (
       <div className="flex gap-3 border border-border p-4">
-        <Stat label="Earned" tone="success" value={currency.format(income)} />
-        <Stat label="Expenses" value={currency.format(expense)} />
+        <Stat label="Earned" tone="success" value={compactCurrency(income)} />
+        <Stat label="Expenses" value={compactCurrency(expense)} />
         <Stat
           label="Net"
           tone={net < 0 ? "destructive" : "success"}
-          value={currency.format(net)}
+          value={compactCurrency(net)}
         />
       </div>
     );
@@ -85,12 +85,12 @@ function Overview({
   return (
     <div className="flex flex-col gap-3 border border-border p-4">
       <div className="flex gap-3">
-        <Stat label="Total" value={currency.format(project.total)} />
-        <Stat label="Paid" tone="success" value={currency.format(income)} />
+        <Stat label="Total" value={compactCurrency(project.total)} />
+        <Stat label="Paid" tone="success" value={compactCurrency(income)} />
         <Stat
           label="Balance"
           tone={balance > 0 ? "destructive" : "success"}
-          value={currency.format(balance)}
+          value={compactCurrency(balance)}
         />
       </div>
       <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
@@ -130,8 +130,8 @@ function Logo({ project, size }: { project: Project; size: number }) {
   );
 }
 
-const BUSINESS_TABS = ["clients", "expenses", "tasks", "notes"] as const;
-const PROJECT_TABS = ["payments", "expenses", "tasks", "notes"] as const;
+const BUSINESS_TABS = ["clients", "finance", "tasks", "notes"] as const;
+const PROJECT_TABS = ["finance", "tasks", "notes"] as const;
 
 export function ProjectDetail({
   project,
@@ -195,10 +195,6 @@ export function ProjectDetail({
     onDeleted(project.id);
   }
 
-  const expenses = entries.filter((e) => e.kind === "expense");
-  const payments = entries.filter(
-    (e) => e.kind === "income" && e.client_id === null
-  );
   const clientEntries = entries.filter((e) => e.client_id !== null);
 
   return (
@@ -288,46 +284,20 @@ export function ProjectDetail({
             projectId={project.id}
           />
         ) : null}
-        {tab === "payments" ? (
-          <ProjectEntries
-            addTitle="Add payment"
-            emptyText="No payments yet."
-            entries={payments}
-            kind="income"
-            labelPlaceholder="e.g. Deposit, Milestone 1"
-            onAdd={(label, amount, date, receiptUrl) =>
+        {tab === "finance" ? (
+          <ProjectFinance
+            entries={entries}
+            onAdd={(p) =>
               addEntry({
-                kind: "income",
+                kind: p.kind,
                 client_id: null,
-                label,
-                amount,
-                date,
-                receipt_url: receiptUrl,
+                label: p.label,
+                amount: p.amount,
+                date: p.date,
+                receipt_url: p.receiptUrl,
               })
             }
             onRemove={removeEntry}
-            title="Payments received"
-          />
-        ) : null}
-        {tab === "expenses" ? (
-          <ProjectEntries
-            addTitle="Add expense"
-            emptyText="No expenses yet."
-            entries={expenses}
-            kind="expense"
-            labelPlaceholder="e.g. Parts, Software, Ads"
-            onAdd={(label, amount, date, receiptUrl) =>
-              addEntry({
-                kind: "expense",
-                client_id: null,
-                label,
-                amount,
-                date,
-                receipt_url: receiptUrl,
-              })
-            }
-            onRemove={removeEntry}
-            title="Expenses"
           />
         ) : null}
         {tab === "tasks" ? <ProjectTasks projectId={project.id} /> : null}

@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 const RECEIPT_BUCKET = "project-receipts";
 
 /** Uploads a receipt file to storage and reports its public URL to the parent. */
-function ReceiptPicker({
+export function ReceiptPicker({
   url,
   name,
   onChange,
