@@ -80,7 +80,11 @@ function baseWidth(type: ColumnType) {
   if (type === "tags") {
     return 120;
   }
-  // number, phone, date
+  if (type === "phone") {
+    // Wide enough for a formatted number + copy icon on one line.
+    return 168;
+  }
+  // number, date
   return 132;
 }
 
@@ -710,7 +714,7 @@ export function ProjectClients({
 
       <div className="mt-4">
         {loading ? (
-          <p className="py-8 text-center text-muted-foreground text-sm">
+          <p className="shimmer py-8 text-center text-muted-foreground text-sm">
             Loading…
           </p>
         ) : null}

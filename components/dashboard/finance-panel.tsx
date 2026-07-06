@@ -628,7 +628,7 @@ export function FinancePanel() {
         <div className="mt-6 flex flex-col">
           <div className="mt-6 flex flex-col">
             {loading ? (
-              <p className="py-12 text-center text-muted-foreground text-sm">
+              <p className="shimmer py-12 text-center text-muted-foreground text-sm">
                 Loading…
               </p>
             ) : null}

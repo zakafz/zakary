@@ -515,7 +515,7 @@ export function SubscriptionsPanel() {
 
       <div className="mt-4 flex flex-col divide-y divide-border/60">
         {loading ? (
-          <p className="py-12 text-center text-muted-foreground text-sm">
+          <p className="shimmer py-12 text-center text-muted-foreground text-sm">
             Loading…
           </p>
         ) : null}
