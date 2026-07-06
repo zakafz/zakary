@@ -195,7 +195,7 @@ function HeaderCell({
   if (!editing) {
     return (
       <div
-        className="shrink-0 px-3 py-1.5 font-medium text-muted-foreground text-sm"
+        className="shrink-0 truncate px-3 py-1.5 font-medium text-muted-foreground text-sm"
         style={style}
       >
         {column.name}
@@ -720,7 +720,7 @@ export function ProjectClients({
             <div style={{ minWidth: gridWidth }}>
               <div className="flex items-stretch border-border border-b bg-card">
                 <div
-                  className="shrink-0 px-3 py-1.5 font-medium text-muted-foreground text-sm"
+                  className="shrink-0 truncate px-3 py-1.5 font-medium text-muted-foreground text-sm"
                   style={{ width: NAME_W, minWidth: NAME_W }}
                 >
                   Client
@@ -738,7 +738,7 @@ export function ProjectClients({
                   />
                 ))}
                 <div
-                  className="ml-auto shrink-0 px-3 py-1.5 text-right font-medium text-muted-foreground text-sm"
+                  className="ml-auto shrink-0 truncate px-3 py-1.5 text-right font-medium text-muted-foreground text-sm"
                   style={{ width: EARNED_W, minWidth: EARNED_W }}
                 >
                   Net
