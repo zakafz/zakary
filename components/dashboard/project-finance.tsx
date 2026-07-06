@@ -17,7 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  compactCurrency,
   currency,
   type EntryKind,
   type ProjectEntry,
@@ -218,7 +217,7 @@ export function ProjectFinance({
             In
           </span>
           <span className="font-semibold text-[15px] text-success tabular-nums">
-            {compactCurrency(income)}
+            {currency.format(income)}
           </span>
         </div>
         <div className="flex flex-col gap-0.5">
@@ -226,7 +225,7 @@ export function ProjectFinance({
             Out
           </span>
           <span className="font-semibold text-[15px] tabular-nums">
-            {compactCurrency(expense)}
+            {currency.format(expense)}
           </span>
         </div>
         <div className="flex flex-col gap-0.5">
@@ -239,7 +238,7 @@ export function ProjectFinance({
               net < 0 ? "text-destructive" : "text-success"
             )}
           >
-            {compactCurrency(net)}
+            {currency.format(net)}
           </span>
         </div>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import {
-    Columns,
+  Columns,
   GripVerticalIcon,
   MoreVerticalIcon,
   PencilIcon,
@@ -74,13 +74,17 @@ type AddClientEntry = (payload: {
 }) => Promise<void>;
 
 function colWidth(type: ColumnType) {
-  if (type === "text" || type === "tags") {
+  if (type === "text") {
     return 200;
   }
-  if (type === "date") {
-    return 150;
+  if (type === "tags") {
+    return 120;
   }
-  return 140;
+  if (type === "date") {
+    return 132;
+  }
+  // number, phone
+  return 132;
 }
 
 /* ------------------------------ add column ------------------------------- */
