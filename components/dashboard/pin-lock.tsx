@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
  * Unlock is remembered for the browser-tab session, so a reload stays unlocked
  * but a fresh open of the app asks again.
  */
-const PIN = "3080";
+const PIN = "6565";
 const SESSION_KEY = "dashboard-unlocked";
 const DIGITS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const DOTS = ["a", "b", "c", "d"];
