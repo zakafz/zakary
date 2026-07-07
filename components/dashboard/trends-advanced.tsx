@@ -45,6 +45,14 @@ const money = new Intl.NumberFormat("en-CA", {
   maximumFractionDigits: 2,
 });
 
+// Whole-dollar format for the compact 3-up summary cards so long values don't
+// blow out the grid on narrow screens.
+const money0 = new Intl.NumberFormat("en-CA", {
+  style: "currency",
+  currency: "CAD",
+  maximumFractionDigits: 0,
+});
+
 const WEEK = { weekStartsOn: 1 } as const;
 
 type Range = { from: Date; to: Date };
@@ -187,13 +195,13 @@ function StatCard({
   tone?: "success" | "destructive";
 }) {
   return (
-    <div className="flex flex-col gap-1 border border-border p-3">
-      <span className="text-muted-foreground text-xs uppercase tracking-wide">
+    <div className="flex min-w-0 flex-col gap-1 border border-border p-3">
+      <span className="truncate text-muted-foreground text-xs uppercase tracking-wide">
         {label}
       </span>
       <span
         className={cn(
-          "font-semibold text-lg tabular-nums",
+          "truncate font-semibold text-base tabular-nums sm:text-lg",
           tone === "success" ? "text-success" : "",
           tone === "destructive" ? "text-destructive" : ""
         )}
@@ -297,13 +305,13 @@ function StatsView({ stats }: { stats: Stats }) {
         <StatCard
           label="Income"
           tone="success"
-          value={money.format(stats.income)}
+          value={money0.format(stats.income)}
         />
-        <StatCard label="Expenses" value={money.format(stats.expenses)} />
+        <StatCard label="Expenses" value={money0.format(stats.expenses)} />
         <StatCard
           label="Net"
           tone={stats.net < 0 ? "destructive" : "success"}
-          value={money.format(stats.net)}
+          value={money0.format(stats.net)}
         />
       </div>
 
