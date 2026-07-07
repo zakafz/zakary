@@ -17,6 +17,7 @@ import { BudgetPanel } from "@/components/dashboard/budget-panel";
 import { CategoriesPanel } from "@/components/dashboard/categories-panel";
 import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
 import { EmptyState } from "@/components/dashboard/empty-state";
+import { TrendsAdvanced } from "@/components/dashboard/trends-advanced";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
@@ -45,6 +46,7 @@ const currency = new Intl.NumberFormat("en-CA", {
 const PAGE_SIZE = 10;
 
 type FinanceView = "trends" | "categories" | "budget";
+type TrendsMode = "general" | "advanced";
 
 type Flow = "expense" | "income";
 
@@ -499,6 +501,69 @@ function AddTransactionDialog({
   );
 }
 
+function GeneralTrends({
+  groups,
+  loading,
+  isEmpty,
+  hasMore,
+  loadingMore,
+  hidden,
+  onRemove,
+  onLoadMore,
+}: {
+  groups: { label: string; items: Transaction[] }[];
+  loading: boolean;
+  isEmpty: boolean;
+  hasMore: boolean;
+  loadingMore: boolean;
+  hidden: boolean;
+  onRemove: (id: string) => void;
+  onLoadMore: () => void;
+}) {
+  return (
+    <div className={cn("mt-6 flex flex-col", hidden ? "hidden" : "")}>
+      {loading ? (
+        <p className="shimmer py-12 text-center text-muted-foreground text-sm">
+          Loading…
+        </p>
+      ) : null}
+
+      {groups.map((group) => (
+        <section className="mt-4 first:mt-0" key={group.label}>
+          <h2 className="py-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+            {group.label}
+          </h2>
+          <div className="flex flex-col divide-y divide-border/60">
+            {group.items.map((txn) => (
+              <TransactionRow key={txn.id} onRemove={onRemove} txn={txn} />
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {isEmpty ? (
+        <EmptyState
+          description="Track your first one above."
+          icon={ReceiptIcon}
+          title="No expenses yet"
+        />
+      ) : null}
+
+      {hasMore ? (
+        <Button
+          className="mt-4 w-full"
+          disabled={loadingMore}
+          onClick={onLoadMore}
+          type="button"
+          variant="outline"
+        >
+          {loadingMore ? "Loading…" : "Load more"}
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
 export function FinancePanel() {
   const supabase = createClient();
 
@@ -507,6 +572,7 @@ export function FinancePanel() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [view, setView] = useState<FinanceView>("trends");
+  const [trendsMode, setTrendsMode] = useState<TrendsMode>("general");
   const [balance, setBalance] = useState<number | null>(null);
 
   // Running balance = opening balance + every transaction since. The opening
@@ -626,50 +692,34 @@ export function FinancePanel() {
       {view === "budget" ? <BudgetPanel /> : null}
       {view === "trends" ? (
         <div className="mt-6 flex flex-col">
-          <div className="mt-6 flex flex-col">
-            {loading ? (
-              <p className="shimmer py-12 text-center text-muted-foreground text-sm">
-                Loading…
-              </p>
-            ) : null}
-
-            {groups.map((group) => (
-              <section className="mt-4 first:mt-0" key={group.label}>
-                <h2 className="py-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                  {group.label}
-                </h2>
-                <div className="flex flex-col divide-y divide-border/60">
-                  {group.items.map((txn) => (
-                    <TransactionRow
-                      key={txn.id}
-                      onRemove={removeTransaction}
-                      txn={txn}
-                    />
-                  ))}
-                </div>
-              </section>
-            ))}
-
-            {loading || transactions.length > 0 ? null : (
-              <EmptyState
-                description="Track your first one above."
-                icon={ReceiptIcon}
-                title="No expenses yet"
-              />
-            )}
-
-            {hasMore ? (
-              <Button
-                className="mt-4 w-full"
-                disabled={loadingMore}
-                onClick={loadMore}
+          <div className="flex h-9 border border-border p-0.5">
+            {(["general", "advanced"] as const).map((m) => (
+              <button
+                className={cn(
+                  "flex flex-1 items-center justify-center px-3 font-medium text-sm capitalize transition-colors",
+                  trendsMode === m
+                    ? "bg-secondary text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+                key={m}
+                onClick={() => setTrendsMode(m)}
                 type="button"
-                variant="outline"
               >
-                {loadingMore ? "Loading…" : "Load more"}
-              </Button>
-            ) : null}
+                {m}
+              </button>
+            ))}
           </div>
+          {trendsMode === "advanced" ? <TrendsAdvanced /> : null}
+          <GeneralTrends
+            groups={groups}
+            hasMore={hasMore}
+            hidden={trendsMode === "advanced"}
+            isEmpty={!loading && transactions.length === 0}
+            loading={loading}
+            loadingMore={loadingMore}
+            onLoadMore={loadMore}
+            onRemove={removeTransaction}
+          />
         </div>
       ) : null}
     </div>
