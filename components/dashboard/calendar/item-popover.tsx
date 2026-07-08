@@ -48,7 +48,7 @@ export function ItemPopover({
           </div>
           <p className="text-muted-foreground text-xs">{when}</p>
 
-          {item.kind === "subscription" && item.amount !== null ? (
+          {item.kind === "subscription" && item.amount !== undefined ? (
             <p className="text-muted-foreground text-xs">
               {currency.format(item.amount)}
             </p>
