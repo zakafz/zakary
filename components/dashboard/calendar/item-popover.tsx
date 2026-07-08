@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { CheckIcon, PencilIcon, RepeatIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
-import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
@@ -60,21 +59,16 @@ export function ItemPopover({
 
           {item.kind === "event" && item.event ? (
             <div className="mt-1 flex gap-2">
-              <Button
-                className="flex-1"
+              <button
+                className="flex flex-1 items-center justify-center gap-1.5 border border-border bg-transparent px-3 py-1.5 text-foreground text-sm transition-colors hover:bg-card"
                 onClick={() => {
                   setOpen(false);
-                  // Defer opening the dialog until the popover has finished
-                  // dismissing; otherwise Radix reads the popover's dismissal
-                  // as an outside interaction and instantly closes the dialog.
-                  setTimeout(() => onEdit(item), 0);
+                  onEdit(item);
                 }}
-                size="sm"
                 type="button"
-                variant="outline"
               >
                 <PencilIcon className="size-4" /> Edit
-              </Button>
+              </button>
               <ConfirmDelete
                 description={<>This permanently removes “{item.title}”.</>}
                 onConfirm={() => onDelete(item.event?.id ?? "")}
