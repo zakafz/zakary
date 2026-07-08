@@ -54,7 +54,7 @@ create table public.events (
 
 ### Color palette
 
-Fixed enum, rendered with the existing `Badge` component (`components/ui/badge.tsx`,
+Fixed enum, rendered with the existing `Badge` component (`components/ui/badge/badge.tsx`,
 which already respects the square radius) using the user-provided custom color classes:
 
 | color   | className                                                              |
@@ -104,7 +104,10 @@ Fetched alongside events and merged into the day/slot rendering:
 
 - **Personal tasks** — `tasks.due_date` (date-only) → check-icon chip on that day.
 - **Subscription renewals** — `subscriptions.next_billing`, projected forward across the
-  visible range by `cycle` (weekly/monthly/yearly) → repeat-icon chip.
+  visible range by `cycle` (weekly/monthly/yearly) → repeat-icon chip. Reuse (or extract)
+  the existing `nextOccurrence` / `ADVANCE` cycle-projection helper from
+  `subscriptions-panel.tsx` so projection semantics stay consistent across tabs.
+  These projected markers are **display-only** and are never persisted as `events` rows.
 
 Overlay markers use distinct, muted styling so the user's own events stand out. Tapping an
 overlay marker opens a small **read-only** detail popover only — no editing from the calendar.
