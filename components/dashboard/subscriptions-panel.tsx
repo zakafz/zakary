@@ -1,6 +1,6 @@
 "use client";
 
-import { addDays, addMonths, addYears, format } from "date-fns";
+import { format } from "date-fns";
 import {
   BookOpenIcon,
   Clapperboard,
@@ -46,10 +46,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { type Cycle, nextOccurrence } from "@/lib/recurrence";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-
-type Cycle = "weekly" | "monthly" | "yearly";
 
 type Subscription = {
   id: string;
@@ -111,26 +110,6 @@ export function isImageIcon(icon: string | null): icon is string {
 
 export function subIcon(key: string | null): LucideIcon {
   return (key && SUB_ICONS[key]) || RepeatIcon;
-}
-
-const ADVANCE: Record<Cycle, (d: Date) => Date> = {
-  weekly: (d) => addDays(d, 7),
-  monthly: (d) => addMonths(d, 1),
-  yearly: (d) => addYears(d, 1),
-};
-
-/**
- * Subscriptions recur, so a billing date in the past just means we haven't
- * rolled it forward yet. Advance by the cycle until it lands today or later.
- */
-function nextOccurrence(iso: string, cycle: Cycle): Date {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  let date = new Date(`${iso}T00:00:00`);
-  while (date < today) {
-    date = ADVANCE[cycle](date);
-  }
-  return date;
 }
 
 const REVEAL = 64;
