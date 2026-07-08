@@ -51,6 +51,7 @@ export function EventDialog({
 
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState(editing?.title ?? "");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [note, setNote] = useState(editing?.note ?? "");
   const [color, setColor] = useState<EventColor>(editing?.color ?? "blue");
   const [allDay, setAllDay] = useState(editing?.all_day ?? false);
@@ -65,7 +66,9 @@ export function EventDialog({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    setErrorMsg(null);
     if (!title.trim()) {
+      setErrorMsg("Give the event a title.");
       return;
     }
     const starts = allDay
@@ -75,6 +78,7 @@ export function EventDialog({
       ? new Date(new Date(day).setHours(23, 59, 0, 0))
       : withTime(day, endTime);
     if (ends < starts) {
+      setErrorMsg("The end time must be after the start time.");
       return;
     }
 
@@ -99,6 +103,7 @@ export function EventDialog({
     const { data, error } = await query;
     setSaving(false);
     if (error || !data) {
+      setErrorMsg(error?.message ?? "Could not save the event. Please retry.");
       return;
     }
     onSaved(data as CalendarEvent, !isEditing);
@@ -176,6 +181,10 @@ export function EventDialog({
             placeholder="Note (optional)"
             value={note}
           />
+
+          {errorMsg ? (
+            <p className="text-destructive text-sm">{errorMsg}</p>
+          ) : null}
 
           <DialogFooter>
             <Button className="w-full" disabled={saving} type="submit">
