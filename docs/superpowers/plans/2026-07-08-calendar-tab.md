@@ -739,7 +739,7 @@ git commit -m "feat: calendar item detail popover"
 "use client";
 
 import { format, isSameMonth, isToday } from "date-fns";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge/badge";
 import { cn } from "@/lib/utils";
 import {
   type CalendarItem,
@@ -873,7 +873,7 @@ compose 7 day columns.
 "use client";
 
 import { format, isToday } from "date-fns";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge/badge";
 import { cn } from "@/lib/utils";
 import { type CalendarItem, EVENT_COLORS } from "./calendar-types";
 import { itemsOnDay } from "./calendar-utils";
