@@ -9,8 +9,7 @@ import {
   startOfWeek,
 } from "date-fns";
 import type { Cycle } from "@/lib/recurrence";
-// biome-ignore lint: intentionally re-exporting
-import { nextOccurrence, occurrencesInRange } from "@/lib/recurrence";
+import { occurrencesInRange } from "@/lib/recurrence";
 import type {
   CalendarEvent,
   CalendarItem,
@@ -127,11 +126,15 @@ export function itemsOnDay(items: CalendarItem[], day: Date): CalendarItem[] {
   return items
     .filter((it) => isSameDay(it.start, day))
     .sort((a, b) => {
+      // The user's own events surface ahead of read-only overlays.
+      const aEvent = a.kind === "event";
+      const bEvent = b.kind === "event";
+      if (aEvent !== bEvent) {
+        return aEvent ? -1 : 1;
+      }
       if (a.allDay !== b.allDay) {
         return a.allDay ? -1 : 1;
       }
       return a.start.getTime() - b.start.getTime();
     });
 }
-
-export { nextOccurrence };

@@ -122,8 +122,13 @@ export function CalendarPanel() {
   }
 
   async function handleDelete(id: string) {
+    const removed = events.find((e) => e.id === id);
     setEvents((prev) => prev.filter((e) => e.id !== id));
-    await supabase.from("events").delete().eq("id", id);
+    const { error } = await supabase.from("events").delete().eq("id", id);
+    if (error && removed) {
+      // Restore the row if the delete failed, keeping local state in sync.
+      setEvents((prev) => [...prev, removed]);
+    }
   }
 
   const heading =

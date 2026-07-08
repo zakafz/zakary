@@ -69,7 +69,7 @@ export function EventDialog({
       return;
     }
     const starts = allDay
-      ? new Date(day.setHours(0, 0, 0, 0))
+      ? new Date(new Date(day).setHours(0, 0, 0, 0))
       : withTime(day, startTime);
     const ends = allDay
       ? new Date(new Date(day).setHours(23, 59, 0, 0))
