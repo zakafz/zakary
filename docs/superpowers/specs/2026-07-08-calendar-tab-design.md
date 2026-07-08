@@ -68,22 +68,26 @@ which already respects the square radius) using the user-provided custom color c
 
 A single `EVENT_COLORS` map is the source of truth for these class strings.
 
-## Component Approach — adopt & restyle
+## Component Approach — lean custom build (external as reference)
 
-Use the open-source **Shadcn Event Calendar** (month/week/day views, keyboard nav) as the
-base engine, then make it native to this app:
+The leading open-source shadcn calendars (Shadcn Event Calendar, charlietlamb/calendar)
+are full applications that bake in foreign state/data layers (Zustand, Drizzle ORM, Nuqs)
+incompatible with this app's plain `useState` + Supabase-client pattern. Adopting either
+wholesale would mean ripping out its entire data/state layer. Instead:
 
-- Strip its rounding to match `--radius: 0`; swap its colors to the app's OKLCH tokens;
-  apply the app's 0.5px borders and serif headers.
-- Replace its built-in event form with the app's own `Dialog`, `Select`, `Input`, and
-  `DatePicker` components so create/edit feels native and consistent with other panels.
-- Keep everything self-contained under `components/dashboard/calendar/`.
-- Use `date-fns` (already a dependency) for all date math and `motion` (already a
-  dependency) for view transitions.
+- Build month / week / day views ourselves, self-contained under
+  `components/dashboard/calendar/`, using **`date-fns`** (already a dependency) for all
+  date math and **`motion`** (already a dependency) for view transitions.
+- Use existing shadcn primitives (`Dialog`, `Select`, `Input`, `DatePicker`, `Badge`,
+  `ConfirmDelete`, `EmptyState`, `Popover`) so create/edit and detail views feel native.
+- Match the app aesthetic directly (square corners `--radius: 0`, 0.5px borders, OKLCH
+  tokens, serif headers) — no restyling of foreign markup required.
+- Use the external calendars purely as **visual/layout reference** for the week/day
+  time-grid.
 
-Rationale: the user wants a genuinely useful, smooth calendar and is fine using an
-external component; adopting a maintained shadcn-ecosystem calendar gives polished
-week/day time-grids without hand-rolling them, while restyling keeps it on-brand.
+Rationale: the user wants a genuinely useful, smooth, on-brand calendar. Given no clean
+drop-in package exists for this stack, a lean custom build is smaller, fully owned, and
+avoids fighting an incompatible state/data layer.
 
 ## Views & UX
 
