@@ -2,7 +2,7 @@
 
 import type { CalendarItem } from "./calendar-types";
 import { daysInRange, viewRange } from "./calendar-utils";
-import { DayColumn } from "./day-view";
+import { TimeGrid } from "./day-view";
 
 export function WeekView({
   anchor,
@@ -21,18 +21,12 @@ export function WeekView({
   const days = daysInRange(from, to);
 
   return (
-    <div className="flex overflow-x-auto">
-      {days.map((day, i) => (
-        <DayColumn
-          day={day}
-          items={items}
-          key={day.toISOString()}
-          onCreateAt={onCreateAt}
-          onDelete={onDelete}
-          onEdit={onEdit}
-          showHourLabels={i === 0}
-        />
-      ))}
-    </div>
+    <TimeGrid
+      days={days}
+      items={items}
+      onCreateAt={onCreateAt}
+      onDelete={onDelete}
+      onEdit={onEdit}
+    />
   );
 }

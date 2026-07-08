@@ -9,116 +9,158 @@ import { ItemPopover } from "./item-popover";
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const HOUR_PX = 48;
+const BODY_HEIGHT = HOURS.length * HOUR_PX;
 
-/** A single day column: all-day chips on top, timed items positioned by hour. */
-export function DayColumn({
-  day,
-  items,
-  onEdit,
-  onDelete,
-  onCreateAt,
-  showHourLabels,
-}: {
-  day: Date;
+type GridProps = {
+  days: Date[];
   items: CalendarItem[];
   onEdit: (item: CalendarItem) => void;
   onDelete: (id: string) => void;
   onCreateAt: (day: Date, hour: number) => void;
-  showHourLabels: boolean;
-}) {
-  const dayItems = itemsOnDay(items, day);
-  const allDay = dayItems.filter((it) => it.allDay);
-  const timed = dayItems.filter((it) => !it.allDay);
+};
 
+/**
+ * A time-grid shared by the day and week views. Everything lives in one CSS
+ * grid (a time-axis column plus one column per day) so the header row, the
+ * all-day row, and the hour lines stay aligned across every column.
+ */
+export function TimeGrid({
+  days,
+  items,
+  onEdit,
+  onDelete,
+  onCreateAt,
+}: GridProps) {
   return (
-    <div className="flex min-w-0 flex-1 flex-col border-border/40 border-r">
+    <div className="overflow-x-auto">
       <div
-        className={cn(
-          "sticky top-0 z-10 flex flex-col items-center gap-1 border-border/60 border-b bg-background py-1.5",
-          isToday(day) && "text-foreground"
-        )}
+        className="grid"
+        style={{
+          gridTemplateColumns: `3rem repeat(${days.length}, minmax(6rem, 1fr))`,
+        }}
       >
-        <span className="text-muted-foreground text-xs">
-          {format(day, "EEE")}
-        </span>
-        <span
-          className={cn(
-            "flex size-6 items-center justify-center text-sm tabular-nums",
-            isToday(day) && "bg-primary font-semibold text-primary-foreground"
-          )}
-        >
-          {format(day, "d")}
-        </span>
-        <div className="flex w-full flex-col gap-0.5 px-1">
-          {allDay.map((it) => (
-            <ItemPopover
-              item={it}
-              key={it.id}
-              onDelete={onDelete}
-              onEdit={onEdit}
-            >
-              <button className="w-full text-left" type="button">
-                <Badge
-                  className={cn(
-                    "w-full justify-start truncate",
-                    EVENT_COLORS[it.color]
-                  )}
-                  size="sm"
-                >
-                  {it.title}
-                </Badge>
-              </button>
-            </ItemPopover>
-          ))}
-        </div>
-      </div>
-
-      <div className="relative" style={{ height: HOURS.length * HOUR_PX }}>
-        {HOURS.map((h) => (
-          <button
-            className="absolute inset-x-0 border-border/30 border-b hover:bg-accent/40"
-            key={h}
-            onClick={() => onCreateAt(day, h)}
-            style={{ top: h * HOUR_PX, height: HOUR_PX }}
-            type="button"
+        {/* Row 1 — weekday + date headers */}
+        <div className="border-border/60 border-b" />
+        {days.map((day) => (
+          <div
+            className="flex flex-col items-center gap-1 border-border/40 border-b border-l py-1.5"
+            key={`head-${day.toISOString()}`}
           >
-            {showHourLabels ? (
-              <span className="absolute top-0 left-1 text-[10px] text-muted-foreground">
+            <span className="text-muted-foreground text-xs">
+              {format(day, "EEE")}
+            </span>
+            <span
+              className={cn(
+                "flex size-6 items-center justify-center text-sm tabular-nums",
+                isToday(day) &&
+                  "bg-primary font-semibold text-primary-foreground"
+              )}
+            >
+              {format(day, "d")}
+            </span>
+          </div>
+        ))}
+
+        {/* Row 2 — all-day items (grid keeps every cell the same height) */}
+        <div className="flex items-start justify-end border-border/40 border-b px-1 py-1 text-[10px] text-muted-foreground">
+          all-day
+        </div>
+        {days.map((day) => (
+          <div
+            className="flex flex-col gap-0.5 border-border/40 border-b border-l p-1"
+            key={`allday-${day.toISOString()}`}
+          >
+            {itemsOnDay(items, day)
+              .filter((it) => it.allDay)
+              .map((it) => (
+                <ItemPopover
+                  item={it}
+                  key={it.id}
+                  onDelete={onDelete}
+                  onEdit={onEdit}
+                >
+                  <button className="w-full text-left" type="button">
+                    <Badge
+                      className={cn(
+                        "w-full justify-start truncate",
+                        EVENT_COLORS[it.color]
+                      )}
+                      size="sm"
+                    >
+                      {it.title}
+                    </Badge>
+                  </button>
+                </ItemPopover>
+              ))}
+          </div>
+        ))}
+
+        {/* Row 3 — hour axis */}
+        <div className="relative" style={{ height: BODY_HEIGHT }}>
+          {HOURS.map((h) =>
+            h === 0 ? null : (
+              <span
+                className="-translate-y-1/2 absolute right-1 text-[10px] text-muted-foreground"
+                key={h}
+                style={{ top: h * HOUR_PX }}
+              >
                 {format(new Date().setHours(h, 0, 0, 0), "ha")}
               </span>
-            ) : null}
-          </button>
-        ))}
-        {timed.map((it) => {
-          const top =
-            (it.start.getHours() + it.start.getMinutes() / 60) * HOUR_PX;
-          const durHrs = Math.max(
-            0.5,
-            (it.end.getTime() - it.start.getTime()) / 3_600_000
-          );
+            )
+          )}
+        </div>
+
+        {/* Row 3 — day bodies */}
+        {days.map((day) => {
+          const timed = itemsOnDay(items, day).filter((it) => !it.allDay);
           return (
-            <ItemPopover
-              item={it}
-              key={it.id}
-              onDelete={onDelete}
-              onEdit={onEdit}
+            <div
+              className="relative border-border/40 border-l"
+              key={`body-${day.toISOString()}`}
+              style={{ height: BODY_HEIGHT }}
             >
-              <button
-                className="absolute inset-x-0.5"
-                style={{ top, height: durHrs * HOUR_PX }}
-                type="button"
-              >
-                <Badge
-                  className={cn(
-                    "h-full w-full flex-col items-start justify-start truncate",
-                    EVENT_COLORS[it.color]
-                  )}
-                  size="sm"
-                >
-                  {it.title}
-                </Badge>
-              </button>
-            </ItemPopover>
+              {HOURS.map((h) => (
+                <button
+                  className="absolute inset-x-0 border-border/20 border-t hover:bg-accent/40"
+                  key={h}
+                  onClick={() => onCreateAt(day, h)}
+                  style={{ top: h * HOUR_PX, height: HOUR_PX }}
+                  type="button"
+                />
+              ))}
+              {timed.map((it) => {
+                const top =
+                  (it.start.getHours() + it.start.getMinutes() / 60) * HOUR_PX;
+                const durHrs = Math.max(
+                  0.5,
+                  (it.end.getTime() - it.start.getTime()) / 3_600_000
+                );
+                return (
+                  <ItemPopover
+                    item={it}
+                    key={it.id}
+                    onDelete={onDelete}
+                    onEdit={onEdit}
+                  >
+                    <button
+                      className="absolute inset-x-0.5"
+                      style={{ top, height: durHrs * HOUR_PX }}
+                      type="button"
+                    >
+                      <Badge
+                        className={cn(
+                          "h-full w-full flex-col items-start justify-start truncate",
+                          EVENT_COLORS[it.color]
+                        )}
+                        size="sm"
+                      >
+                        {it.title}
+                      </Badge>
+                    </button>
+                  </ItemPopover>
+                );
+              })}
+            </div>
           );
         })}
       </div>
@@ -126,7 +168,13 @@ export function DayColumn({
   );
 }
 
-export function DayView(props: {
+export function DayView({
+  anchor,
+  items,
+  onEdit,
+  onDelete,
+  onCreateAt,
+}: {
   anchor: Date;
   items: CalendarItem[];
   onEdit: (item: CalendarItem) => void;
@@ -134,15 +182,12 @@ export function DayView(props: {
   onCreateAt: (day: Date, hour: number) => void;
 }) {
   return (
-    <div className="flex">
-      <DayColumn
-        day={props.anchor}
-        items={props.items}
-        onCreateAt={props.onCreateAt}
-        onDelete={props.onDelete}
-        onEdit={props.onEdit}
-        showHourLabels
-      />
-    </div>
+    <TimeGrid
+      days={[anchor]}
+      items={items}
+      onCreateAt={onCreateAt}
+      onDelete={onDelete}
+      onEdit={onEdit}
+    />
   );
 }

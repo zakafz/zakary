@@ -141,6 +141,7 @@ export function CalendarPanel() {
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1">
           <Button
+            className="rounded-none"
             onClick={() => go(-1)}
             size="sm"
             type="button"
@@ -149,6 +150,7 @@ export function CalendarPanel() {
             ‹
           </Button>
           <Button
+            className="rounded-none"
             onClick={() => setAnchor(new Date())}
             size="sm"
             type="button"
@@ -157,6 +159,7 @@ export function CalendarPanel() {
             Today
           </Button>
           <Button
+            className="rounded-none"
             onClick={() => go(1)}
             size="sm"
             type="button"
@@ -168,6 +171,7 @@ export function CalendarPanel() {
         <span className="font-serif text-lg italic">{heading}</span>
         <Button
           aria-label="New event"
+          className="rounded-none"
           onClick={() => openCreate(new Date())}
           size="sm"
           type="button"
