@@ -64,7 +64,10 @@ export function ItemPopover({
                 className="flex-1"
                 onClick={() => {
                   setOpen(false);
-                  onEdit(item);
+                  // Defer opening the dialog until the popover has finished
+                  // dismissing; otherwise Radix reads the popover's dismissal
+                  // as an outside interaction and instantly closes the dialog.
+                  setTimeout(() => onEdit(item), 0);
                 }}
                 size="sm"
                 type="button"
