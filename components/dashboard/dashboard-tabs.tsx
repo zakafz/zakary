@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CalendarDaysIcon,
   FolderIcon,
   KeyRoundIcon,
   LayoutDashboardIcon,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { CalendarPanel } from "./calendar/calendar-panel";
 import { FinancePanel } from "./finance-panel";
 import { NotesPanel } from "./notes-panel";
 import { OverviewPanel } from "./overview-panel";
@@ -22,6 +24,7 @@ import { TasksPanel } from "./tasks-panel";
 
 type TabId =
   | "overview"
+  | "calendar"
   | "finance"
   | "projects"
   | "subscriptions"
@@ -42,6 +45,12 @@ const TABS: Tab[] = [
     label: "Overview",
     icon: LayoutDashboardIcon,
     description: "A snapshot of everything at a glance.",
+  },
+  {
+    id: "calendar",
+    label: "Calendar",
+    icon: CalendarDaysIcon,
+    description: "Your schedule, tasks and renewals.",
   },
   {
     id: "finance",
@@ -86,6 +95,9 @@ export function DashboardTabs() {
   function renderPanel() {
     if (active === "overview") {
       return <OverviewPanel />;
+    }
+    if (active === "calendar") {
+      return <CalendarPanel />;
     }
     if (active === "finance") {
       return <FinancePanel />;
