@@ -14,6 +14,10 @@ import {
   subIcon,
 } from "@/components/dashboard/subscriptions-panel";
 import {
+  type EventColor,
+  EVENT_COLORS,
+} from "./calendar/calendar-types";
+import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
@@ -127,6 +131,20 @@ type NextPayment = {
   days: number;
   icon: string | null;
 };
+type EventRow = {
+  title: string;
+  starts_at: string;
+  ends_at: string;
+  all_day: boolean;
+  color: EventColor;
+};
+type NextEvent = {
+  title: string;
+  start: Date;
+  allDay: boolean;
+  color: EventColor;
+  days: number;
+};
 type CategoryLine = { slice: Slice; spent: number; budget: number };
 type Task = { id: string; title: string; due_date: string | null };
 
@@ -136,6 +154,7 @@ type Data = {
   subsMonthly: number;
   trend: { key: string; day: number; total: number }[];
   nextPayment: NextPayment | null;
+  nextEvent: NextEvent | null;
   categories: CategoryLine[];
   tasks: Task[];
 };
@@ -247,6 +266,58 @@ function NextPaymentCard({ data }: { data: Data }) {
       ) : (
         <span className="mt-2 text-muted-foreground text-sm">
           No upcoming subscriptions.
+        </span>
+      )}
+    </Card>
+  );
+}
+
+function eventWhen(e: NextEvent) {
+  const dateStr = e.start.toLocaleDateString("en-CA", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+  if (e.allDay) {
+    return `${dateStr} · All day`;
+  }
+  const timeStr = e.start.toLocaleTimeString("en-CA", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+  return `${dateStr} · ${timeStr}`;
+}
+
+function NextEventCard({ data }: { data: Data }) {
+  const next = data.nextEvent;
+  return (
+    <Card>
+      <Heading>Next event</Heading>
+      {next ? (
+        <>
+          <div className="mt-1 flex items-center gap-2">
+            <span
+              className={cn(
+                "size-3 shrink-0 border border-border/60",
+                EVENT_COLORS[next.color]
+              )}
+            />
+            <span className="min-w-0 flex-1 truncate font-semibold text-lg">
+              {next.title}
+            </span>
+          </div>
+          <div className="mt-1 flex items-baseline justify-between gap-2">
+            <span className="text-muted-foreground text-sm">
+              {eventWhen(next)}
+            </span>
+            <span className="text-muted-foreground text-sm">
+              {dueLabel(next.days)}
+            </span>
+          </div>
+        </>
+      ) : (
+        <span className="mt-2 text-muted-foreground text-sm">
+          No upcoming events.
         </span>
       )}
     </Card>
@@ -468,11 +539,28 @@ function soonestPayment(subs: Sub[]): NextPayment | null {
   return next;
 }
 
+/** The soonest event that hasn't ended yet (rows arrive start-sorted). */
+function soonestEvent(rows: EventRow[]): NextEvent | null {
+  const row = rows[0];
+  if (!row) {
+    return null;
+  }
+  const start = new Date(row.starts_at);
+  return {
+    title: row.title,
+    start,
+    allDay: row.all_day,
+    color: row.color,
+    days: daysUntil(start),
+  };
+}
+
 function computeData(
   txns: Txn[],
   subs: Sub[],
   budgets: Budget[],
-  tasks: Task[]
+  tasks: Task[],
+  events: EventRow[]
 ): Data {
   const now = new Date();
   const currentKey = monthKey(now);
@@ -494,6 +582,7 @@ function computeData(
     ),
     trend: days.map((d) => ({ ...d, total: dailyTotals.get(d.key) ?? 0 })),
     nextPayment: soonestPayment(subs),
+    nextEvent: soonestEvent(events),
     categories: categoryLines(monthByCategory, budgets),
     tasks,
   };
@@ -504,6 +593,7 @@ function isEmpty(data: Data) {
     data.thisMonth === 0 &&
     data.trend.every((m) => m.total === 0) &&
     !data.nextPayment &&
+    !data.nextEvent &&
     data.tasks.length === 0
   );
 }
@@ -544,7 +634,13 @@ export function OverviewPanel() {
         .eq("done", false)
         .order("created_at", { ascending: false })
         .limit(5),
-    ]).then(([txnRes, subRes, budgetRes, taskRes]) => {
+      supabase
+        .from("events")
+        .select("title, starts_at, ends_at, all_day, color")
+        .gte("ends_at", now.toISOString())
+        .order("starts_at", { ascending: true })
+        .limit(1),
+    ]).then(([txnRes, subRes, budgetRes, taskRes, eventRes]) => {
       if (!active) {
         return;
       }
@@ -553,7 +649,8 @@ export function OverviewPanel() {
           (txnRes.data ?? []) as Txn[],
           (subRes.data ?? []) as Sub[],
           (budgetRes.data ?? []) as Budget[],
-          (taskRes.data ?? []) as Task[]
+          (taskRes.data ?? []) as Task[],
+          (eventRes.data ?? []) as EventRow[]
         )
       );
     });
@@ -576,6 +673,7 @@ export function OverviewPanel() {
 
   return (
     <div className="flex flex-col gap-3">
+      <NextEventCard data={data} />
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <SpentCard data={data} />
         <NextPaymentCard data={data} />
