@@ -151,7 +151,7 @@ export function TimeGrid({
                     onEdit={onEdit}
                   >
                     <button
-                      className="absolute inset-x-0.5"
+                      className="absolute inset-x-0.5 -mt-[5px] -ml-0.5"
                       style={{ top, height: durHrs * HOUR_PX }}
                       type="button"
                     >
