@@ -121,9 +121,10 @@ export function TimeGrid({
               key={`body-${day.toISOString()}`}
               style={{
                 height: BODY_HEIGHT,
-                // One continuous set of hour lines (a 1px line every HOUR_PX)
-                // so timed events align exactly with the axis labels.
-                backgroundImage: `repeating-linear-gradient(to bottom, var(--border-subtle) 0, var(--border-subtle) 1px, transparent 1px, transparent ${HOUR_PX}px)`,
+                // Hour lines drawn at the BOTTOM of each hour block, so lines
+                // land on the hour marks (48, 96, …) with none at y=0 — the
+                // all-day row's border already divides there (no double line).
+                backgroundImage: `repeating-linear-gradient(to bottom, transparent 0, transparent ${HOUR_PX - 1}px, var(--border-subtle) ${HOUR_PX - 1}px, var(--border-subtle) ${HOUR_PX}px)`,
               }}
             >
               {HOURS.map((h) => (
