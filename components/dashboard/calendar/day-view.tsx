@@ -119,17 +119,17 @@ export function TimeGrid({
             <div
               className="relative border-border/40 border-l"
               key={`body-${day.toISOString()}`}
-              style={{
-                height: BODY_HEIGHT,
-                // Hour lines drawn at the BOTTOM of each hour block, so lines
-                // land on the hour marks (48, 96, …) with none at y=0 — the
-                // all-day row's border already divides there (no double line).
-                backgroundImage: `repeating-linear-gradient(to bottom, transparent 0, transparent ${HOUR_PX - 1}px, var(--border-subtle) ${HOUR_PX - 1}px, var(--border-subtle) ${HOUR_PX}px)`,
-              }}
+              style={{ height: BODY_HEIGHT }}
             >
               {HOURS.map((h) => (
                 <button
-                  className="absolute inset-x-0 hover:bg-accent/40"
+                  // Line drawn on the button's top edge at exactly h*HOUR_PX —
+                  // the same coordinate timed events use, so they line up. The
+                  // top hour (h=0) has no line; the all-day border divides there.
+                  className={cn(
+                    "absolute inset-x-0 hover:bg-accent/40",
+                    h > 0 && "border-border/30 border-t"
+                  )}
                   key={h}
                   onClick={() => onCreateAt(day, h)}
                   style={{ top: h * HOUR_PX, height: HOUR_PX }}
