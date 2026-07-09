@@ -53,7 +53,7 @@ export function CalendarPanel() {
       supabase.from("tasks").select("id,title,done,due_date"),
       supabase
         .from("subscriptions")
-        .select("id,name,amount,cycle,next_billing"),
+        .select("id,name,amount,cycle,next_billing,color"),
     ]).then(([ev, tk, sb]) => {
       if (!active) {
         return;
@@ -137,18 +137,10 @@ export function CalendarPanel() {
       : format(anchor, "MMM d, yyyy");
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-2">
+    <div className="-translate-x-1/2 relative left-1/2 flex w-screen max-w-[100vw] flex-col gap-3">
+      <div className="flex items-center justify-between gap-2 px-4">
+        <span className="font-serif text-2xl italic">{heading}</span>
         <div className="flex items-center gap-1">
-          <Button
-            className="rounded-none"
-            onClick={() => go(-1)}
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            ‹
-          </Button>
           <Button
             className="rounded-none"
             onClick={() => setAnchor(new Date())}
@@ -159,28 +151,38 @@ export function CalendarPanel() {
             Today
           </Button>
           <Button
+            aria-label="Previous"
+            className="rounded-none"
+            onClick={() => go(-1)}
+            size="icon-sm"
+            type="button"
+            variant="outline"
+          >
+            ‹
+          </Button>
+          <Button
+            aria-label="Next"
             className="rounded-none"
             onClick={() => go(1)}
-            size="sm"
+            size="icon-sm"
             type="button"
             variant="outline"
           >
             ›
           </Button>
+          <Button
+            aria-label="New event"
+            className="rounded-none"
+            onClick={() => openCreate(new Date())}
+            size="icon-sm"
+            type="button"
+          >
+            <CalendarPlusIcon className="size-4" />
+          </Button>
         </div>
-        <span className="font-serif text-lg italic">{heading}</span>
-        <Button
-          aria-label="New event"
-          className="rounded-none"
-          onClick={() => openCreate(new Date())}
-          size="sm"
-          type="button"
-        >
-          <CalendarPlusIcon className="size-4" />
-        </Button>
       </div>
 
-      <div className="flex gap-1">
+      <div className="flex gap-1 px-4">
         {VIEWS.map((v) => (
           <button
             className={cn(

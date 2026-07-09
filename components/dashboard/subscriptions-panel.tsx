@@ -49,6 +49,11 @@ import {
 import { type Cycle, nextOccurrence } from "@/lib/recurrence";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import {
+  EVENT_COLOR_KEYS,
+  EVENT_COLORS,
+  type EventColor,
+} from "./calendar/calendar-types";
 
 type Subscription = {
   id: string;
@@ -57,6 +62,7 @@ type Subscription = {
   cycle: Cycle;
   next_billing: string | null;
   icon: string | null;
+  color: EventColor;
 };
 
 const CYCLES: { id: Cycle; label: string }[] = [
@@ -257,7 +263,14 @@ function SubscriptionRow({
           transition: dragging ? "none" : "transform 0.2s ease",
         }}
       >
-        <div className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary text-secondary-foreground">
+        <div
+          className={cn(
+            "relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg",
+            sub.color === "neutral"
+              ? "bg-secondary text-secondary-foreground"
+              : EVENT_COLORS[sub.color]
+          )}
+        >
           {isImageIcon(sub.icon) ? (
             <Image
               alt=""
@@ -306,6 +319,7 @@ function SubscriptionDialog({
   const [amount, setAmount] = useState(editing ? String(editing.amount) : "");
   const [cycle, setCycle] = useState<Cycle>(editing?.cycle ?? "monthly");
   const [icon, setIcon] = useState(editing?.icon ?? DEFAULT_ICON);
+  const [color, setColor] = useState<EventColor>(editing?.color ?? "neutral");
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -343,6 +357,7 @@ function SubscriptionDialog({
       amount: Math.abs(value),
       cycle,
       icon,
+      color,
       next_billing: format(nextBilling, "yyyy-MM-dd"),
     };
 
@@ -459,6 +474,27 @@ function SubscriptionDialog({
               />
             </div>
             <IconPicker onChange={setIcon} value={icon} />
+          </div>
+          <div className="flex flex-col gap-2">
+            <span className="font-medium text-muted-foreground text-sm">
+              Color
+            </span>
+            <div className="flex gap-2">
+              {EVENT_COLOR_KEYS.map((key) => (
+                <button
+                  aria-label={key}
+                  aria-pressed={color === key}
+                  className={cn(
+                    "size-7 border transition-transform",
+                    EVENT_COLORS[key],
+                    color === key ? "scale-110 border-primary" : "border-border"
+                  )}
+                  key={key}
+                  onClick={() => setColor(key)}
+                  type="button"
+                />
+              ))}
+            </div>
           </div>
           <DatePicker onChange={setNextBilling} value={nextBilling} />
           <DialogFooter>
