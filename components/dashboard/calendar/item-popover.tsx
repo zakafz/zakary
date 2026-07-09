@@ -49,7 +49,7 @@ export function ItemPopover({
     : `${format(item.start, "EEE, MMM d")} · ${format(item.start, "p")} – ${format(item.end, "p")}`;
 
   return (
-    <Popover onOpenChange={handleOpenChange} open={open}>
+    <Popover modal onOpenChange={handleOpenChange} open={open}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent align="start" className="w-64 rounded-none p-3">
         <div className="flex flex-col gap-2">

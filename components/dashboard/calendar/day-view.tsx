@@ -119,11 +119,16 @@ export function TimeGrid({
             <div
               className="relative border-border/40 border-l"
               key={`body-${day.toISOString()}`}
-              style={{ height: BODY_HEIGHT }}
+              style={{
+                height: BODY_HEIGHT,
+                // One continuous set of hour lines (a 1px line every HOUR_PX)
+                // so timed events align exactly with the axis labels.
+                backgroundImage: `repeating-linear-gradient(to bottom, var(--border-subtle) 0, var(--border-subtle) 1px, transparent 1px, transparent ${HOUR_PX}px)`,
+              }}
             >
               {HOURS.map((h) => (
                 <button
-                  className="absolute inset-x-0 border-border/20 border-t hover:bg-accent/40"
+                  className="absolute inset-x-0 hover:bg-accent/40"
                   key={h}
                   onClick={() => onCreateAt(day, h)}
                   style={{ top: h * HOUR_PX, height: HOUR_PX }}
