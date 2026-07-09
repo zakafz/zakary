@@ -14,6 +14,7 @@ import type {
   CalendarEvent,
   CalendarItem,
   CalendarView,
+  EventColor,
 } from "./calendar-types";
 
 export type Task = {
@@ -29,6 +30,7 @@ export type Subscription = {
   amount: number;
   cycle: Cycle;
   next_billing: string | null;
+  color: EventColor;
 };
 
 /** The [from, to] date range visible for a given view + anchor date. */
@@ -112,7 +114,7 @@ export function buildOverlays(
         start: day,
         end: day,
         allDay: true,
-        color: "neutral",
+        color: s.color,
         amount: s.amount,
       });
     }

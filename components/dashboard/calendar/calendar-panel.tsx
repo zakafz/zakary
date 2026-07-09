@@ -53,7 +53,7 @@ export function CalendarPanel() {
       supabase.from("tasks").select("id,title,done,due_date"),
       supabase
         .from("subscriptions")
-        .select("id,name,amount,cycle,next_billing"),
+        .select("id,name,amount,cycle,next_billing,color"),
     ]).then(([ev, tk, sb]) => {
       if (!active) {
         return;
