@@ -7,8 +7,12 @@ import { type CalendarItem, EVENT_COLORS } from "./calendar-types";
 import { daysInRange, itemsOnDay, viewRange } from "./calendar-utils";
 import { ItemPopover } from "./item-popover";
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 const MAX_CHIPS = 3;
+// The chip stays solid; only the label text fades, and only where it actually
+// overflows (short labels end before the fade zone, so they show no fade).
+const LABEL_FADE =
+  "block w-full overflow-hidden whitespace-nowrap [mask-image:linear-gradient(to_right,black_85%,transparent)]";
 
 export function MonthView({
   anchor,
@@ -28,36 +32,36 @@ export function MonthView({
 
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-7 border-border/60 border-b">
-        {WEEKDAYS.map((w) => (
+      <div className="grid grid-cols-7">
+        {WEEKDAYS.map((w, i) => (
           <div
-            className="py-1.5 text-center font-medium text-muted-foreground text-xs"
-            key={w}
+            className="py-2 text-center font-medium text-muted-foreground text-xs"
+            key={`${w}-${i}`}
           >
             {w}
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7">
+      <div className="grid grid-cols-7 border-border/40 border-t">
         {days.map((day) => {
           const dayItems = itemsOnDay(items, day);
           const inMonth = isSameMonth(day, anchor);
           return (
             <div
               className={cn(
-                "flex min-h-20 flex-col gap-1 border-border/40 border-r border-b p-1",
-                !inMonth && "bg-muted/30 text-muted-foreground"
+                "flex min-h-28 flex-col gap-1 border-border/30 border-r border-b px-1 py-1.5",
+                !inMonth && "opacity-40"
               )}
               key={day.toISOString()}
             >
               <button
-                className="self-end"
+                className="mx-auto"
                 onClick={() => onSelectDay(day)}
                 type="button"
               >
                 <span
                   className={cn(
-                    "flex size-6 items-center justify-center text-xs tabular-nums transition-colors hover:bg-accent",
+                    "flex size-7 items-center justify-center text-sm tabular-nums",
                     isToday(day) &&
                       "bg-primary font-semibold text-primary-foreground"
                   )}
@@ -76,12 +80,12 @@ export function MonthView({
                     <button className="w-full text-left" type="button">
                       <Badge
                         className={cn(
-                          "w-full justify-start truncate",
+                          "w-full justify-start",
                           EVENT_COLORS[it.color]
                         )}
                         size="sm"
                       >
-                        {it.title}
+                        <span className={LABEL_FADE}>{it.title}</span>
                       </Badge>
                     </button>
                   </ItemPopover>
@@ -92,7 +96,7 @@ export function MonthView({
                     onClick={() => onSelectDay(day)}
                     type="button"
                   >
-                    +{dayItems.length - MAX_CHIPS} more
+                    +{dayItems.length - MAX_CHIPS}
                   </button>
                 ) : null}
               </div>

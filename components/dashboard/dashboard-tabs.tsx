@@ -47,16 +47,16 @@ const TABS: Tab[] = [
     description: "A snapshot of everything at a glance.",
   },
   {
-    id: "calendar",
-    label: "Calendar",
-    icon: CalendarDaysIcon,
-    description: "Your schedule, tasks and renewals.",
-  },
-  {
     id: "finance",
     label: "Finance",
     icon: WalletIcon,
     description: "Accounts, spending and net worth.",
+  },
+  {
+    id: "calendar",
+    label: "Calendar",
+    icon: CalendarDaysIcon,
+    description: "Your schedule, tasks and renewals.",
   },
   {
     id: "projects",

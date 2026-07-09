@@ -82,12 +82,14 @@ export function TimeGrid({
                   <button className="w-full text-left" type="button">
                     <Badge
                       className={cn(
-                        "w-full justify-start truncate",
+                        "w-full justify-start",
                         EVENT_COLORS[it.color]
                       )}
                       size="sm"
                     >
-                      {it.title}
+                      <span className="block w-full overflow-hidden whitespace-nowrap [mask-image:linear-gradient(to_right,black_85%,transparent)]">
+                        {it.title}
+                      </span>
                     </Badge>
                   </button>
                 </ItemPopover>
