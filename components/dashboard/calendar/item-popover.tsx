@@ -115,13 +115,6 @@ export function ItemPopover({
           {item.event?.note ? (
             <p className="whitespace-pre-wrap text-sm">{item.event.note}</p>
           ) : null}
-
-          {isEvent ? null : (
-            <p className="text-muted-foreground text-xs">
-              {item.kind === "task" ? "Task" : "Subscription"} · manage in its
-              tab
-            </p>
-          )}
         </div>
       </PopoverContent>
     </Popover>

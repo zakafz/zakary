@@ -706,9 +706,7 @@ export function ItemPopover({
               </ConfirmDelete>
             </div>
           ) : (
-            <p className="text-muted-foreground text-xs">
-              {item.kind === "task" ? "Task" : "Subscription"} · manage in its tab
-            </p>
+            
           )}
         </div>
       </PopoverContent>
