@@ -1,0 +1,60 @@
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { SignOutButton } from "@/components/auth/sign-out-button";
+import { DashboardNav } from "@/components/dashboard/dashboard-nav";
+import { PinLock } from "@/components/dashboard/pin-lock";
+import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Dashboard",
+    template: "%s · Dashboard",
+  },
+  robots: { index: false, follow: false },
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Dashboard",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Middleware already gates this, but guard here too for safety.
+  if (!user) {
+    redirect("/login");
+  }
+
+  return (
+    <PinLock>
+      <main className="mx-auto flex min-h-[100dvh] w-full max-w-3xl flex-col px-6 py-8">
+        <header className="flex items-center justify-between gap-4">
+          <div className="flex flex-col">
+            <h1 className="font-serif text-2xl italic">Dashboard</h1>
+            <p className="text-muted-foreground text-sm">{user.email}</p>
+          </div>
+          <SignOutButton />
+        </header>
+
+        <div className="mt-6 flex flex-1 flex-col">
+          <DashboardNav />
+          <div className="mt-6 flex-1" role="tabpanel">
+            {children}
+          </div>
+        </div>
+      </main>
+    </PinLock>
+  );
+}

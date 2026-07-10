@@ -110,9 +110,9 @@ function Overview({
           value={compactCurrency(balance)}
         />
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+      <div className="h-2 w-full overflow-hidden bg-secondary">
         <div
-          className="h-full rounded-full bg-success transition-[width]"
+          className="h-full bg-success transition-[width]"
           style={{ width: `${pct}%` }}
         />
       </div>
