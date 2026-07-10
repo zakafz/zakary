@@ -4,8 +4,14 @@ import { format, isSameMonth, isToday } from "date-fns";
 import { Badge } from "@/components/ui/badge/badge";
 import { cn } from "@/lib/utils";
 import { type CalendarItem, EVENT_COLORS } from "./calendar-types";
-import { daysInRange, itemsOnDay, viewRange } from "./calendar-utils";
+import {
+  type DayMoney,
+  daysInRange,
+  itemsOnDay,
+  viewRange,
+} from "./calendar-utils";
 import { ItemPopover } from "./item-popover";
+import { DayNet } from "./money-label";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 const MAX_CHIPS = 3;
@@ -17,12 +23,14 @@ const LABEL_FADE =
 export function MonthView({
   anchor,
   items,
+  money,
   onSelectDay,
   onEdit,
   onDelete,
 }: {
   anchor: Date;
   items: CalendarItem[];
+  money: Map<string, DayMoney>;
   onSelectDay: (day: Date) => void;
   onEdit: (item: CalendarItem) => void;
   onDelete: (id: string) => void;
@@ -46,6 +54,7 @@ export function MonthView({
         {days.map((day) => {
           const dayItems = itemsOnDay(items, day);
           const inMonth = isSameMonth(day, anchor);
+          const dayMoney = money.get(format(day, "yyyy-MM-dd"));
           return (
             <div
               className={cn(
@@ -69,6 +78,9 @@ export function MonthView({
                   {format(day, "d")}
                 </span>
               </button>
+              {dayMoney ? (
+                <DayNet className="mx-auto" money={dayMoney} />
+              ) : null}
               <div className="flex flex-col gap-0.5">
                 {dayItems.slice(0, MAX_CHIPS).map((it) => (
                   <ItemPopover

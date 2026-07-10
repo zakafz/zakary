@@ -39,7 +39,12 @@ export type CalendarEvent = {
 
 export type CalendarView = "month" | "week" | "day";
 
-export type ItemKind = "event" | "task" | "subscription";
+export type ItemKind =
+  | "event"
+  | "task"
+  | "subscription"
+  | "client-date"
+  | "payment";
 
 /** Unified render item covering events and read-only overlays. */
 export type CalendarItem = {
@@ -54,4 +59,6 @@ export type CalendarItem = {
   event?: CalendarEvent;
   /** Present only when kind === "subscription". */
   amount?: number;
+  /** Secondary context line for overlays (e.g. the project name). */
+  context?: string;
 };

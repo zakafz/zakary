@@ -13,6 +13,21 @@ export const CATEGORIES: { id: TransactionCategory; label: string }[] = [
   { id: "bills", label: "Bills" },
 ];
 
+/** Category palette, shared across every finance chart and breakdown. */
+export const CATEGORY_COLOR: Record<TransactionCategory, string> = {
+  shopping: "#a78bfa",
+  transportation: "#38bdf8",
+  food: "#fbbf24",
+  bills: "#34d399",
+};
+
+/** Display labels keyed by category id. */
+export const CATEGORY_LABEL: Record<TransactionCategory, string> =
+  Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label])) as Record<
+    TransactionCategory,
+    string
+  >;
+
 export type Transaction = {
   id: string;
   merchant: string;
@@ -25,64 +40,3 @@ export type Transaction = {
   /** ISO date string (YYYY-MM-DD). */
   date: string;
 };
-
-/**
- * Placeholder transactions. Swap for a Supabase query once the
- * `transactions` table exists — the shape maps 1:1.
- */
-export const TRANSACTIONS: Transaction[] = [
-  {
-    id: "t1",
-    merchant: "Amzn Mktp Ca",
-    type: "purchase",
-    category: "shopping",
-    pending: true,
-    amount: -68.97,
-    note: "Household",
-    date: "2026-07-04",
-  },
-  {
-    id: "t2",
-    merchant: "McDonald's",
-    type: "purchase",
-    category: "food",
-    pending: true,
-    amount: -1.84,
-    note: "Coffee",
-    date: "2026-07-02",
-  },
-  {
-    id: "t3",
-    merchant: "Pizzeria Le Monde",
-    type: "purchase",
-    category: "food",
-    amount: -5.81,
-    note: "Lunch",
-    date: "2026-07-02",
-  },
-  {
-    id: "t4",
-    merchant: "Apple.com/Bill",
-    type: "purchase",
-    category: "bills",
-    amount: -4.59,
-    note: "iCloud",
-    date: "2026-07-02",
-  },
-  {
-    id: "t5",
-    merchant: "Transfer out",
-    type: "transfer",
-    amount: -411,
-    note: "Chequing",
-    date: "2026-07-02",
-  },
-  {
-    id: "t6",
-    merchant: "Payroll",
-    type: "deposit",
-    amount: 1240.5,
-    note: "Salary",
-    date: "2026-06-30",
-  },
-];

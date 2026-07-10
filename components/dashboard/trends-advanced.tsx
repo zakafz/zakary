@@ -17,8 +17,10 @@ import {
   ArrowDownRightIcon,
   ArrowUpRightIcon,
   CalendarRangeIcon,
+  CoinsIcon,
   HashIcon,
   type LucideIcon,
+  PiggyBankIcon,
   ReceiptIcon,
   TrendingDownIcon,
 } from "lucide-react";
@@ -32,7 +34,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  CATEGORIES,
+  CATEGORY_COLOR,
+  CATEGORY_LABEL,
   type Transaction,
   type TransactionCategory,
 } from "@/data/finance";
@@ -116,25 +119,17 @@ const PRESETS: { id: PresetId; label: string; range: () => Range }[] = [
   },
 ];
 
-const CAT_COLOR: Record<TransactionCategory, string> = {
-  shopping: "#a78bfa",
-  transportation: "#38bdf8",
-  food: "#fbbf24",
-  bills: "#34d399",
-};
-
-const CAT_LABEL = Object.fromEntries(
-  CATEGORIES.map((c) => [c.id, c.label])
-) as Record<TransactionCategory, string>;
-
 type Stats = {
   income: number;
   expenses: number;
   net: number;
   count: number;
   avgDaily: number;
+  savingsRate: number;
   biggestExpense: Transaction | null;
   biggestIncome: Transaction | null;
+  smallestIncome: Transaction | null;
+  incomeList: Transaction[];
   categories: { category: TransactionCategory; amount: number }[];
 };
 
@@ -149,6 +144,19 @@ function biggest(
     }
   }
   return best;
+}
+
+function smallest(
+  list: Transaction[],
+  value: (t: Transaction) => number
+): Transaction | null {
+  let least: Transaction | null = null;
+  for (const t of list) {
+    if (!least || value(t) < value(least)) {
+      least = t;
+    }
+  }
+  return least;
 }
 
 function computeStats(txns: Transaction[], range: Range): Stats {
@@ -173,14 +181,22 @@ function computeStats(txns: Transaction[], range: Range): Stats {
     .map(([category, amount]) => ({ category, amount }))
     .sort((a, b) => b.amount - a.amount);
 
+  const net = income - expenses;
+
   return {
     income,
     expenses,
-    net: income - expenses,
-    count: txns.length,
+    net,
+    // Count only the income + purchases the stats actually summarise; transfers
+    // are excluded so the number lines up with the income/expense figures.
+    count: incomes.length + purchases.length,
     avgDaily: expenses / days,
+    // Share of incoming money kept after expenses. 0 when nothing came in.
+    savingsRate: income > 0 ? (net / income) * 100 : 0,
     biggestExpense: biggest(purchases, (t) => Math.abs(t.amount)),
     biggestIncome: biggest(incomes, (t) => t.amount),
+    smallestIncome: smallest(incomes, (t) => t.amount),
+    incomeList: [...incomes].sort((a, b) => b.amount - a.amount),
     categories,
   };
 }
@@ -270,9 +286,9 @@ function CategoryBreakdown({ stats }: { stats: Stats }) {
               <span className="flex items-center gap-2">
                 <span
                   className="size-2.5 shrink-0"
-                  style={{ backgroundColor: CAT_COLOR[c.category] }}
+                  style={{ backgroundColor: CATEGORY_COLOR[c.category] }}
                 />
-                {CAT_LABEL[c.category]}
+                {CATEGORY_LABEL[c.category]}
               </span>
               <span className="tabular-nums">
                 {money.format(c.amount)}
@@ -287,13 +303,60 @@ function CategoryBreakdown({ stats }: { stats: Stats }) {
                 className="h-full"
                 style={{
                   width: `${pct}%`,
-                  backgroundColor: CAT_COLOR[c.category],
+                  backgroundColor: CATEGORY_COLOR[c.category],
                 }}
               />
             </div>
           </div>
         );
       })}
+    </div>
+  );
+}
+
+const INCOME_PREVIEW = 4;
+
+function IncomeList({ incomes }: { incomes: Transaction[] }) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (incomes.length === 0) {
+    return null;
+  }
+
+  const shown = expanded ? incomes : incomes.slice(0, INCOME_PREVIEW);
+  const hiddenCount = incomes.length - shown.length;
+
+  return (
+    <div className="flex flex-col gap-1 border border-border p-4">
+      <span className="mb-1 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+        Income ({incomes.length})
+      </span>
+      <div className="flex flex-col divide-y divide-border/60">
+        {shown.map((income) => (
+          <div className="flex items-center gap-3 py-2.5" key={income.id}>
+            <div className="flex min-w-0 flex-1 flex-col">
+              <span className="truncate font-medium text-sm">
+                {income.merchant}
+              </span>
+              <span className="text-muted-foreground text-xs">
+                {format(new Date(`${income.date}T00:00:00`), "MMM d, yyyy")}
+              </span>
+            </div>
+            <span className="shrink-0 font-semibold text-sm text-success tabular-nums">
+              {money.format(income.amount)}
+            </span>
+          </div>
+        ))}
+      </div>
+      {incomes.length > INCOME_PREVIEW ? (
+        <button
+          className="mt-2 self-start font-medium text-muted-foreground text-sm hover:text-foreground"
+          onClick={() => setExpanded((prev) => !prev)}
+          type="button"
+        >
+          {expanded ? "Show less" : `Show all (${hiddenCount} more)`}
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -342,6 +405,24 @@ function StatsView({ stats }: { stats: Stats }) {
                 tone="success"
               />
             ) : null}
+            {stats.smallestIncome ? (
+              <Highlight
+                icon={CoinsIcon}
+                label="Smallest income"
+                primary={money.format(stats.smallestIncome.amount)}
+                secondary={stats.smallestIncome.merchant}
+                tone="success"
+              />
+            ) : null}
+            {stats.income > 0 ? (
+              <Highlight
+                icon={PiggyBankIcon}
+                label="Savings rate"
+                primary={`${Math.round(stats.savingsRate)}%`}
+                secondary="of income kept"
+                tone={stats.savingsRate < 0 ? "destructive" : "success"}
+              />
+            ) : null}
             <Highlight
               icon={HashIcon}
               label="Transactions"
@@ -355,6 +436,7 @@ function StatsView({ stats }: { stats: Stats }) {
             />
           </div>
 
+          <IncomeList incomes={stats.incomeList} />
           <CategoryBreakdown stats={stats} />
         </>
       )}

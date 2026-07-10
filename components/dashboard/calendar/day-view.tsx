@@ -4,8 +4,9 @@ import { format, isToday } from "date-fns";
 import { Badge } from "@/components/ui/badge/badge";
 import { cn } from "@/lib/utils";
 import { type CalendarItem, EVENT_COLORS } from "./calendar-types";
-import { itemsOnDay } from "./calendar-utils";
+import { type DayMoney, itemsOnDay } from "./calendar-utils";
 import { ItemPopover } from "./item-popover";
+import { DayBreakdown, DayNet } from "./money-label";
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const HOUR_PX = 48;
@@ -14,10 +15,28 @@ const BODY_HEIGHT = HOURS.length * HOUR_PX;
 type GridProps = {
   days: Date[];
   items: CalendarItem[];
+  money: Map<string, DayMoney>;
+  /** Day view shows precise income + expense; week view shows the net only. */
+  precise?: boolean;
   onEdit: (item: CalendarItem) => void;
   onDelete: (id: string) => void;
   onCreateAt: (day: Date, hour: number) => void;
 };
+
+function HeaderMoney({
+  money,
+  precise,
+}: {
+  money: DayMoney | undefined;
+  precise?: boolean;
+}) {
+  // Nothing on days with no money activity.
+  if (!money || (money.income === 0 && money.expense === 0)) {
+    return null;
+  }
+  // Day view breaks income/expense out; week view shows the single net.
+  return precise ? <DayBreakdown money={money} /> : <DayNet money={money} />;
+}
 
 /**
  * A time-grid shared by the day and week views. Everything lives in one CSS
@@ -27,6 +46,8 @@ type GridProps = {
 export function TimeGrid({
   days,
   items,
+  money,
+  precise,
   onEdit,
   onDelete,
   onCreateAt,
@@ -58,6 +79,10 @@ export function TimeGrid({
             >
               {format(day, "d")}
             </span>
+            <HeaderMoney
+              money={money.get(format(day, "yyyy-MM-dd"))}
+              precise={precise}
+            />
           </div>
         ))}
 
@@ -179,12 +204,14 @@ export function TimeGrid({
 export function DayView({
   anchor,
   items,
+  money,
   onEdit,
   onDelete,
   onCreateAt,
 }: {
   anchor: Date;
   items: CalendarItem[];
+  money: Map<string, DayMoney>;
   onEdit: (item: CalendarItem) => void;
   onDelete: (id: string) => void;
   onCreateAt: (day: Date, hour: number) => void;
@@ -193,9 +220,11 @@ export function DayView({
     <TimeGrid
       days={[anchor]}
       items={items}
+      money={money}
       onCreateAt={onCreateAt}
       onDelete={onDelete}
       onEdit={onEdit}
+      precise
     />
   );
 }

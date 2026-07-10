@@ -8,7 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES, type TransactionCategory } from "@/data/finance";
+import {
+  CATEGORIES,
+  CATEGORY_COLOR,
+  type TransactionCategory,
+} from "@/data/finance";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -26,13 +30,6 @@ const PERIOD_SHORT: Record<Period, string> = {
   weekly: "wk",
   monthly: "mo",
   yearly: "yr",
-};
-
-const CAT_COLOR: Record<TransactionCategory, string> = {
-  shopping: "#a78bfa",
-  transportation: "#38bdf8",
-  food: "#fbbf24",
-  bills: "#34d399",
 };
 
 const OVER_COLOR = "#f87171";
@@ -224,7 +221,7 @@ export function BudgetPanel() {
         const over = budget.amount > 0 && used > budget.amount;
         const pct =
           budget.amount > 0 ? Math.min(100, (used / budget.amount) * 100) : 0;
-        const color = over ? OVER_COLOR : CAT_COLOR[c.id];
+        const color = over ? OVER_COLOR : CATEGORY_COLOR[c.id];
 
         return (
           <div
@@ -235,7 +232,7 @@ export function BudgetPanel() {
               <div className="flex items-center gap-2">
                 <span
                   className="size-2.5 rounded-full"
-                  style={{ backgroundColor: CAT_COLOR[c.id] }}
+                  style={{ backgroundColor: CATEGORY_COLOR[c.id] }}
                 />
                 <span className="font-medium text-sm">{c.label}</span>
               </div>

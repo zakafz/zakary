@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES } from "@/data/finance";
+import { CATEGORY_COLOR, CATEGORY_LABEL } from "@/data/finance";
 import { createClient } from "@/lib/supabase/client";
 
 type Slice = "shopping" | "transportation" | "food" | "bills" | "other";
@@ -83,19 +83,49 @@ function rangeFromKey(key: string): {
 
 const CURRENT_MONTH_KEY = firstOfMonthISO(new Date()).slice(0, 7);
 
+const PAGE = 1000;
+
+type PurchaseRow = { amount: number; category: Slice | null };
+
+/**
+ * Fetch every purchase in the range, paging in 1000-row chunks — PostgREST caps
+ * a single response at 1000, so "All time" would otherwise undercount.
+ */
+async function fetchPurchases(
+  supabase: ReturnType<typeof createClient>,
+  start: string | null,
+  end: string | null
+): Promise<PurchaseRow[]> {
+  const rows: PurchaseRow[] = [];
+  let from = 0;
+  for (;;) {
+    let query = supabase
+      .from("transactions")
+      .select("amount, category")
+      .eq("type", "purchase");
+    if (start && end) {
+      query = query.gte("date", start).lt("date", end);
+    }
+    const { data, error } = await query.range(from, from + PAGE - 1);
+    if (error || !data) {
+      break;
+    }
+    rows.push(...(data as PurchaseRow[]));
+    if (data.length < PAGE) {
+      break;
+    }
+    from += PAGE;
+  }
+  return rows;
+}
+
 const SLICE_COLOR: Record<Slice, string> = {
-  shopping: "#a78bfa",
-  transportation: "#38bdf8",
-  food: "#fbbf24",
-  bills: "#34d399",
+  ...CATEGORY_COLOR,
   other: "#a1a1aa",
 };
 
 const SLICE_LABEL: Record<Slice, string> = {
-  ...(Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label])) as Record<
-    Slice,
-    string
-  >),
+  ...CATEGORY_LABEL,
   other: "Other",
 };
 
@@ -158,19 +188,8 @@ export function CategoriesPanel() {
 
     const { start, end } = rangeFromKey(selected);
 
-    let query = supabase
-      .from("transactions")
-      .select("amount, category")
-      .eq("type", "purchase");
-    if (start && end) {
-      query = query.gte("date", start).lt("date", end);
-    }
-
-    query.then(({ data }) => {
-      if (!(active && data)) {
-        if (active) {
-          setLoading(false);
-        }
+    fetchPurchases(supabase, start, end).then((rows) => {
+      if (!active) {
         return;
       }
       const next: Record<Slice, number> = {
@@ -180,7 +199,7 @@ export function CategoriesPanel() {
         bills: 0,
         other: 0,
       };
-      for (const row of data as { amount: number; category: Slice | null }[]) {
+      for (const row of rows) {
         const key: Slice = row.category ?? "other";
         next[key] += Math.abs(row.amount);
       }

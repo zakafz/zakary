@@ -2,11 +2,13 @@
 
 import { format } from "date-fns";
 import {
+  BanknoteIcon,
   CheckIcon,
   EllipsisVerticalIcon,
   PencilIcon,
   RepeatIcon,
   Trash2Icon,
+  UserIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
@@ -59,6 +61,12 @@ export function ItemPopover({
               {item.kind === "subscription" ? (
                 <RepeatIcon className="size-4" />
               ) : null}
+              {item.kind === "client-date" ? (
+                <UserIcon className="size-4" />
+              ) : null}
+              {item.kind === "payment" ? (
+                <BanknoteIcon className="size-4" />
+              ) : null}
               <p className="font-semibold text-sm leading-tight">
                 {item.title}
               </p>
@@ -105,6 +113,10 @@ export function ItemPopover({
           </div>
 
           <p className="text-muted-foreground text-xs">{when}</p>
+
+          {item.context ? (
+            <p className="text-muted-foreground text-xs">{item.context}</p>
+          ) : null}
 
           {item.kind === "subscription" && item.amount !== undefined ? (
             <p className="text-muted-foreground text-xs">

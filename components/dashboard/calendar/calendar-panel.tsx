@@ -22,7 +22,14 @@ import type {
 } from "./calendar-types";
 import {
   buildOverlays,
+  buildProjectOverlays,
+  type ClientRow,
+  type DateColumn,
   eventToItem,
+  type MoneyTxn,
+  moneyByDay,
+  type PaymentRow,
+  type ProjectMeta,
   type Subscription,
   type Task,
   viewRange,
@@ -41,6 +48,11 @@ export function CalendarPanel() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [subs, setSubs] = useState<Subscription[]>([]);
+  const [projects, setProjects] = useState<ProjectMeta[]>([]);
+  const [clients, setClients] = useState<ClientRow[]>([]);
+  const [dateCols, setDateCols] = useState<DateColumn[]>([]);
+  const [payments, setPayments] = useState<PaymentRow[]>([]);
+  const [moneyTxns, setMoneyTxns] = useState<MoneyTxn[]>([]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<CalendarEvent | null>(null);
@@ -54,19 +66,26 @@ export function CalendarPanel() {
       supabase
         .from("subscriptions")
         .select("id,name,amount,cycle,next_billing,color"),
-    ]).then(([ev, tk, sb]) => {
+      supabase.from("projects").select("id,type,name"),
+      supabase.from("project_clients").select("id,project_id,name,data"),
+      supabase
+        .from("project_columns")
+        .select("id,project_id")
+        .eq("type", "date"),
+      supabase.from("project_entries").select("id,project_id,label,date"),
+      supabase.from("transactions").select("amount,type,date"),
+    ]).then(([ev, tk, sb, pj, cl, dc, pe, tx]) => {
       if (!active) {
         return;
       }
-      if (ev.data) {
-        setEvents(ev.data as CalendarEvent[]);
-      }
-      if (tk.data) {
-        setTasks(tk.data as Task[]);
-      }
-      if (sb.data) {
-        setSubs(sb.data as Subscription[]);
-      }
+      setEvents((ev.data ?? []) as CalendarEvent[]);
+      setTasks((tk.data ?? []) as Task[]);
+      setSubs((sb.data ?? []) as Subscription[]);
+      setProjects((pj.data ?? []) as ProjectMeta[]);
+      setClients((cl.data ?? []) as ClientRow[]);
+      setDateCols((dc.data ?? []) as DateColumn[]);
+      setPayments((pe.data ?? []) as PaymentRow[]);
+      setMoneyTxns((tx.data ?? []) as MoneyTxn[]);
     });
     return () => {
       active = false;
@@ -78,8 +97,30 @@ export function CalendarPanel() {
     return [
       ...events.map(eventToItem),
       ...buildOverlays(tasks, subs, from, to),
+      ...buildProjectOverlays(
+        {
+          projects,
+          clients,
+          dateColumns: dateCols,
+          payments,
+        },
+        from,
+        to
+      ),
     ];
-  }, [events, tasks, subs, view, anchor]);
+  }, [
+    events,
+    tasks,
+    subs,
+    projects,
+    clients,
+    dateCols,
+    payments,
+    view,
+    anchor,
+  ]);
+
+  const money = useMemo(() => moneyByDay(moneyTxns), [moneyTxns]);
 
   function shiftAnchor(d: Date, dir: -1 | 1) {
     if (view === "month") {
@@ -212,6 +253,7 @@ export function CalendarPanel() {
             <MonthView
               anchor={anchor}
               items={items}
+              money={money}
               onDelete={handleDelete}
               onEdit={openEdit}
               onSelectDay={(day) => {
@@ -224,6 +266,7 @@ export function CalendarPanel() {
             <WeekView
               anchor={anchor}
               items={items}
+              money={money}
               onCreateAt={(day, hour) => openCreate(day, hour)}
               onDelete={handleDelete}
               onEdit={openEdit}
@@ -233,6 +276,7 @@ export function CalendarPanel() {
             <DayView
               anchor={anchor}
               items={items}
+              money={money}
               onCreateAt={(day, hour) => openCreate(day, hour)}
               onDelete={handleDelete}
               onEdit={openEdit}

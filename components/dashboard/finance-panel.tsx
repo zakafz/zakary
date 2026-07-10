@@ -8,6 +8,7 @@ import {
   type LucideIcon,
   PlusIcon,
   ReceiptIcon,
+  ScaleIcon,
   ShoppingBagIcon,
   Trash2Icon,
   UtensilsIcon,
@@ -32,6 +33,7 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   CATEGORIES,
+  CATEGORY_LABEL,
   type Transaction,
   type TransactionCategory,
 } from "@/data/finance";
@@ -82,10 +84,6 @@ const CATEGORY_STYLE: Record<
     chipActive: "border-emerald-500/40 bg-emerald-500/15 text-emerald-400",
   },
 };
-
-const CATEGORY_LABEL: Record<TransactionCategory, string> = Object.fromEntries(
-  CATEGORIES.map((c) => [c.id, c.label])
-) as Record<TransactionCategory, string>;
 
 function formatAmount(amount: number) {
   const sign = amount < 0 ? "−" : "+";
@@ -141,7 +139,14 @@ function tileIcon(txn: Transaction): LucideIcon {
 }
 
 function subtitle(txn: Transaction) {
-  const base = txn.category ? CATEGORY_LABEL[txn.category] : "Purchase";
+  let base: string;
+  if (txn.type === "transfer") {
+    base = "Transfer";
+  } else if (txn.type === "deposit") {
+    base = "Income";
+  } else {
+    base = txn.category ? CATEGORY_LABEL[txn.category] : "Purchase";
+  }
   return txn.pending ? `${base} • Pending` : base;
 }
 
@@ -501,6 +506,156 @@ function AddTransactionDialog({
   );
 }
 
+function ReconcileDialog({
+  balance,
+  onAdded,
+}: {
+  balance: number | null;
+  onAdded: (saved: Transaction) => void;
+}) {
+  const supabase = createClient();
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [actual, setActual] = useState("");
+
+  const target = Number.parseFloat(actual);
+  const hasTarget = actual.trim() !== "" && Number.isFinite(target);
+  // Difference we need to book so the running balance matches the real account.
+  const delta =
+    hasTarget && balance !== null
+      ? Math.round((target - balance) * 100) / 100
+      : 0;
+  const balanced = hasTarget && delta === 0;
+
+  function preview() {
+    if (!hasTarget) {
+      return "Enter your real account balance.";
+    }
+    if (balanced) {
+      return "Already balanced — nothing to adjust.";
+    }
+    const verb = delta > 0 ? "Add" : "Remove";
+    return `Will ${verb} ${formatAmount(delta)}`;
+  }
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!(hasTarget && balance !== null) || delta === 0) {
+      return;
+    }
+
+    const row = {
+      merchant: "Balance adjustment",
+      type: "transfer" as const,
+      category: null,
+      amount: delta,
+      note: null,
+      date: format(new Date(), "yyyy-MM-dd"),
+    };
+
+    setSaving(true);
+    const { data, error } = await supabase
+      .from("transactions")
+      .insert(row)
+      .select()
+      .single();
+    setSaving(false);
+
+    if (error || !data) {
+      return;
+    }
+    onAdded(data as Transaction);
+    setActual("");
+    setOpen(false);
+  }
+
+  return (
+    <Dialog
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) {
+          setActual("");
+        }
+      }}
+      open={open}
+    >
+      <DialogTrigger asChild>
+        <Button
+          className="h-8 gap-1.5 rounded-none px-2.5 text-xs"
+          disabled={balance === null}
+          size="sm"
+          type="button"
+          variant="outline"
+        >
+          <ScaleIcon className="size-3.5" />
+          Adjust
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Reconcile balance</DialogTitle>
+          <DialogDescription>
+            Match your balance to your real account.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form className="flex min-w-0 flex-col gap-5" onSubmit={submit}>
+          <div className="flex items-center justify-between border border-border p-3">
+            <span className="text-muted-foreground text-sm">
+              Current balance
+            </span>
+            <span className="font-semibold tabular-nums">
+              {balance === null ? "—" : currency.format(balance)}
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className="font-medium text-muted-foreground text-sm">
+              Actual balance in your account
+            </span>
+            <div className="flex items-center gap-1 py-1">
+              <span className="font-semibold text-4xl text-muted-foreground">
+                $
+              </span>
+              <input
+                autoFocus
+                className="min-w-0 flex-1 bg-transparent text-left font-semibold text-4xl tabular-nums outline-none [appearance:textfield] placeholder:text-muted-foreground/50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                inputMode="decimal"
+                onChange={(e) => setActual(e.target.value)}
+                placeholder="0.00"
+                step="0.01"
+                type="number"
+                value={actual}
+              />
+            </div>
+          </div>
+
+          <p
+            className={cn(
+              "text-sm tabular-nums",
+              balanced ? "text-muted-foreground" : "",
+              !balanced && delta > 0 ? "text-success" : "",
+              !balanced && delta < 0 ? "text-foreground" : ""
+            )}
+          >
+            {preview()}
+          </p>
+
+          <DialogFooter>
+            <Button
+              className="w-full"
+              disabled={saving || !hasTarget || balanced}
+              type="submit"
+            >
+              {saving ? "Adjusting…" : "Apply adjustment"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function GeneralTrends({
   groups,
   loading,
@@ -577,21 +732,39 @@ export function FinancePanel() {
 
   // Running balance = opening balance + every transaction since. The opening
   // balance lives in the table as a one-off "deposit" row, so summing every
-  // amount is all it takes.
+  // amount is all it takes. PostgREST caps a single response at 1000 rows, so
+  // we page through in chunks and keep going until a short page tells us we've
+  // reached the end — otherwise the balance silently omits older rows.
   useEffect(() => {
     let active = true;
-    supabase
-      .from("transactions")
-      .select("amount")
-      .then(({ data }) => {
-        if (active && data) {
-          const total = (data as { amount: number }[]).reduce(
-            (acc, r) => acc + r.amount,
-            0
-          );
-          setBalance(total);
+    const CHUNK = 1000;
+
+    async function sumAll() {
+      let total = 0;
+      let start = 0;
+      for (;;) {
+        const { data, error } = await supabase
+          .from("transactions")
+          .select("amount")
+          .range(start, start + CHUNK - 1);
+        if (error || !data) {
+          return;
         }
-      });
+        total += (data as { amount: number }[]).reduce(
+          (acc, r) => acc + r.amount,
+          0
+        );
+        if (data.length < CHUNK) {
+          break;
+        }
+        start += CHUNK;
+      }
+      if (active) {
+        setBalance(total);
+      }
+    }
+
+    sumAll();
     return () => {
       active = false;
     };
@@ -650,20 +823,30 @@ export function FinancePanel() {
     if (removed) {
       setBalance((prev) => (prev ?? 0) - removed.amount);
     }
-    await supabase.from("transactions").delete().eq("id", id);
+    const { error } = await supabase.from("transactions").delete().eq("id", id);
+    // Restore the optimistic removal if the delete didn't land.
+    if (error && removed) {
+      setTransactions((prev) =>
+        prev.some((t) => t.id === id) ? prev : [removed, ...prev]
+      );
+      setBalance((prev) => (prev ?? 0) + removed.amount);
+    }
   }
 
   const groups = groupByDate(transactions);
 
   return (
     <div className="flex flex-col">
-      <div className="mb-6 flex flex-col gap-1 border border-border p-4">
-        <span className="text-muted-foreground text-xs uppercase tracking-wide">
-          Current balance
-        </span>
-        <span className="font-semibold text-3xl tabular-nums">
-          {balance === null ? "—" : currency.format(balance)}
-        </span>
+      <div className="mb-6 flex items-start justify-between gap-4 border border-border p-4">
+        <div className="flex flex-col gap-1">
+          <span className="text-muted-foreground text-xs uppercase tracking-wide">
+            Current balance
+          </span>
+          <span className="font-semibold text-3xl tabular-nums">
+            {balance === null ? "—" : currency.format(balance)}
+          </span>
+        </div>
+        <ReconcileDialog balance={balance} onAdded={handleAdded} />
       </div>
 
       <div className="flex items-center gap-2">
