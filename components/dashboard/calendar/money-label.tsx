@@ -12,6 +12,23 @@ function netTone(net: number) {
   return "text-muted-foreground";
 }
 
+function sign(net: number) {
+  if (net > 0) {
+    return "+";
+  }
+  if (net < 0) {
+    return "−";
+  }
+  return "";
+}
+
+/** Tight net for narrow cells: whole dollars under $1K, `$1.2K` above. */
+function netLabel(net: number) {
+  const abs = Math.abs(net);
+  const amount = abs >= 1000 ? compactCurrency(abs) : `$${Math.round(abs)}`;
+  return `${sign(net)}${amount}`;
+}
+
 /** Compact net for a day (made − spent) as colored text. Green up, red down. */
 export function DayNet({
   money,
@@ -24,13 +41,12 @@ export function DayNet({
   return (
     <span
       className={cn(
-        "text-center font-medium text-[11px] tabular-nums",
+        "max-w-full truncate text-center font-medium text-[11px] tabular-nums",
         netTone(net),
         className
       )}
     >
-      {net > 0 ? "+" : ""}
-      {compactCurrency(net)}
+      {netLabel(net)}
     </span>
   );
 }

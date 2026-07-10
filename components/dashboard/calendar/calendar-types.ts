@@ -15,6 +15,16 @@ export const EVENT_COLOR_KEYS: EventColor[] = [
   "red",
 ];
 
+/** Solid dot className per color — used for the compact mobile month view. */
+export const EVENT_DOT: Record<EventColor, string> = {
+  neutral: "bg-muted-foreground",
+  blue: "bg-blue-500",
+  green: "bg-green-500",
+  sky: "bg-sky-500",
+  purple: "bg-purple-500",
+  red: "bg-red-500",
+};
+
 /** Badge className per color (user-specified shadcn custom-color palette). */
 export const EVENT_COLORS: Record<EventColor, string> = {
   neutral: "bg-secondary text-secondary-foreground",

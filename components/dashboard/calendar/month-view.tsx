@@ -3,7 +3,7 @@
 import { format, isSameMonth, isToday } from "date-fns";
 import { Badge } from "@/components/ui/badge/badge";
 import { cn } from "@/lib/utils";
-import { type CalendarItem, EVENT_COLORS } from "./calendar-types";
+import { type CalendarItem, EVENT_COLORS, EVENT_DOT } from "./calendar-types";
 import {
   type DayMoney,
   daysInRange,
@@ -58,7 +58,7 @@ export function MonthView({
           return (
             <div
               className={cn(
-                "flex min-h-28 flex-col gap-1 border-border/30 border-r border-b px-1 py-1.5",
+                "flex min-h-20 flex-col gap-1 border-border/30 border-r border-b px-0.5 py-1.5 sm:min-h-28 sm:px-1",
                 !inMonth && "opacity-40"
               )}
               key={day.toISOString()}
@@ -81,7 +81,28 @@ export function MonthView({
               {dayMoney ? (
                 <DayNet className="mx-auto" money={dayMoney} />
               ) : null}
-              <div className="flex flex-col gap-0.5">
+
+              {/* Mobile: compact dots — tap the cell to open the day. */}
+              {dayItems.length > 0 ? (
+                <button
+                  className="mt-auto flex flex-wrap justify-center gap-1 pb-0.5 sm:hidden"
+                  onClick={() => onSelectDay(day)}
+                  type="button"
+                >
+                  {dayItems.slice(0, 5).map((it) => (
+                    <span
+                      className={cn(
+                        "size-1.5 shrink-0 rounded-full",
+                        EVENT_DOT[it.color]
+                      )}
+                      key={it.id}
+                    />
+                  ))}
+                </button>
+              ) : null}
+
+              {/* Desktop: full labelled chips. */}
+              <div className="hidden flex-col gap-0.5 sm:flex">
                 {dayItems.slice(0, MAX_CHIPS).map((it) => (
                   <ItemPopover
                     item={it}
