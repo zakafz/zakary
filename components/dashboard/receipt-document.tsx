@@ -226,93 +226,10 @@ export const ReceiptDocument = forwardRef<
 ReceiptDocument.displayName = "ReceiptDocument";
 
 /**
- * Renders a receipt off-screen, waits for the logo to load, and returns an
- * A4 PDF blob — no visible element required by the caller.
+ * Produces a crisp, vector A4 PDF blob via @react-pdf/renderer. Loaded lazily
+ * so the (heavy) renderer stays out of the initial bundle.
  */
 export async function generateReceiptPdf(data: ReceiptDocData): Promise<Blob> {
-  const { createRoot } = await import("react-dom/client");
-  const { createElement } = await import("react");
-  const holder = document.createElement("div");
-  holder.style.cssText = "position:fixed;left:-9999px;top:0;z-index:-1;";
-  document.body.appendChild(holder);
-  const root = createRoot(holder);
-  root.render(createElement(ReceiptDocument, { data }));
-
-  // Let React paint, then wait for any images to settle.
-  await new Promise((r) =>
-    requestAnimationFrame(() => requestAnimationFrame(r))
-  );
-  const imgs = Array.from(holder.querySelectorAll("img"));
-  await Promise.all(
-    imgs.map((img) =>
-      img.complete
-        ? Promise.resolve()
-        : new Promise((res) => {
-            img.onload = res;
-            img.onerror = res;
-          })
-    )
-  );
-
-  try {
-    return await receiptPdfBlob(holder.firstElementChild as HTMLElement);
-  } finally {
-    root.unmount();
-    holder.remove();
-  }
-}
-
-/**
- * html2canvas reads the computed background of <html>/<body> to paint the page
- * behind the element. This app's theme uses `lab()`/`oklch()` colors there,
- * which html2canvas can't parse — so we pin them to plain values during the
- * snapshot and restore them right after.
- */
-function withPlainDocumentColors<T>(fn: () => Promise<T>): Promise<T> {
-  const targets = [document.documentElement, document.body];
-  const saved = targets.map((el) => ({
-    el,
-    background: el.style.background,
-    color: el.style.color,
-  }));
-  for (const el of targets) {
-    el.style.background = "#ffffff";
-    el.style.color = "#171717";
-  }
-  return fn().finally(() => {
-    for (const s of saved) {
-      s.el.style.background = s.background;
-      s.el.style.color = s.color;
-    }
-  });
-}
-
-/** Snapshots a rendered receipt element into an A4 PDF blob. */
-export async function receiptPdfBlob(el: HTMLElement): Promise<Blob> {
-  const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-    import("html2canvas-pro"),
-    import("jspdf"),
-  ]);
-  const canvas = await withPlainDocumentColors(() =>
-    html2canvas(el, {
-      scale: 2,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-      logging: false,
-    })
-  );
-  const pdf = new jsPDF({ unit: "pt", format: "a4" });
-  const pageW = pdf.internal.pageSize.getWidth();
-  const imgH = (canvas.height * pageW) / canvas.width;
-  pdf.addImage(
-    canvas.toDataURL("image/png"),
-    "PNG",
-    0,
-    0,
-    pageW,
-    imgH,
-    undefined,
-    "FAST"
-  );
-  return pdf.output("blob");
+  const { renderReceiptPdfBlob } = await import("./receipt-pdf");
+  return renderReceiptPdfBlob(data);
 }

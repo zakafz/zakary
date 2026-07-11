@@ -623,6 +623,8 @@ function ReceiptDetailDrawer({
             to: email.trim(),
             number: data.number,
             businessName: data.business.name,
+            customerName: data.customer.name,
+            total: money(data.total),
             pdfUrl,
           },
         }
