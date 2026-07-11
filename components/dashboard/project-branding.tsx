@@ -165,7 +165,7 @@ export function ProjectBranding({
         <div className="flex flex-col gap-1">
           <span className="font-medium text-sm">Receipt logo</span>
           <span className="text-muted-foreground text-xs">
-            Shown at the top of every receipt. PNG with transparency works best.
+            Shown at the top of every receipt.
           </span>
         </div>
         <input

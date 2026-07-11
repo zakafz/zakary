@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
@@ -655,7 +656,10 @@ function ReceiptDetailDrawer({
     <Drawer onOpenChange={(o) => (o ? null : onClose())} open>
       <DrawerContent>
         <DrawerHeader className="flex-row items-center justify-between">
-          <DrawerTitle>{data.number}</DrawerTitle>
+          <div className="flex items-center justify-center gap-5">
+            <DrawerClose><Button variant="outline" className="rounded-none" size="icon-sm"><XIcon /></Button></DrawerClose>
+            <DrawerTitle>{data.number}</DrawerTitle>
+          </div>
           <span
             className={cn(
               "rounded-full px-2.5 py-0.5 font-medium text-xs capitalize",
@@ -698,7 +702,7 @@ function ReceiptDetailDrawer({
           </div>
         </div>
 
-        <DrawerFooter className="flex-row gap-2">
+        <DrawerFooter className="flex-row gap-2 pb-5">
           <Button
             className="flex-1 rounded-none"
             disabled={busy !== null}

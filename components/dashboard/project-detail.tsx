@@ -333,7 +333,7 @@ export function ProjectDetail({
         <Overview expense={expense} income={income} project={project} />
       </div>
 
-      <div className="mt-6 flex gap-1 overflow-x-auto border-border border-b [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="mt-6 flex gap-1 overflow-x-auto overflow-y-hidden border-border border-b [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {tabs.map((t) => (
           <button
             className={cn(

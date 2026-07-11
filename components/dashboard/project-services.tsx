@@ -1,12 +1,13 @@
 "use client";
 
-import { PencilIcon, PlusIcon, TagIcon, Trash2Icon } from "lucide-react";
+import { PencilIcon, PlusIcon, TagIcon, Trash2Icon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
@@ -50,7 +51,16 @@ function ServiceDrawer({
     <Drawer onOpenChange={onOpenChange} open={open}>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>{service ? "Edit service" : "New service"}</DrawerTitle>
+          <div className="flex items-center gap-5">
+            <DrawerClose>
+              <Button className="rounded-none" size="icon-sm" variant="outline">
+                <XIcon />
+              </Button>
+            </DrawerClose>
+            <DrawerTitle>
+              {service ? "Edit service" : "New service"}
+            </DrawerTitle>
+          </div>
         </DrawerHeader>
         <form
           className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5"
@@ -89,7 +99,7 @@ function ServiceDrawer({
             </div>
           </div>
         </form>
-        <DrawerFooter>
+        <DrawerFooter className="pb-5">
           <Button
             className="w-full rounded-none"
             form="service-form"
