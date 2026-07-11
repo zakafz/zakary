@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { type ProjectColumn, tagChip } from "@/data/projects";
-import { cn } from "@/lib/utils";
+import { cn, formatPhone } from "@/lib/utils";
 
 function asString(value: unknown) {
   return typeof value === "string" || typeof value === "number"
@@ -284,13 +284,25 @@ export function ClientCellEditor({
       />
     );
   }
+  if (column.type === "phone") {
+    return (
+      <input
+        aria-label={column.name}
+        className={INPUT}
+        inputMode="tel"
+        onChange={(e) => onChange(formatPhone(e.target.value))}
+        type="tel"
+        value={asString(value)}
+      />
+    );
+  }
   return (
     <input
       aria-label={column.name}
       className={INPUT}
       inputMode={column.type === "number" ? "decimal" : "text"}
       onChange={(e) => onChange(e.target.value)}
-      type={column.type === "phone" ? "tel" : column.type}
+      type={column.type}
       value={asString(value)}
     />
   );

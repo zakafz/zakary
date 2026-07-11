@@ -8,9 +8,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { ClientPage } from "@/components/dashboard/client-page";
+import { ProjectBranding } from "@/components/dashboard/project-branding";
 import { ProjectClients } from "@/components/dashboard/project-clients";
 import { ProjectDialog } from "@/components/dashboard/project-dialog";
 import { ProjectFinance } from "@/components/dashboard/project-finance";
+import { ProjectReceipts } from "@/components/dashboard/project-receipts";
+import { ProjectServices } from "@/components/dashboard/project-services";
 import { ProjectTasks } from "@/components/dashboard/project-tasks";
 import {
   AlertDialog,
@@ -31,6 +35,7 @@ import {
   compactCurrency,
   PROJECT_TYPE_LABEL,
   type Project,
+  type ProjectClient,
   type ProjectEntry,
 } from "@/data/projects";
 import { createClient } from "@/lib/supabase/client";
@@ -147,7 +152,14 @@ function Logo({ project, size }: { project: Project; size: number }) {
   );
 }
 
-const BUSINESS_TABS = ["clients", "finance", "tasks"] as const;
+const BUSINESS_TABS = [
+  "clients",
+  "finance",
+  "receipts",
+  "services",
+  "branding",
+  "tasks",
+] as const;
 const PROJECT_TABS = ["finance", "tasks"] as const;
 
 export function ProjectDetail({
@@ -166,6 +178,9 @@ export function ProjectDetail({
   const [editOpen, setEditOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<ProjectClient | null>(
+    null
+  );
   const isBusiness = project.type === "business";
   const tabs = isBusiness ? BUSINESS_TABS : PROJECT_TABS;
   const [tab, setTab] = useState<string>(tabs[0]);
@@ -215,6 +230,29 @@ export function ProjectDetail({
   }
 
   const clientEntries = entries.filter((e) => e.client_id !== null);
+
+  if (selectedClient) {
+    return (
+      <ClientPage
+        client={selectedClient}
+        entries={entries}
+        onAddEntry={(p) =>
+          addEntry({
+            kind: p.kind,
+            client_id: p.clientId,
+            label: p.label,
+            amount: p.amount,
+            date: p.date,
+            receipt_url: p.receiptUrl,
+          })
+        }
+        onBack={() => setSelectedClient(null)}
+        onClientSaved={setSelectedClient}
+        onRemoveEntry={removeEntry}
+        project={project}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col">
@@ -317,19 +355,16 @@ export function ProjectDetail({
         {tab === "clients" ? (
           <ProjectClients
             entries={clientEntries}
-            onAddEntry={(p) =>
-              addEntry({
-                kind: p.kind,
-                client_id: p.clientId,
-                label: p.label,
-                amount: p.amount,
-                date: p.date,
-                receipt_url: p.receiptUrl,
-              })
-            }
-            onRemoveEntry={removeEntry}
+            onOpenClient={setSelectedClient}
             projectId={project.id}
           />
+        ) : null}
+        {tab === "services" ? <ProjectServices projectId={project.id} /> : null}
+        {tab === "receipts" ? (
+          <ProjectReceipts projectId={project.id} projectName={project.name} />
+        ) : null}
+        {tab === "branding" ? (
+          <ProjectBranding projectId={project.id} projectName={project.name} />
         ) : null}
         {tab === "finance" ? (
           <ProjectFinance

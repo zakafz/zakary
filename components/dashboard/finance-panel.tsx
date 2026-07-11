@@ -706,7 +706,7 @@ function GeneralTrends({
 
       {hasMore ? (
         <Button
-          className="mt-4 w-full"
+          className="mt-4 w-full rounded-none"
           disabled={loadingMore}
           onClick={onLoadMore}
           type="button"

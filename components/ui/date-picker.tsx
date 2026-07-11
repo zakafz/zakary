@@ -15,9 +15,11 @@ import { cn } from "@/lib/utils";
 export function DatePicker({
   value,
   onChange,
+  className,
 }: {
   value: Date;
   onChange: (date: Date) => void;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -25,7 +27,7 @@ export function DatePicker({
     <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
         <Button
-          className={cn("w-full justify-start font-normal")}
+          className={cn("w-full justify-start font-normal", className)}
           type="button"
           variant="outline"
         >

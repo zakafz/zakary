@@ -238,6 +238,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--background);
+    /* Required so drawer/dialog overlays cover the viewport after scroll. */
+    position: relative;
   }
 
   html::-webkit-scrollbar {
@@ -266,6 +268,17 @@
   ::-moz-selection {
     background-color: var(--selection-bg);
     color: var(--selection-text);
+  }
+
+  /* Hide native number-input spinners for a cleaner amount field. */
+  .no-spinner::-webkit-outer-spin-button,
+  .no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .no-spinner {
+    -moz-appearance: textfield;
+    appearance: textfield;
   }
 
   /* Hit area extension utility */

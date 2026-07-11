@@ -14,11 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
 import { EmptyState } from "@/components/dashboard/empty-state";
-import {
-  ClientCellEditor,
-  ClientCellValue,
-} from "@/components/dashboard/project-client-cell";
-import { ProjectEntries } from "@/components/dashboard/project-entries";
+import { ClientCellValue } from "@/components/dashboard/project-client-cell";
 import { TagOptionsDialog } from "@/components/dashboard/tag-options-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,12 +39,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import {
   COLUMN_TYPES,
   type ColumnType,
   currency,
@@ -63,15 +53,6 @@ import { cn } from "@/lib/utils";
 const NAME_W = 168;
 const EARNED_W = 96;
 const ACTIONS_W = 44;
-
-type AddClientEntry = (payload: {
-  clientId: string;
-  kind: "income" | "expense";
-  label: string;
-  amount: number;
-  date: string;
-  receiptUrl: string | null;
-}) => Promise<void>;
 
 function baseWidth(type: ColumnType) {
   if (type === "text") {
@@ -327,12 +308,14 @@ function ClientRow({
 }) {
   return (
     <div className="flex items-center border-border/60 border-b bg-background">
-      <div
-        className="shrink-0 truncate px-3 py-1.5 font-medium text-[15px]"
+      <button
+        className="shrink-0 truncate px-3 py-1.5 text-left font-medium text-[15px] transition-colors hover:text-primary"
+        onClick={() => onEdit(client)}
         style={{ width: NAME_W, minWidth: NAME_W }}
+        type="button"
       >
         {client.name}
-      </div>
+      </button>
       {columns.map((column) => (
         <div
           className="shrink-0 px-3 py-1.5 text-sm"
@@ -364,155 +347,16 @@ function ClientRow({
   );
 }
 
-/* ---------------------------- edit sheet --------------------------------- */
-
-function EditClientSheet({
-  client,
-  columns,
-  entries,
-  onClose,
-  onSave,
-  onAddEntry,
-  onRemoveEntry,
-}: {
-  client: ProjectClient;
-  columns: ProjectColumn[];
-  entries: ProjectEntry[];
-  onClose: () => void;
-  onSave: (id: string, name: string, data: Record<string, unknown>) => void;
-  onAddEntry: AddClientEntry;
-  onRemoveEntry: (id: string) => void;
-}) {
-  const [name, setName] = useState(client.name);
-  const [data, setData] = useState<Record<string, unknown>>(client.data ?? {});
-
-  function commit() {
-    onSave(client.id, name.trim() || client.name, data);
-  }
-
-  const earnings = entries.filter(
-    (e) => e.client_id === client.id && e.kind === "income"
-  );
-  const expenses = entries.filter(
-    (e) => e.client_id === client.id && e.kind === "expense"
-  );
-
-  return (
-    <Sheet
-      onOpenChange={(next) => {
-        if (!next) {
-          commit();
-          onClose();
-        }
-      }}
-      open
-    >
-      <SheetContent
-        className="w-full gap-0 overflow-y-auto sm:max-w-md"
-        side="right"
-      >
-        <SheetHeader className="border-border/60 border-b">
-          <SheetTitle>Edit client</SheetTitle>
-        </SheetHeader>
-        <div className="flex flex-col gap-4 p-6">
-          <div className="flex flex-col gap-1.5">
-            <span className="font-medium text-muted-foreground text-sm">
-              Name
-            </span>
-            <Input
-              onChange={(e) => setName(e.target.value)}
-              type="text"
-              value={name}
-            />
-          </div>
-          {columns.map((column) => (
-            <div className="flex flex-col gap-1.5" key={column.id}>
-              <span className="font-medium text-muted-foreground text-sm">
-                {column.name}
-              </span>
-              <ClientCellEditor
-                column={column}
-                onChange={(value) =>
-                  setData((prev) => ({ ...prev, [column.id]: value }))
-                }
-                value={data[column.id]}
-              />
-            </div>
-          ))}
-
-          <div className="border-border border-t pt-4">
-            <ProjectEntries
-              addTitle={`Earning from ${client.name}`}
-              emptyText="No earnings yet."
-              entries={earnings}
-              inline
-              kind="income"
-              labelPlaceholder="What was it for?"
-              onAdd={(label, amount, date, receiptUrl) =>
-                onAddEntry({
-                  clientId: client.id,
-                  kind: "income",
-                  label,
-                  amount,
-                  date,
-                  receiptUrl,
-                })
-              }
-              onRemove={onRemoveEntry}
-              title="Earnings"
-            />
-          </div>
-          <div className="border-border border-t pt-4">
-            <ProjectEntries
-              addTitle={`Expense for ${client.name}`}
-              emptyText="No expenses yet."
-              entries={expenses}
-              inline
-              kind="expense"
-              labelPlaceholder="e.g. Parts, Materials"
-              onAdd={(label, amount, date, receiptUrl) =>
-                onAddEntry({
-                  clientId: client.id,
-                  kind: "expense",
-                  label,
-                  amount,
-                  date,
-                  receiptUrl,
-                })
-              }
-              onRemove={onRemoveEntry}
-              title="Expenses"
-            />
-          </div>
-
-          <Button
-            className="w-full rounded-none"
-            onClick={() => {
-              commit();
-              onClose();
-            }}
-            type="button"
-          >
-            Done
-          </Button>
-        </div>
-      </SheetContent>
-    </Sheet>
-  );
-}
-
 /* ------------------------------- panel ----------------------------------- */
 
 export function ProjectClients({
   projectId,
   entries,
-  onAddEntry,
-  onRemoveEntry,
+  onOpenClient,
 }: {
   projectId: string;
   entries: ProjectEntry[];
-  onAddEntry: AddClientEntry;
-  onRemoveEntry: (id: string) => void;
+  onOpenClient: (client: ProjectClient) => void;
 }) {
   const supabase = createClient();
   const [clients, setClients] = useState<ProjectClient[]>([]);
@@ -521,7 +365,6 @@ export function ProjectClients({
   const [name, setName] = useState("");
   const [search, setSearch] = useState("");
   const [editColumns, setEditColumns] = useState(false);
-  const [editing, setEditing] = useState<ProjectClient | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -572,24 +415,6 @@ export function ProjectClients({
         )
       );
     }
-  }
-
-  function patchClient(id: string, patch: Partial<ProjectClient>) {
-    setClients((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...patch } : c))
-    );
-  }
-
-  async function saveClient(
-    id: string,
-    nextName: string,
-    data: Record<string, unknown>
-  ) {
-    patchClient(id, { name: nextName, data });
-    await supabase
-      .from("project_clients")
-      .update({ name: nextName, data })
-      .eq("id", id);
   }
 
   async function removeClient(id: string) {
@@ -766,7 +591,7 @@ export function ProjectClients({
                   earned={netFor(client.id)}
                   key={client.id}
                   onDelete={removeClient}
-                  onEdit={setEditing}
+                  onEdit={onOpenClient}
                 />
               ))}
               {filtered.length === 0 ? (
@@ -780,18 +605,6 @@ export function ProjectClients({
           </div>
         ) : null}
       </div>
-
-      {editing ? (
-        <EditClientSheet
-          client={editing}
-          columns={columns}
-          entries={entries}
-          onAddEntry={onAddEntry}
-          onClose={() => setEditing(null)}
-          onRemoveEntry={onRemoveEntry}
-          onSave={saveClient}
-        />
-      ) : null}
     </div>
   );
 }

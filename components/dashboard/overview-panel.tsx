@@ -14,10 +14,6 @@ import {
   subIcon,
 } from "@/components/dashboard/subscriptions-panel";
 import {
-  type EventColor,
-  EVENT_COLORS,
-} from "./calendar/calendar-types";
-import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
@@ -26,6 +22,7 @@ import {
 import { CATEGORIES, type TransactionCategory } from "@/data/finance";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { EVENT_COLORS, type EventColor } from "./calendar/calendar-types";
 
 type Cycle = "weekly" | "monthly" | "yearly";
 type Period = "weekly" | "monthly" | "yearly";
