@@ -9,6 +9,7 @@ import {
   PlusIcon,
   ReceiptIcon,
   ScaleIcon,
+  ShapesIcon,
   ShoppingBagIcon,
   Trash2Icon,
   UtensilsIcon,
@@ -57,6 +58,7 @@ const CATEGORY_ICON: Record<TransactionCategory, LucideIcon> = {
   transportation: CarIcon,
   food: UtensilsIcon,
   bills: ReceiptIcon,
+  other: ShapesIcon,
 };
 
 const CATEGORY_STYLE: Record<
@@ -82,6 +84,11 @@ const CATEGORY_STYLE: Record<
     icon: "text-emerald-400",
     tile: "bg-emerald-500/15 text-emerald-400",
     chipActive: "border-emerald-500/40 bg-emerald-500/15 text-emerald-400",
+  },
+  other: {
+    icon: "text-rose-400",
+    tile: "bg-rose-500/15 text-rose-400",
+    chipActive: "border-rose-500/40 bg-rose-500/15 text-rose-400",
   },
 };
 

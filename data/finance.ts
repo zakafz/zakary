@@ -4,13 +4,15 @@ export type TransactionCategory =
   | "shopping"
   | "transportation"
   | "food"
-  | "bills";
+  | "bills"
+  | "other";
 
 export const CATEGORIES: { id: TransactionCategory; label: string }[] = [
   { id: "shopping", label: "Shopping" },
   { id: "transportation", label: "Transportation" },
   { id: "food", label: "Food & Drink" },
   { id: "bills", label: "Bills" },
+  { id: "other", label: "Other" },
 ];
 
 /** Category palette, shared across every finance chart and breakdown. */
@@ -19,6 +21,7 @@ export const CATEGORY_COLOR: Record<TransactionCategory, string> = {
   transportation: "#38bdf8",
   food: "#fbbf24",
   bills: "#34d399",
+  other: "#fb7185",
 };
 
 /** Display labels keyed by category id. */

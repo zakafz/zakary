@@ -32,7 +32,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  compactCurrency,
   PROJECT_TYPE_LABEL,
   type Project,
   type ProjectClient,
@@ -49,81 +48,6 @@ type NewEntry = {
   date: string;
   receipt_url: string | null;
 };
-
-function Stat({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: string;
-  tone?: "success" | "destructive";
-}) {
-  return (
-    <div className="flex flex-1 flex-col gap-1">
-      <span className="text-muted-foreground text-xs uppercase tracking-wide">
-        {label}
-      </span>
-      <span
-        className={cn(
-          "font-semibold text-lg tabular-nums",
-          tone === "success" && "text-success",
-          tone === "destructive" && "text-destructive"
-        )}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
-function Overview({
-  project,
-  income,
-  expense,
-}: {
-  project: Project;
-  income: number;
-  expense: number;
-}) {
-  if (project.type === "business") {
-    const net = income - expense;
-    return (
-      <div className="flex gap-3 border border-border p-4">
-        <Stat label="Earned" tone="success" value={compactCurrency(income)} />
-        <Stat label="Expenses" value={compactCurrency(expense)} />
-        <Stat
-          label="Net"
-          tone={net < 0 ? "destructive" : "success"}
-          value={compactCurrency(net)}
-        />
-      </div>
-    );
-  }
-
-  const balance = project.total - income;
-  const pct =
-    project.total > 0 ? Math.min(100, (income / project.total) * 100) : 0;
-  return (
-    <div className="flex flex-col gap-3 border border-border p-4">
-      <div className="flex gap-3">
-        <Stat label="Total" value={compactCurrency(project.total)} />
-        <Stat label="Paid" tone="success" value={compactCurrency(income)} />
-        <Stat
-          label="Balance"
-          tone={balance > 0 ? "destructive" : "success"}
-          value={compactCurrency(balance)}
-        />
-      </div>
-      <div className="h-2 w-full overflow-hidden bg-secondary">
-        <div
-          className="h-full bg-success transition-[width]"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
-  );
-}
 
 function Logo({ project, size }: { project: Project; size: number }) {
   if (project.logo_url) {
@@ -203,13 +127,6 @@ export function ProjectDetail({
       active = false;
     };
   }, [supabase, project.id]);
-
-  const income = entries
-    .filter((e) => e.kind === "income")
-    .reduce((acc, e) => acc + e.amount, 0);
-  const expense = entries
-    .filter((e) => e.kind === "expense")
-    .reduce((acc, e) => acc + e.amount, 0);
 
   async function addEntry(entry: NewEntry) {
     const { data } = await supabase
@@ -333,10 +250,6 @@ export function ProjectDetail({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      <div className="mt-6">
-        <Overview expense={expense} income={income} project={project} />
-      </div>
 
       <div className="mt-6 flex gap-1 overflow-x-auto overflow-y-hidden border-border border-b [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {tabs.map((t) => (

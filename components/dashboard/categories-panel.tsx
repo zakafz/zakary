@@ -119,15 +119,9 @@ async function fetchPurchases(
   return rows;
 }
 
-const SLICE_COLOR: Record<Slice, string> = {
-  ...CATEGORY_COLOR,
-  other: "#a1a1aa",
-};
+const SLICE_COLOR: Record<Slice, string> = CATEGORY_COLOR;
 
-const SLICE_LABEL: Record<Slice, string> = {
-  ...CATEGORY_LABEL,
-  other: "Other",
-};
+const SLICE_LABEL: Record<Slice, string> = CATEGORY_LABEL;
 
 const currency = new Intl.NumberFormat("en-CA", {
   style: "currency",

@@ -78,6 +78,7 @@ const DEFAULT_BUDGETS: Record<TransactionCategory, Budget> = {
   transportation: { amount: 0, period: "weekly" },
   food: { amount: 0, period: "weekly" },
   bills: { amount: 0, period: "monthly" },
+  other: { amount: 0, period: "monthly" },
 };
 
 export function BudgetPanel() {
@@ -89,6 +90,7 @@ export function BudgetPanel() {
     transportation: "",
     food: "",
     bills: "",
+    other: "",
   });
   const [purchases, setPurchases] = useState<Purchase[]>([]);
 
@@ -111,6 +113,7 @@ export function BudgetPanel() {
         transportation: "",
         food: "",
         bills: "",
+        other: "",
       };
       for (const row of (budgetRes.data ?? []) as {
         category: TransactionCategory;
