@@ -13,21 +13,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  PROJECT_TYPE_LABEL,
-  type Project,
-  type ProjectType,
-} from "@/data/projects";
+import type { Project } from "@/data/projects";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
 
 const LOGO_BUCKET = "project-logos";
-const TYPES: ProjectType[] = ["business", "project"];
-
-const TYPE_HINT: Record<ProjectType, string> = {
-  business: "Ongoing operation with clients (e.g. a detailing shop).",
-  project: "A single engagement with an agreed total (e.g. an app build).",
-};
 
 export function ProjectDialog({
   editing,
@@ -44,7 +33,6 @@ export function ProjectDialog({
   const fileInput = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [type, setType] = useState<ProjectType>(editing?.type ?? "business");
   const [name, setName] = useState(editing?.name ?? "");
   const [total, setTotal] = useState(
     editing?.total ? String(editing.total) : ""
@@ -79,10 +67,10 @@ export function ProjectDialog({
       return;
     }
     const payload = {
-      type,
+      type: "project" as const,
       name: name.trim(),
       logo_url: logoUrl,
-      total: type === "project" ? Math.abs(Number.parseFloat(total) || 0) : 0,
+      total: Math.abs(Number.parseFloat(total) || 0),
     };
 
     setSaving(true);
@@ -134,28 +122,12 @@ export function ProjectDialog({
           <DialogTitle>
             {isEditing ? "Edit project" : "New project"}
           </DialogTitle>
-          <DialogDescription>{TYPE_HINT[type]}</DialogDescription>
+          <DialogDescription>
+            A single engagement with an agreed total (e.g. an app build).
+          </DialogDescription>
         </DialogHeader>
 
         <form className="flex min-w-0 flex-col gap-4" onSubmit={submit}>
-          <div className="flex h-9 border border-border p-0.5">
-            {TYPES.map((t) => (
-              <button
-                className={cn(
-                  "flex flex-1 items-center justify-center px-3 font-medium text-sm transition-colors",
-                  type === t
-                    ? "bg-secondary text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-                key={t}
-                onClick={() => setType(t)}
-                type="button"
-              >
-                {PROJECT_TYPE_LABEL[t]}
-              </button>
-            ))}
-          </div>
-
           <div className="flex items-center gap-3">
             <button
               aria-label="Upload logo"
@@ -188,21 +160,19 @@ export function ProjectDialog({
             value={name}
           />
 
-          {type === "project" ? (
-            <div className="flex flex-col gap-1.5">
-              <span className="font-medium text-muted-foreground text-sm">
-                Agreed total
-              </span>
-              <Input
-                inputMode="decimal"
-                onChange={(e) => setTotal(e.target.value)}
-                placeholder="0.00"
-                step="0.01"
-                type="number"
-                value={total}
-              />
-            </div>
-          ) : null}
+          <div className="flex flex-col gap-1.5">
+            <span className="font-medium text-muted-foreground text-sm">
+              Agreed total
+            </span>
+            <Input
+              inputMode="decimal"
+              onChange={(e) => setTotal(e.target.value)}
+              placeholder="0.00"
+              step="0.01"
+              type="number"
+              value={total}
+            />
+          </div>
 
           <DialogFooter>
             <Button

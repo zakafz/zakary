@@ -99,7 +99,7 @@ function ServiceDrawer({
             </div>
           </div>
         </form>
-        <DrawerFooter className="pb-5">
+        <DrawerFooter className="max-lg:pb-10">
           <Button
             className="w-full rounded-none"
             form="service-form"

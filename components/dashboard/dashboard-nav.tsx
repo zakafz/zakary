@@ -9,6 +9,7 @@ import {
   NotebookIcon,
   RepeatIcon,
   WalletIcon,
+  WrenchIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -24,6 +25,7 @@ const TABS: Tab[] = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboardIcon },
   { href: "/dashboard/finance", label: "Finance", icon: WalletIcon },
   { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDaysIcon },
+  { href: "/dashboard/strtunez", label: "STR Tunez", icon: WrenchIcon },
   { href: "/dashboard/projects", label: "Projects", icon: FolderIcon },
   {
     href: "/dashboard/subscriptions",

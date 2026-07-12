@@ -9,22 +9,13 @@ import { ProjectDialog } from "@/components/dashboard/project-dialog";
 import { SwipeRow } from "@/components/dashboard/swipe-row";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   currency,
   PROJECT_TYPE_LABEL,
   type Project,
-  type ProjectType,
 } from "@/data/projects";
 import { createClient } from "@/lib/supabase/client";
 
 type Totals = { income: number; expense: number };
-type Filter = ProjectType | "all";
 
 function ProjectLogo({ project }: { project: Project }) {
   if (project.logo_url) {
@@ -67,7 +58,6 @@ export function ProjectsPanel() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [totals, setTotals] = useState<Record<string, Totals>>({});
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<Filter>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selected, setSelected] = useState<Project | null>(null);
 
@@ -76,6 +66,7 @@ export function ProjectsPanel() {
       supabase
         .from("projects")
         .select("*")
+        .eq("type", "project")
         .order("created_at", { ascending: false }),
       supabase.from("project_entries").select("project_id, kind, amount"),
     ]);
@@ -132,28 +123,14 @@ export function ProjectsPanel() {
     );
   }
 
-  const filtered =
-    filter === "all" ? projects : projects.filter((p) => p.type === filter);
+  const filtered = projects;
 
   return (
     <div className="flex flex-col">
       <div className="flex items-center gap-2">
-        <Select onValueChange={(v) => setFilter(v as Filter)} value={filter}>
-          <SelectTrigger className="flex-1 rounded-none border-border">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="rounded-none">
-            <SelectItem className="rounded-none" value="all">
-              All projects
-            </SelectItem>
-            <SelectItem className="rounded-none" value="business">
-              Businesses
-            </SelectItem>
-            <SelectItem className="rounded-none" value="project">
-              Projects
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-1 items-center border border-border px-3 py-2 font-medium text-sm">
+          Projects
+        </div>
         <Button
           aria-label="New project"
           className="aspect-square h-auto shrink-0 self-stretch rounded-none"

@@ -167,11 +167,14 @@ export function ProjectDetail({
   onBack,
   onChanged,
   onDeleted,
+  hideBack = false,
 }: {
   project: Project;
   onBack: () => void;
   onChanged: (project: Project, isNew: boolean) => void;
   onDeleted: (id: string) => void;
+  /** Hide the back chevron when the detail is shown as a standalone tab. */
+  hideBack?: boolean;
 }) {
   const supabase = createClient();
   const [entries, setEntries] = useState<ProjectEntry[]>([]);
@@ -257,14 +260,16 @@ export function ProjectDetail({
   return (
     <div className="flex flex-col">
       <div className="flex items-center gap-2">
-        <button
-          aria-label="Back"
-          className="-ml-1.5 inline-flex size-7 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
-          onClick={onBack}
-          type="button"
-        >
-          <ChevronLeftIcon className="size-5" />
-        </button>
+        {hideBack ? null : (
+          <button
+            aria-label="Back"
+            className="-ml-1.5 inline-flex size-7 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+            onClick={onBack}
+            type="button"
+          >
+            <ChevronLeftIcon className="size-5" />
+          </button>
+        )}
         <Logo project={project} size={40} />
         <div className="flex min-w-0 flex-1 flex-col">
           <h2 className="truncate font-semibold text-lg leading-tight">

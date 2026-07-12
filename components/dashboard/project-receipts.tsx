@@ -307,8 +307,15 @@ function NewReceiptDrawer({
   return (
     <Drawer onOpenChange={onOpenChange} open={open}>
       <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>New receipt</DrawerTitle>
+        <DrawerHeader className="flex w-full items-start justify-center">
+          <div className="flex items-center justify-center gap-5">
+            <DrawerClose>
+              <Button className="rounded-none" size="icon-sm" variant="outline">
+                <XIcon />
+              </Button>
+            </DrawerClose>
+            <DrawerTitle>New receipt</DrawerTitle>
+          </div>
         </DrawerHeader>
         <form
           className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-5"
@@ -499,7 +506,7 @@ function NewReceiptDrawer({
             </div>
           </section>
         </form>
-        <DrawerFooter>
+        <DrawerFooter className="max-lg:pb-10">
           <Button
             className="w-full rounded-none"
             disabled={saving}
@@ -657,7 +664,11 @@ function ReceiptDetailDrawer({
       <DrawerContent>
         <DrawerHeader className="flex-row items-center justify-between">
           <div className="flex items-center justify-center gap-5">
-            <DrawerClose><Button variant="outline" className="rounded-none" size="icon-sm"><XIcon /></Button></DrawerClose>
+            <DrawerClose>
+              <Button className="rounded-none" size="icon-sm" variant="outline">
+                <XIcon />
+              </Button>
+            </DrawerClose>
             <DrawerTitle>{data.number}</DrawerTitle>
           </div>
           <span
@@ -702,7 +713,7 @@ function ReceiptDetailDrawer({
           </div>
         </div>
 
-        <DrawerFooter className="flex-row gap-2 pb-5">
+        <DrawerFooter className="flex-row gap-2 max-lg:pb-10">
           <Button
             className="flex-1 rounded-none"
             disabled={busy !== null}
