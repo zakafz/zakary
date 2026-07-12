@@ -40,6 +40,7 @@ export function ClientPage({
   entries,
   onBack,
   onAddEntry,
+  onEditEntry,
   onRemoveEntry,
   onClientSaved,
 }: {
@@ -48,6 +49,15 @@ export function ClientPage({
   entries: ProjectEntry[];
   onBack: () => void;
   onAddEntry: AddClientEntry;
+  onEditEntry: (
+    id: string,
+    entry: {
+      label: string;
+      amount: number;
+      date: string;
+      receiptUrl: string | null;
+    }
+  ) => Promise<void>;
   onRemoveEntry: (id: string) => void;
   onClientSaved: (client: ProjectClient) => void;
 }) {
@@ -219,6 +229,7 @@ export function ClientPage({
                   receiptUrl,
                 })
               }
+              onEdit={onEditEntry}
               onRemove={onRemoveEntry}
               title="Earnings"
             />
@@ -239,6 +250,7 @@ export function ClientPage({
                   receiptUrl,
                 })
               }
+              onEdit={onEditEntry}
               onRemove={onRemoveEntry}
               title="Expenses"
             />

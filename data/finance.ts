@@ -37,6 +37,8 @@ export type Transaction = {
   type: TransactionType;
   category?: TransactionCategory;
   pending?: boolean;
+  /** Paid/received in cash — tracked so bank balance = total − cash on hand. */
+  cash?: boolean;
   /** Negative = money out, positive = money in. In CAD. */
   amount: number;
   note?: string;

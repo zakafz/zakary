@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2Icon } from "lucide-react";
+import { PencilIcon, Trash2Icon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
@@ -10,10 +10,11 @@ const REVEAL = 64;
 const DRAG_THRESHOLD = 4;
 
 /**
- * A row that reveals a confirm-delete action on left-swipe and, optionally,
- * fires onClick for a plain tap. Renders a <button> when clickable (project /
- * client rows) and a <div> otherwise (rows that hold their own controls, like
- * a task checkbox), so we never nest interactive elements.
+ * A row that reveals a confirm-delete action on left-swipe and, optionally, an
+ * edit action on right-swipe. Also fires onClick for a plain tap. Renders a
+ * <button> when clickable (project / client rows) and a <div> otherwise (rows
+ * that hold their own controls, like a task checkbox), so we never nest
+ * interactive elements.
  */
 export function SwipeRow({
   children,
@@ -21,6 +22,8 @@ export function SwipeRow({
   deleteTitle,
   deleteDescription,
   deleteLabel,
+  onEdit,
+  editLabel,
   onClick,
   className,
   outerClassName,
@@ -30,6 +33,8 @@ export function SwipeRow({
   deleteTitle: string;
   deleteDescription: ReactNode;
   deleteLabel: string;
+  onEdit?: () => void;
+  editLabel?: string;
   onClick?: () => void;
   className?: string;
   outerClassName?: string;
@@ -39,6 +44,9 @@ export function SwipeRow({
   const startX = useRef(0);
   const startOffset = useRef(0);
   const moved = useRef(false);
+
+  // Right-swipe (positive offset) is only allowed when an edit action exists.
+  const maxOffset = onEdit ? REVEAL : 0;
 
   function onPointerDown(e: React.PointerEvent) {
     const interactive = (e.target as HTMLElement).closest("button, a");
@@ -59,25 +67,40 @@ export function SwipeRow({
     if (Math.abs(delta) > DRAG_THRESHOLD) {
       moved.current = true;
     }
-    setOffset(Math.max(-REVEAL, Math.min(0, startOffset.current + delta)));
+    setOffset(
+      Math.max(-REVEAL, Math.min(maxOffset, startOffset.current + delta))
+    );
   }
   function onPointerUp() {
     if (!dragging) {
       return;
     }
     setDragging(false);
-    setOffset((current) => (current < -REVEAL / 2 ? -REVEAL : 0));
+    setOffset((current) => {
+      if (current < -REVEAL / 2) {
+        return -REVEAL;
+      }
+      if (current > REVEAL / 2) {
+        return REVEAL;
+      }
+      return 0;
+    });
   }
   function handleClick() {
     if (!moved.current) {
       onClick?.();
     }
   }
+  function handleEdit() {
+    setOffset(0);
+    onEdit?.();
+  }
 
   const sharedProps = {
     className: cn(
       "flex w-full touch-pan-y items-center gap-3 bg-background py-3 text-left",
       offset < 0 && "pr-4",
+      offset > 0 && "pl-4",
       onClick ? "cursor-pointer" : "cursor-default",
       className
     ),
@@ -93,6 +116,18 @@ export function SwipeRow({
 
   return (
     <div className={cn("relative overflow-hidden", outerClassName)}>
+      {onEdit ? (
+        <button
+          aria-label={editLabel}
+          className="absolute inset-y-0 left-0 flex items-center justify-center bg-primary pl-1 text-primary-foreground"
+          onClick={handleEdit}
+          style={{ width: REVEAL }}
+          type="button"
+        >
+          <PencilIcon className="size-5" />
+        </button>
+      ) : null}
+
       <ConfirmDelete
         description={deleteDescription}
         onConfirm={onDelete}

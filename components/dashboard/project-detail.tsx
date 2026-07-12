@@ -139,6 +139,20 @@ export function ProjectDetail({
     }
   }
 
+  async function editEntry(id: string, entry: Partial<NewEntry>) {
+    const { data } = await supabase
+      .from("project_entries")
+      .update(entry)
+      .eq("id", id)
+      .select()
+      .single();
+    if (data) {
+      setEntries((prev) =>
+        prev.map((e) => (e.id === id ? (data as ProjectEntry) : e))
+      );
+    }
+  }
+
   async function removeEntry(id: string) {
     setEntries((prev) => prev.filter((e) => e.id !== id));
     await supabase.from("project_entries").delete().eq("id", id);
@@ -168,6 +182,14 @@ export function ProjectDetail({
         }
         onBack={() => setSelectedClient(null)}
         onClientSaved={setSelectedClient}
+        onEditEntry={(id, entry) =>
+          editEntry(id, {
+            label: entry.label,
+            amount: entry.amount,
+            date: entry.date,
+            receipt_url: entry.receiptUrl,
+          })
+        }
         onRemoveEntry={removeEntry}
         project={project}
       />
@@ -291,6 +313,15 @@ export function ProjectDetail({
               addEntry({
                 kind: p.kind,
                 client_id: null,
+                label: p.label,
+                amount: p.amount,
+                date: p.date,
+                receipt_url: p.receiptUrl,
+              })
+            }
+            onEdit={(id, p) =>
+              editEntry(id, {
+                kind: p.kind,
                 label: p.label,
                 amount: p.amount,
                 date: p.date,

@@ -166,8 +166,15 @@ export function BudgetPanel() {
     0
   );
   const monthStart = periodStart("monthly");
+  // Only count spending in categories that actually have a budget set — the
+  // summary tracks progress against the budget, not total spend.
   const spentThisMonth = purchases
-    .filter((p) => p.date >= monthStart)
+    .filter(
+      (p) =>
+        p.date >= monthStart &&
+        p.category !== null &&
+        budgets[p.category].amount > 0
+    )
     .reduce((acc, p) => acc + Math.abs(p.amount), 0);
   const remaining = monthlyBudget - spentThisMonth;
   const overBudget = remaining < 0;

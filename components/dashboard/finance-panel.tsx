@@ -3,9 +3,11 @@
 import { format } from "date-fns";
 import {
   ArrowLeftRightIcon,
+  BanknoteIcon,
   CarIcon,
   CreditCardIcon,
   type LucideIcon,
+  PencilIcon,
   PlusIcon,
   ReceiptIcon,
   ScaleIcon,
@@ -154,6 +156,9 @@ function subtitle(txn: Transaction) {
   } else {
     base = txn.category ? CATEGORY_LABEL[txn.category] : "Purchase";
   }
+  if (txn.cash) {
+    base = `${base} • Cash`;
+  }
   return txn.pending ? `${base} • Pending` : base;
 }
 
@@ -162,9 +167,11 @@ const REVEAL = 80;
 function TransactionRow({
   txn,
   onRemove,
+  onEdit,
 }: {
   txn: Transaction;
   onRemove: (id: string) => void;
+  onEdit: (txn: Transaction) => void;
 }) {
   const Icon = tileIcon(txn);
   const isIncome = txn.amount > 0;
@@ -175,6 +182,9 @@ function TransactionRow({
   const startOffset = useRef(0);
 
   function onPointerDown(e: React.PointerEvent) {
+    if ((e.target as HTMLElement).closest("button")) {
+      return;
+    }
     startX.current = e.clientX;
     startOffset.current = offset;
     setDragging(true);
@@ -186,7 +196,7 @@ function TransactionRow({
       return;
     }
     const delta = e.clientX - startX.current;
-    setOffset(Math.max(-REVEAL, Math.min(0, startOffset.current + delta)));
+    setOffset(Math.max(-REVEAL, Math.min(REVEAL, startOffset.current + delta)));
   }
 
   function onPointerUp() {
@@ -194,12 +204,36 @@ function TransactionRow({
       return;
     }
     setDragging(false);
-    setOffset((current) => (current < -REVEAL / 2 ? -REVEAL : 0));
+    setOffset((current) => {
+      if (current < -REVEAL / 2) {
+        return -REVEAL;
+      }
+      if (current > REVEAL / 2) {
+        return REVEAL;
+      }
+      return 0;
+    });
+  }
+
+  function handleEdit() {
+    setOffset(0);
+    onEdit(txn);
   }
 
   return (
     <div className="relative overflow-hidden">
-      {/* Delete block revealed on swipe */}
+      {/* Edit action revealed on right-swipe */}
+      <button
+        aria-label={`Edit ${txn.merchant}`}
+        className="absolute inset-y-0 left-0 flex items-center justify-center bg-primary pl-1 text-primary-foreground"
+        onClick={handleEdit}
+        style={{ width: REVEAL }}
+        type="button"
+      >
+        <PencilIcon className="size-5" />
+      </button>
+
+      {/* Delete action revealed on left-swipe */}
       <ConfirmDelete
         description={
           <>
@@ -220,7 +254,8 @@ function TransactionRow({
       <div
         className={cn(
           "flex touch-pan-y items-center gap-3 bg-background py-3",
-          offset < 0 && "pr-4"
+          offset < 0 && "pr-4",
+          offset > 0 && "pl-4"
         )}
         onPointerCancel={onPointerUp}
         onPointerDown={onPointerDown}
@@ -336,6 +371,7 @@ function buildTransactionRow(input: {
   category: TransactionCategory;
   note: string;
   date: Date;
+  cash: boolean;
 }) {
   const isIncome = input.flow === "income";
   const note = input.note.trim();
@@ -345,6 +381,7 @@ function buildTransactionRow(input: {
     category: isIncome ? null : input.category,
     amount: isIncome ? Math.abs(input.value) : -Math.abs(input.value),
     note: note || null,
+    cash: input.cash,
     date: format(input.date, "yyyy-MM-dd"),
   };
 }
@@ -377,29 +414,109 @@ function FlowToggle({
   );
 }
 
-function AddTransactionDialog({
-  onAdded,
+function CashToggle({
+  checked,
+  label,
+  onChange,
 }: {
-  onAdded: (saved: Transaction) => void;
+  checked: boolean;
+  label: string;
+  onChange: (next: boolean) => void;
+}) {
+  return (
+    <button
+      aria-pressed={checked}
+      className={cn(
+        "flex items-center justify-between border px-3 py-2.5 text-left transition-colors",
+        checked
+          ? "border-emerald-500/40 bg-emerald-500/10"
+          : "border-border hover:bg-secondary/50"
+      )}
+      onClick={() => onChange(!checked)}
+      type="button"
+    >
+      <span className="flex flex-col">
+        <span className="flex items-center gap-2 font-medium text-sm">
+          <BanknoteIcon
+            className={cn(
+              "size-4",
+              checked ? "text-emerald-400" : "text-muted-foreground"
+            )}
+          />
+          {label}
+        </span>
+        <span className="text-muted-foreground text-xs">
+          Tracked separately from your account balance.
+        </span>
+      </span>
+      <span
+        className={cn(
+          "flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors",
+          checked ? "bg-emerald-500" : "bg-secondary"
+        )}
+      >
+        <span
+          className={cn(
+            "size-4 rounded-full bg-white transition-transform",
+            checked ? "translate-x-4" : "translate-x-0"
+          )}
+        />
+      </span>
+    </button>
+  );
+}
+
+function initialFlow(editing: Transaction | null): Flow {
+  if (editing) {
+    return editing.amount < 0 ? "expense" : "income";
+  }
+  return "expense";
+}
+
+function dialogTitle(isEditing: boolean, isIncome: boolean) {
+  if (isEditing) {
+    return "Edit transaction";
+  }
+  return isIncome ? "Track income" : "Track expense";
+}
+
+function dialogDescription(isEditing: boolean, isIncome: boolean) {
+  if (isEditing) {
+    return "Update this transaction's details.";
+  }
+  return isIncome
+    ? "Log money coming in to your finances."
+    : "Log a new expense to your finances.";
+}
+
+function TransactionDialog({
+  editing,
+  open,
+  onOpenChange,
+  onSaved,
+}: {
+  editing: Transaction | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSaved: (saved: Transaction, isNew: boolean) => void;
 }) {
   const supabase = createClient();
-  const [open, setOpen] = useState(false);
+  const isEditing = editing !== null;
   const [saving, setSaving] = useState(false);
-  const [flow, setFlow] = useState<Flow>("expense");
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<TransactionCategory>("food");
-  const [note, setNote] = useState("");
-  const [date, setDate] = useState<Date>(new Date());
+  const [flow, setFlow] = useState<Flow>(initialFlow(editing));
+  const [amount, setAmount] = useState(
+    editing ? String(Math.abs(editing.amount)) : ""
+  );
+  const [category, setCategory] = useState<TransactionCategory>(
+    editing?.category ?? "food"
+  );
+  const [note, setNote] = useState(editing?.note ?? "");
+  const [date, setDate] = useState<Date>(
+    editing ? new Date(`${editing.date}T00:00:00`) : new Date()
+  );
+  const [cash, setCash] = useState(editing?.cash ?? false);
 
   const isIncome = flow === "income";
-
-  function resetForm() {
-    setFlow("expense");
-    setAmount("");
-    setCategory("food");
-    setNote("");
-    setDate(new Date());
-  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -408,52 +525,47 @@ function AddTransactionDialog({
       return;
     }
 
-    const row = buildTransactionRow({ flow, value, category, note, date });
+    const row = buildTransactionRow({
+      flow,
+      value,
+      category,
+      note,
+      date,
+      cash,
+    });
     setSaving(true);
-    const { data, error } = await supabase
-      .from("transactions")
-      .insert(row)
-      .select()
-      .single();
+    const query = isEditing
+      ? supabase
+          .from("transactions")
+          .update(row)
+          .eq("id", editing.id)
+          .select()
+          .single()
+      : supabase.from("transactions").insert(row).select().single();
+    const { data, error } = await query;
     setSaving(false);
 
     if (error || !data) {
       return;
     }
-    onAdded(data as Transaction);
-    resetForm();
-    setOpen(false);
+    onSaved(data as Transaction, !isEditing);
+    onOpenChange(false);
+  }
+
+  let submitLabel = isEditing
+    ? "Save changes"
+    : `Add ${isIncome ? "income" : "expense"}`;
+  if (saving) {
+    submitLabel = "Saving…";
   }
 
   return (
-    <Dialog
-      onOpenChange={(next) => {
-        setOpen(next);
-        if (next) {
-          resetForm();
-        }
-      }}
-      open={open}
-    >
-      <DialogTrigger asChild>
-        <Button
-          aria-label="Track transaction"
-          className="aspect-square h-auto shrink-0 self-stretch rounded-none"
-          size="sm"
-          type="button"
-        >
-          <PlusIcon />
-        </Button>
-      </DialogTrigger>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>
-            {isIncome ? "Track income" : "Track expense"}
-          </DialogTitle>
+          <DialogTitle>{dialogTitle(isEditing, isIncome)}</DialogTitle>
           <DialogDescription>
-            {isIncome
-              ? "Log money coming in to your finances."
-              : "Log a new expense to your finances."}
+            {dialogDescription(isEditing, isIncome)}
           </DialogDescription>
         </DialogHeader>
 
@@ -502,9 +614,15 @@ function AddTransactionDialog({
 
           <DatePicker onChange={setDate} value={date} />
 
+          <CashToggle
+            checked={cash}
+            label={isIncome ? "Received in cash" : "Paid in cash"}
+            onChange={setCash}
+          />
+
           <DialogFooter>
             <Button className="w-full" disabled={saving} type="submit">
-              {saving ? "Adding…" : `Add ${isIncome ? "income" : "expense"}`}
+              {submitLabel}
             </Button>
           </DialogFooter>
         </form>
@@ -671,6 +789,7 @@ function GeneralTrends({
   loadingMore,
   hidden,
   onRemove,
+  onEdit,
   onLoadMore,
 }: {
   groups: { label: string; items: Transaction[] }[];
@@ -680,6 +799,7 @@ function GeneralTrends({
   loadingMore: boolean;
   hidden: boolean;
   onRemove: (id: string) => void;
+  onEdit: (txn: Transaction) => void;
   onLoadMore: () => void;
 }) {
   return (
@@ -697,7 +817,12 @@ function GeneralTrends({
           </h2>
           <div className="flex flex-col divide-y divide-border/60">
             {group.items.map((txn) => (
-              <TransactionRow key={txn.id} onRemove={onRemove} txn={txn} />
+              <TransactionRow
+                key={txn.id}
+                onEdit={onEdit}
+                onRemove={onRemove}
+                txn={txn}
+              />
             ))}
           </div>
         </section>
@@ -736,6 +861,9 @@ export function FinancePanel() {
   const [view, setView] = useState<FinanceView>("trends");
   const [trendsMode, setTrendsMode] = useState<TrendsMode>("general");
   const [balance, setBalance] = useState<number | null>(null);
+  const [cashBalance, setCashBalance] = useState(0);
+  const [addOpen, setAddOpen] = useState(false);
+  const [editing, setEditing] = useState<Transaction | null>(null);
 
   // Running balance = opening balance + every transaction since. The opening
   // balance lives in the table as a one-off "deposit" row, so summing every
@@ -748,26 +876,27 @@ export function FinancePanel() {
 
     async function sumAll() {
       let total = 0;
+      let cash = 0;
       let start = 0;
       for (;;) {
         const { data, error } = await supabase
           .from("transactions")
-          .select("amount")
+          .select("amount, cash")
           .range(start, start + CHUNK - 1);
         if (error || !data) {
           return;
         }
-        total += (data as { amount: number }[]).reduce(
-          (acc, r) => acc + r.amount,
-          0
-        );
-        if (data.length < CHUNK) {
+        const rows = data as { amount: number; cash: boolean | null }[];
+        total += rows.reduce((acc, r) => acc + r.amount, 0);
+        cash += rows.reduce((acc, r) => acc + (r.cash ? r.amount : 0), 0);
+        if (rows.length < CHUNK) {
           break;
         }
         start += CHUNK;
       }
       if (active) {
         setBalance(total);
+        setCashBalance(cash);
       }
     }
 
@@ -819,9 +948,27 @@ export function FinancePanel() {
     setHasMore(more);
   }
 
+  const cashPart = (t: Transaction) => (t.cash ? t.amount : 0);
+
   function handleAdded(saved: Transaction) {
     setTransactions((prev) => [saved, ...prev]);
     setBalance((prev) => (prev ?? 0) + saved.amount);
+    if (saved.cash) {
+      setCashBalance((prev) => prev + saved.amount);
+    }
+  }
+
+  function handleSaved(saved: Transaction, isNew: boolean) {
+    if (isNew) {
+      handleAdded(saved);
+      return;
+    }
+    const old = transactions.find((t) => t.id === saved.id);
+    setTransactions((prev) => prev.map((t) => (t.id === saved.id ? saved : t)));
+    if (old) {
+      setBalance((prev) => (prev ?? 0) - old.amount + saved.amount);
+      setCashBalance((prev) => prev - cashPart(old) + cashPart(saved));
+    }
   }
 
   async function removeTransaction(id: string) {
@@ -829,6 +976,9 @@ export function FinancePanel() {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
     if (removed) {
       setBalance((prev) => (prev ?? 0) - removed.amount);
+      if (removed.cash) {
+        setCashBalance((prev) => prev - removed.amount);
+      }
     }
     const { error } = await supabase.from("transactions").delete().eq("id", id);
     // Restore the optimistic removal if the delete didn't land.
@@ -837,6 +987,9 @@ export function FinancePanel() {
         prev.some((t) => t.id === id) ? prev : [removed, ...prev]
       );
       setBalance((prev) => (prev ?? 0) + removed.amount);
+      if (removed.cash) {
+        setCashBalance((prev) => prev + removed.amount);
+      }
     }
   }
 
@@ -852,6 +1005,15 @@ export function FinancePanel() {
           <span className="font-semibold text-3xl tabular-nums">
             {balance === null ? "—" : currency.format(balance)}
           </span>
+          {cashBalance !== 0 && balance !== null ? (
+            <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-muted-foreground text-xs tabular-nums">
+              <span>Bank {currency.format(balance - cashBalance)}</span>
+              <span className="flex items-center gap-1 text-emerald-400">
+                <BanknoteIcon className="size-3.5" />
+                Cash {currency.format(cashBalance)}
+              </span>
+            </span>
+          ) : null}
         </div>
         <ReconcileDialog balance={balance} onAdded={handleAdded} />
       </div>
@@ -875,8 +1037,35 @@ export function FinancePanel() {
           ))}
         </div>
 
-        <AddTransactionDialog onAdded={handleAdded} />
+        <Button
+          aria-label="Track transaction"
+          className="aspect-square h-auto shrink-0 self-stretch rounded-none"
+          onClick={() => setAddOpen(true)}
+          size="sm"
+          type="button"
+        >
+          <PlusIcon />
+        </Button>
       </div>
+
+      <TransactionDialog
+        editing={null}
+        key={addOpen ? "add-open" : "add"}
+        onOpenChange={setAddOpen}
+        onSaved={handleSaved}
+        open={addOpen}
+      />
+      <TransactionDialog
+        editing={editing}
+        key={editing?.id ?? "edit"}
+        onOpenChange={(next) => {
+          if (!next) {
+            setEditing(null);
+          }
+        }}
+        onSaved={handleSaved}
+        open={editing !== null}
+      />
 
       {view === "categories" ? <CategoriesPanel /> : null}
       {view === "budget" ? <BudgetPanel /> : null}
@@ -907,6 +1096,7 @@ export function FinancePanel() {
             isEmpty={!loading && transactions.length === 0}
             loading={loading}
             loadingMore={loadingMore}
+            onEdit={setEditing}
             onLoadMore={loadMore}
             onRemove={removeTransaction}
           />

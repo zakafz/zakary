@@ -53,45 +53,69 @@ function inPeriod(dateISO: string, period: Period) {
   return d >= cutoff;
 }
 
-type AddEntry = (payload: {
+type EntryPayload = {
   kind: EntryKind;
   label: string;
   amount: number;
   date: string;
   receiptUrl: string | null;
-}) => Promise<void>;
+};
 
-function FinanceAddForm({
+type AddEntry = (payload: EntryPayload) => Promise<void>;
+type EditEntry = (id: string, payload: EntryPayload) => Promise<void>;
+
+function FinanceEntryForm({
+  editing,
   onAdd,
+  onEdit,
   onDone,
 }: {
+  editing: ProjectEntry | null;
   onAdd: AddEntry;
+  onEdit: EditEntry;
   onDone: () => void;
 }) {
-  const [kind, setKind] = useState<EntryKind>("income");
+  const [kind, setKind] = useState<EntryKind>(editing?.kind ?? "income");
   const [saving, setSaving] = useState(false);
-  const [label, setLabel] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState<Date>(new Date());
-  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
-  const [receiptName, setReceiptName] = useState<string | null>(null);
+  const [label, setLabel] = useState(editing?.label ?? "");
+  const [amount, setAmount] = useState(editing ? String(editing.amount) : "");
+  const [date, setDate] = useState<Date>(
+    editing ? new Date(`${editing.date}T00:00:00`) : new Date()
+  );
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(
+    editing?.receipt_url ?? null
+  );
+  const [receiptName, setReceiptName] = useState<string | null>(
+    editing?.receipt_url ? "Current receipt" : null
+  );
   const isIncome = kind === "income";
+  const isEditing = editing !== null;
 
   async function submit() {
     const value = Number.parseFloat(amount);
     if (!(label.trim() && Number.isFinite(value) && value > 0)) {
       return;
     }
-    setSaving(true);
-    await onAdd({
+    const payload: EntryPayload = {
       kind,
       label: label.trim(),
       amount: Math.abs(value),
       date: format(date, "yyyy-MM-dd"),
       receiptUrl,
-    });
+    };
+    setSaving(true);
+    if (isEditing) {
+      await onEdit(editing.id, payload);
+    } else {
+      await onAdd(payload);
+    }
     setSaving(false);
     onDone();
+  }
+
+  let submitLabel = isEditing ? "Save changes" : "Add";
+  if (saving) {
+    submitLabel = "Saving…";
   }
 
   return (
@@ -154,7 +178,7 @@ function FinanceAddForm({
         onClick={submit}
         type="button"
       >
-        {saving ? "Adding…" : "Add"}
+        {submitLabel}
       </Button>
     </div>
   );
@@ -163,14 +187,17 @@ function FinanceAddForm({
 export function ProjectFinance({
   entries,
   onAdd,
+  onEdit,
   onRemove,
 }: {
   entries: ProjectEntry[];
   onAdd: AddEntry;
+  onEdit: EditEntry;
   onRemove: (id: string) => void;
 }) {
   const [period, setPeriod] = useState<Period>("all");
   const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState<ProjectEntry | null>(null);
 
   const filtered = entries
     .filter((e) => inPeriod(e.date, period))
@@ -202,7 +229,10 @@ export function ProjectFinance({
         <Button
           aria-label="Add entry"
           className="aspect-square h-auto shrink-0 self-stretch rounded-none"
-          onClick={() => setAdding((v) => !v)}
+          onClick={() => {
+            setEditing(null);
+            setAdding((v) => !v);
+          }}
           size="sm"
           type="button"
           variant={adding ? "secondary" : "default"}
@@ -239,8 +269,17 @@ export function ProjectFinance({
         ))}
       </div>
 
-      {adding ? (
-        <FinanceAddForm onAdd={onAdd} onDone={() => setAdding(false)} />
+      {adding || editing ? (
+        <FinanceEntryForm
+          editing={editing}
+          key={editing?.id ?? "add"}
+          onAdd={onAdd}
+          onDone={() => {
+            setAdding(false);
+            setEditing(null);
+          }}
+          onEdit={onEdit}
+        />
       ) : null}
 
       <div className="mt-3 flex flex-col divide-y divide-border/60">
@@ -251,8 +290,13 @@ export function ProjectFinance({
             }
             deleteLabel={`Delete ${e.label}`}
             deleteTitle="Delete entry?"
+            editLabel={`Edit ${e.label}`}
             key={e.id}
             onDelete={() => onRemove(e.id)}
+            onEdit={() => {
+              setAdding(false);
+              setEditing(e);
+            }}
           >
             <div className="flex min-w-0 flex-1 flex-col">
               <span className="truncate font-semibold text-[15px] leading-tight">

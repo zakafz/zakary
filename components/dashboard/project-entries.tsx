@@ -125,6 +125,7 @@ export function ProjectEntries({
   labelPlaceholder,
   entries,
   onAdd,
+  onEdit,
   onRemove,
   emptyText,
   inline = false,
@@ -140,12 +141,22 @@ export function ProjectEntries({
     date: string,
     receiptUrl: string | null
   ) => Promise<void>;
+  onEdit: (
+    id: string,
+    entry: {
+      label: string;
+      amount: number;
+      date: string;
+      receiptUrl: string | null;
+    }
+  ) => Promise<void>;
   onRemove: (id: string) => void;
   emptyText: string;
   /** Render the add form inline instead of a modal dialog (for use inside a Sheet). */
   inline?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [label, setLabel] = useState("");
   const [amount, setAmount] = useState("");
@@ -154,13 +165,25 @@ export function ProjectEntries({
   const [receiptName, setReceiptName] = useState<string | null>(null);
   const isIncome = kind === "income";
   const EmptyIcon = isIncome ? CoinsIcon : ReceiptIcon;
+  const isEditing = editingId !== null;
 
   function reset() {
+    setEditingId(null);
     setLabel("");
     setAmount("");
     setDate(new Date());
     setReceiptUrl(null);
     setReceiptName(null);
+  }
+
+  function startEdit(entry: ProjectEntry) {
+    setEditingId(entry.id);
+    setLabel(entry.label);
+    setAmount(String(entry.amount));
+    setDate(new Date(`${entry.date}T00:00:00`));
+    setReceiptUrl(entry.receipt_url);
+    setReceiptName(entry.receipt_url ? "Current receipt" : null);
+    setOpen(true);
   }
 
   async function submit(e?: React.FormEvent) {
@@ -170,12 +193,21 @@ export function ProjectEntries({
       return;
     }
     setSaving(true);
-    await onAdd(
-      label.trim(),
-      Math.abs(value),
-      format(date, "yyyy-MM-dd"),
-      receiptUrl
-    );
+    if (editingId) {
+      await onEdit(editingId, {
+        label: label.trim(),
+        amount: Math.abs(value),
+        date: format(date, "yyyy-MM-dd"),
+        receiptUrl,
+      });
+    } else {
+      await onAdd(
+        label.trim(),
+        Math.abs(value),
+        format(date, "yyyy-MM-dd"),
+        receiptUrl
+      );
+    }
     setSaving(false);
     reset();
     setOpen(false);
@@ -183,6 +215,11 @@ export function ProjectEntries({
 
   const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
   const showInlineForm = inline && open;
+  let submitLabel = isEditing ? "Save changes" : "Add";
+  if (saving) {
+    submitLabel = "Saving…";
+  }
+  const heading = isEditing ? "Edit entry" : addTitle;
 
   const formEl = (
     <form className="flex min-w-0 flex-col gap-4" onSubmit={submit}>
@@ -228,7 +265,7 @@ export function ProjectEntries({
         onClick={() => submit()}
         type="button"
       >
-        {saving ? "Adding…" : "Add"}
+        {submitLabel}
       </Button>
     </form>
   );
@@ -269,7 +306,7 @@ export function ProjectEntries({
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>{addTitle}</DialogTitle>
+          <DialogTitle>{heading}</DialogTitle>
           <DialogDescription>
             {isIncome ? "Log money coming in." : "Log a cost."}
           </DialogDescription>
@@ -302,8 +339,10 @@ export function ProjectEntries({
             }
             deleteLabel={`Delete ${entry.label}`}
             deleteTitle="Delete entry?"
+            editLabel={`Edit ${entry.label}`}
             key={entry.id}
             onDelete={() => onRemove(entry.id)}
+            onEdit={() => startEdit(entry)}
           >
             <div className="flex min-w-0 flex-1 flex-col">
               <span className="truncate font-semibold text-[15px] leading-tight">

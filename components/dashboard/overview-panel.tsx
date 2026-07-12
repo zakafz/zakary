@@ -19,14 +19,19 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart/chart";
-import { CATEGORIES, type TransactionCategory } from "@/data/finance";
+import {
+  CATEGORIES,
+  CATEGORY_COLOR,
+  CATEGORY_LABEL,
+  type TransactionCategory,
+} from "@/data/finance";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { EVENT_COLORS, type EventColor } from "./calendar/calendar-types";
 
 type Cycle = "weekly" | "monthly" | "yearly";
 type Period = "weekly" | "monthly" | "yearly";
-type Slice = TransactionCategory | "other";
+type Slice = TransactionCategory;
 
 const TO_MONTHLY: Record<Cycle, number> = {
   weekly: 52 / 12,
@@ -34,23 +39,11 @@ const TO_MONTHLY: Record<Cycle, number> = {
   yearly: 1 / 12,
 };
 
-const SLICE_COLOR: Record<Slice, string> = {
-  shopping: "#a78bfa",
-  transportation: "#38bdf8",
-  food: "#fbbf24",
-  bills: "#34d399",
-  other: "#a1a1aa",
-};
+const SLICE_COLOR: Record<Slice, string> = CATEGORY_COLOR;
 
-const SLICE_LABEL: Record<Slice, string> = {
-  shopping: "Shopping",
-  transportation: "Transportation",
-  food: "Food & Drink",
-  bills: "Bills",
-  other: "Other",
-};
+const SLICE_LABEL: Record<Slice, string> = CATEGORY_LABEL;
 
-const CATEGORY_ORDER: Slice[] = [...CATEGORIES.map((c) => c.id), "other"];
+const CATEGORY_ORDER: Slice[] = CATEGORIES.map((c) => c.id);
 
 const money = new Intl.NumberFormat("en-CA", {
   style: "currency",
