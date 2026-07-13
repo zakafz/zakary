@@ -66,20 +66,20 @@ type Subscription = {
 };
 
 const CYCLES: { id: Cycle; label: string }[] = [
-  { id: "weekly", label: "Weekly" },
+  { id: "biweekly", label: "Biweekly" },
   { id: "monthly", label: "Monthly" },
   { id: "yearly", label: "Yearly" },
 ];
 
 const CYCLE_LABEL: Record<Cycle, string> = {
-  weekly: "Weekly",
+  biweekly: "Biweekly",
   monthly: "Monthly",
   yearly: "Yearly",
 };
 
 // Normalise any cycle to a monthly cost for the summary.
 const TO_MONTHLY: Record<Cycle, number> = {
-  weekly: 52 / 12,
+  biweekly: 26 / 12,
   monthly: 1,
   yearly: 1 / 12,
 };

@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  ArrowDownRightIcon,
-  ArrowUpRightIcon,
-  ListChecksIcon,
-  WalletIcon,
-} from "lucide-react";
+import { ArrowDownRightIcon, ArrowUpRightIcon, WalletIcon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
@@ -29,12 +24,13 @@ import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { EVENT_COLORS, type EventColor } from "./calendar/calendar-types";
 
-type Cycle = "weekly" | "monthly" | "yearly";
+type Cycle = "biweekly" | "monthly" | "yearly";
 type Period = "weekly" | "monthly" | "yearly";
 type Slice = TransactionCategory;
 
-const TO_MONTHLY: Record<Cycle, number> = {
+const TO_MONTHLY: Record<Cycle | Period, number> = {
   weekly: 52 / 12,
+  biweekly: 26 / 12,
   monthly: 1,
   yearly: 1 / 12,
 };
@@ -72,7 +68,7 @@ function currentMonthDays() {
 }
 
 const ADVANCE: Record<Cycle, (d: Date) => Date> = {
-  weekly: (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7),
+  biweekly: (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 14),
   monthly: (d) => new Date(d.getFullYear(), d.getMonth() + 1, d.getDate()),
   yearly: (d) => new Date(d.getFullYear() + 1, d.getMonth(), d.getDate()),
 };
@@ -91,7 +87,11 @@ function nextOccurrence(iso: string, cycle: Cycle): Date {
 function daysUntil(date: Date) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  return Math.round((date.getTime() - today.getTime()) / 86_400_000);
+  // Compare calendar days, not exact time — an event later *today* (e.g. 1pm)
+  // must read as "Today", not round up to "Tomorrow".
+  const target = new Date(date);
+  target.setHours(0, 0, 0, 0);
+  return Math.round((target.getTime() - today.getTime()) / 86_400_000);
 }
 
 function dueLabel(days: number) {
@@ -136,7 +136,6 @@ type NextEvent = {
   days: number;
 };
 type CategoryLine = { slice: Slice; spent: number; budget: number };
-type Task = { id: string; title: string; due_date: string | null };
 
 type Data = {
   thisMonth: number;
@@ -146,7 +145,6 @@ type Data = {
   nextPayment: NextPayment | null;
   nextEvent: NextEvent | null;
   categories: CategoryLine[];
-  tasks: Task[];
 };
 
 function Card({
@@ -377,49 +375,6 @@ function TrendChart({ data }: { data: Data }) {
   );
 }
 
-function TasksCard({ data }: { data: Data }) {
-  return (
-    <Card>
-      <Heading>Tasks to do</Heading>
-      {data.tasks.length > 0 ? (
-        <div className="mt-3 flex flex-col divide-y divide-border">
-          {data.tasks.map((task) => {
-            const due = task.due_date
-              ? new Date(`${task.due_date}T00:00:00`).toLocaleDateString(
-                  "en-CA",
-                  { month: "short", day: "numeric" }
-                )
-              : null;
-            return (
-              <div
-                className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"
-                key={task.id}
-              >
-                <span className="size-4 shrink-0 border border-muted-foreground/50" />
-                <p className="min-w-0 flex-1 truncate text-[15px]">
-                  {task.title}
-                </p>
-                {due ? (
-                  <span className="shrink-0 text-muted-foreground text-sm">
-                    {due}
-                  </span>
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="mt-3 flex flex-col items-center gap-2 py-6 text-center">
-          <ListChecksIcon className="size-6 text-muted-foreground" />
-          <span className="text-muted-foreground text-sm">
-            All caught up. No tasks to do.
-          </span>
-        </div>
-      )}
-    </Card>
-  );
-}
-
 function CategoryBars({ data }: { data: Data }) {
   return (
     <Card>
@@ -509,13 +464,40 @@ function categoryLines(
   })).filter((c) => c.spent > 0 || c.budget > 0);
 }
 
-function soonestPayment(subs: Sub[]): NextPayment | null {
+const cents = (n: number) => Math.round(Math.abs(n) * 100);
+
+const dateKey = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+    d.getDate()
+  ).padStart(2, "0")}`;
+
+/**
+ * The next occurrence that hasn't been paid yet. A subscription charge already
+ * booked in the transaction history (matching amount + date) is skipped, so the
+ * card advances to the following cycle instead of showing an already-paid one.
+ */
+function nextUnpaidOccurrence(sub: Sub, txns: Txn[]): Date {
+  let date = nextOccurrence(sub.next_billing as string, sub.cycle);
+  for (
+    let guard = 0;
+    guard < 120 &&
+    txns.some(
+      (t) => t.date === dateKey(date) && cents(t.amount) === cents(sub.amount)
+    );
+    guard++
+  ) {
+    date = ADVANCE[sub.cycle](date);
+  }
+  return date;
+}
+
+function soonestPayment(subs: Sub[], txns: Txn[]): NextPayment | null {
   let next: NextPayment | null = null;
   for (const s of subs) {
     if (!s.next_billing) {
       continue;
     }
-    const date = nextOccurrence(s.next_billing, s.cycle);
+    const date = nextUnpaidOccurrence(s, txns);
     if (!next || date < next.date) {
       next = {
         name: s.name,
@@ -549,7 +531,6 @@ function computeData(
   txns: Txn[],
   subs: Sub[],
   budgets: Budget[],
-  tasks: Task[],
   events: EventRow[]
 ): Data {
   const now = new Date();
@@ -571,10 +552,9 @@ function computeData(
       0
     ),
     trend: days.map((d) => ({ ...d, total: dailyTotals.get(d.key) ?? 0 })),
-    nextPayment: soonestPayment(subs),
+    nextPayment: soonestPayment(subs, txns),
     nextEvent: soonestEvent(events),
     categories: categoryLines(monthByCategory, budgets),
-    tasks,
   };
 }
 
@@ -583,8 +563,7 @@ function isEmpty(data: Data) {
     data.thisMonth === 0 &&
     data.trend.every((m) => m.total === 0) &&
     !data.nextPayment &&
-    !data.nextEvent &&
-    data.tasks.length === 0
+    !data.nextEvent
   );
 }
 
@@ -619,18 +598,12 @@ export function OverviewPanel() {
         .select("name, amount, cycle, next_billing, icon"),
       supabase.from("budgets").select("category, amount, period"),
       supabase
-        .from("tasks")
-        .select("id, title, due_date")
-        .eq("done", false)
-        .order("created_at", { ascending: false })
-        .limit(5),
-      supabase
         .from("events")
         .select("title, starts_at, ends_at, all_day, color")
         .gte("ends_at", now.toISOString())
         .order("starts_at", { ascending: true })
         .limit(1),
-    ]).then(([txnRes, subRes, budgetRes, taskRes, eventRes]) => {
+    ]).then(([txnRes, subRes, budgetRes, eventRes]) => {
       if (!active) {
         return;
       }
@@ -639,7 +612,6 @@ export function OverviewPanel() {
           (txnRes.data ?? []) as Txn[],
           (subRes.data ?? []) as Sub[],
           (budgetRes.data ?? []) as Budget[],
-          (taskRes.data ?? []) as Task[],
           (eventRes.data ?? []) as EventRow[]
         )
       );
@@ -670,7 +642,6 @@ export function OverviewPanel() {
       </div>
       <TrendChart data={data} />
       {data.categories.length > 0 ? <CategoryBars data={data} /> : null}
-      <TasksCard data={data} />
     </div>
   );
 }

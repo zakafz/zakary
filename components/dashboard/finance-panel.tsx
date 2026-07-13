@@ -16,12 +16,22 @@ import {
   Trash2Icon,
   UtensilsIcon,
 } from "lucide-react";
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BudgetPanel } from "@/components/dashboard/budget-panel";
+import {
+  EVENT_COLORS,
+  type EventColor,
+} from "@/components/dashboard/calendar/calendar-types";
 import { CategoriesPanel } from "@/components/dashboard/categories-panel";
 import { ConfirmDelete } from "@/components/dashboard/confirm-delete";
 import { EmptyState } from "@/components/dashboard/empty-state";
+import {
+  isImageIcon,
+  subIcon,
+} from "@/components/dashboard/subscriptions-panel";
 import { TrendsAdvanced } from "@/components/dashboard/trends-advanced";
+import { Badge } from "@/components/ui/badge/badge";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
@@ -40,6 +50,7 @@ import {
   type Transaction,
   type TransactionCategory,
 } from "@/data/finance";
+import { type Cycle, occursOn } from "@/lib/recurrence";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +60,46 @@ const currency = new Intl.NumberFormat("en-CA", {
 });
 
 const PAGE_SIZE = 10;
+
+// A recognized recurring charge, plus how to brand its transaction row.
+type MatchedSub = {
+  name: string;
+  amount: number;
+  cycle: Cycle;
+  next_billing: string | null;
+  icon: string | null;
+  color: EventColor;
+};
+
+const CYCLE_BADGE: Record<Cycle, string> = {
+  biweekly: "Biweekly",
+  monthly: "Monthly",
+  yearly: "Yearly",
+};
+
+const cents = (n: number) => Math.round(Math.abs(n) * 100);
+
+/**
+ * Find the subscription whose scheduled charge this transaction represents:
+ * an expense whose amount matches and whose date lands on the sub's cycle.
+ */
+function matchSubscription(
+  txn: Transaction,
+  subs: MatchedSub[]
+): MatchedSub | null {
+  if (txn.amount >= 0) {
+    return null;
+  }
+  const target = new Date(`${txn.date}T00:00:00`);
+  return (
+    subs.find(
+      (s) =>
+        s.next_billing !== null &&
+        cents(s.amount) === cents(txn.amount) &&
+        occursOn(s.next_billing, s.cycle, target)
+    ) ?? null
+  );
+}
 
 type FinanceView = "trends" | "categories" | "budget";
 type TrendsMode = "general" | "advanced";
@@ -164,12 +215,67 @@ function subtitle(txn: Transaction) {
 
 const REVEAL = 80;
 
+// The leading avatar: a matched subscription lends its logo/color, otherwise
+// the transaction falls back to its category tile.
+function TransactionTile({
+  txn,
+  sub,
+  fallbackIcon: Icon,
+}: {
+  txn: Transaction;
+  sub: MatchedSub | null;
+  fallbackIcon: LucideIcon;
+}) {
+  const tileColor = () => {
+    if (sub) {
+      return sub.color === "neutral"
+        ? "bg-secondary text-secondary-foreground"
+        : EVENT_COLORS[sub.color];
+    }
+    return txn.category
+      ? CATEGORY_STYLE[txn.category].tile
+      : "bg-secondary text-secondary-foreground";
+  };
+
+  function content() {
+    if (sub && isImageIcon(sub.icon)) {
+      return (
+        <Image
+          alt=""
+          className="object-cover"
+          fill
+          sizes="44px"
+          src={sub.icon}
+        />
+      );
+    }
+    if (sub) {
+      const SubIcon = subIcon(sub.icon);
+      return <SubIcon className="size-5" />;
+    }
+    return <Icon className="size-5" />;
+  }
+
+  return (
+    <div
+      className={cn(
+        "relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg",
+        tileColor()
+      )}
+    >
+      {content()}
+    </div>
+  );
+}
+
 function TransactionRow({
   txn,
+  sub,
   onRemove,
   onEdit,
 }: {
   txn: Transaction;
+  sub: MatchedSub | null;
   onRemove: (id: string) => void;
   onEdit: (txn: Transaction) => void;
 }) {
@@ -266,21 +372,19 @@ function TransactionRow({
           transition: dragging ? "none" : "transform 0.2s ease",
         }}
       >
-        <div
-          className={cn(
-            "relative flex size-11 shrink-0 items-center justify-center rounded-lg",
-            txn.category
-              ? CATEGORY_STYLE[txn.category].tile
-              : "bg-secondary text-secondary-foreground"
-          )}
-        >
-          <Icon className="size-5" />
-        </div>
+        <TransactionTile fallbackIcon={Icon} sub={sub} txn={txn} />
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <p className="truncate font-semibold text-[15px] leading-tight">
-            {txn.merchant}
-          </p>
+          <div className="flex min-w-0 items-center gap-1.5">
+            <p className="truncate font-semibold text-[15px] leading-tight">
+              {txn.merchant}
+            </p>
+            {sub ? (
+              <Badge className="shrink-0" variant="secondary">
+                {CYCLE_BADGE[sub.cycle]}
+              </Badge>
+            ) : null}
+          </div>
           <p className="truncate text-muted-foreground text-sm">
             {subtitle(txn)}
           </p>
@@ -788,6 +892,7 @@ function GeneralTrends({
   hasMore,
   loadingMore,
   hidden,
+  matchSub,
   onRemove,
   onEdit,
   onLoadMore,
@@ -798,6 +903,7 @@ function GeneralTrends({
   hasMore: boolean;
   loadingMore: boolean;
   hidden: boolean;
+  matchSub: (txn: Transaction) => MatchedSub | null;
   onRemove: (id: string) => void;
   onEdit: (txn: Transaction) => void;
   onLoadMore: () => void;
@@ -821,6 +927,7 @@ function GeneralTrends({
                 key={txn.id}
                 onEdit={onEdit}
                 onRemove={onRemove}
+                sub={matchSub(txn)}
                 txn={txn}
               />
             ))}
@@ -864,6 +971,29 @@ export function FinancePanel() {
   const [cashBalance, setCashBalance] = useState(0);
   const [addOpen, setAddOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
+  const [subs, setSubs] = useState<MatchedSub[]>([]);
+
+  // Subscriptions are read once to recognize their scheduled charges among the
+  // transactions; a matched row borrows the subscription's logo, color and cycle.
+  useEffect(() => {
+    let active = true;
+    supabase
+      .from("subscriptions")
+      .select("name, amount, cycle, next_billing, icon, color")
+      .then(({ data }) => {
+        if (active && data) {
+          setSubs(data as MatchedSub[]);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [supabase]);
+
+  const matchSub = useCallback(
+    (txn: Transaction) => matchSubscription(txn, subs),
+    [subs]
+  );
 
   // Running balance = opening balance + every transaction since. The opening
   // balance lives in the table as a one-off "deposit" row, so summing every
@@ -1096,6 +1226,7 @@ export function FinancePanel() {
             isEmpty={!loading && transactions.length === 0}
             loading={loading}
             loadingMore={loadingMore}
+            matchSub={matchSub}
             onEdit={setEditing}
             onLoadMore={loadMore}
             onRemove={removeTransaction}
