@@ -193,7 +193,7 @@ export function ProjectDetail({
         onRemoveEntry={removeEntry}
         project={project}
       />
-    );
+    ); 
   }
 
   return (
